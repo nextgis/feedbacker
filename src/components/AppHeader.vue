@@ -1,0 +1,94 @@
+<template>
+    <header class="header">
+        <div href="#" class="header__title">
+            <img class="header__logo" src="../assets/wwf_logo.svg" alt="Сбор общественных мнений">
+            <h1 class="header__title-text title">Сбор общественных мнений</h1>
+        </div>
+        <nav class="header-menu">
+            <a href="#" class="header-menu__link">О проекте</a>
+            <a href="#" class="header-menu__link">Инструкции</a>
+        </nav>
+        <v-btn primary dark large
+               class="header__login-button login-button">Войти</v-btn>
+    </header>
+</template>
+
+<script>
+export default {
+  name: 'hello',
+  data () {
+    return {
+    }
+  }
+}
+</script>
+
+<style lang="styl">
+@require '~vuetify/src/stylus/settings/_colors';
+@require '../styl/custom-vuetify/_theme'
+@require '../styl/custom-vuetify/_variables'
+@require '../styl/variables'
+@require '~vuetify/src/stylus/elements/_typography.styl'
+@require '../styl/custom-vuetify/_typography'
+@require '~vuetify/src/stylus/trumps/_spacing.styl'
+
+
+
+.header
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: $header-height;
+    background-color: #fff;
+    border-bottom: 1px solid $line-color;    
+    min-width: $grid-breakpoints.md
+
+    &__title
+        position:absolute;
+        line-height: $header-height;
+        left: $spacers.three.x;
+        top:0;
+  
+        @media $display-breakpoints.xs-only
+            left: $grid-gutters.xl;
+
+    &__title-text
+        @extend .title;
+        @extend .ml-2;
+        display: inline;
+        vertical-align: middle;
+
+    &__logo
+        display: inline-block;
+        vertical-align: middle;
+        height: 36px;
+        width: auto;
+
+    &__login-button
+        position: absolute;
+        right: $spacers.three.x;
+        top:0;
+        margin:0;
+        bottom:0;
+        margin-top: auto;
+        margin-bottom: auto;
+  
+        @media $display-breakpoints.xs-only
+            right: $grid-gutters.xl;
+
+.header-menu
+    text-align: center;
+
+    &__link
+        @extend .title;
+        @extend .mr-4;
+        text-decoration: none;
+        line-height: $header-height !important;
+        color: $theme.primary
+
+        &:first-child{
+            margin-left: 24px;
+        }
+
+</style>

@@ -1,0 +1,27 @@
+.stepper
+    box-shadow: none;
+    
+    &__step
+        &__step
+            width: 28px;
+            height: 28px;
+            color: #fff;
+            font-size: 14px;
+            fonr-weight: bold
+            
+            .icon
+                color: #fff
+        &:not(.stepper__step--active):not(.stepper__step--complete)
+            .stepper__step__step
+                background: rgba(0,0,0,.38);
+                
+        &--inactive
+            .stepper__label
+                opacity:.48
+    
+.stepper--vertical 
+    .stepper
+        &__step__step            
+            margin-right: 24px
+        &__content
+            padding-left: 36px

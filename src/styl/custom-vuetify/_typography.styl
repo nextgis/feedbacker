@@ -1,0 +1,26 @@
+.display-1, .display-2, .display-3, .display-4,
+.subheading,
+.headline,
+.title{
+    font-family: $heading-font-family;
+    text-transform: uppercase;
+    color: #000;
+}
+
+.subheading{
+    color: rgba(0,0,0,.8)
+}
+
+
+h1
+    @extend .display-4
+    word-spacing: .02em
+  
+h2
+    @extend .display-3
+  
+h3
+    @extend .display-2
+  
+h4
+    @extend .display-1
