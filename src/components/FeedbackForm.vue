@@ -1,5 +1,4 @@
 <template>
-  <transition name="feedback-form-slide-x">
     <div class="feedback-form" v-if="active">
       <v-icon class="feedback-form__closer"
               @click="triggerClose()">close</v-icon>
@@ -59,7 +58,6 @@
         <v-btn error large :disabled="feedbackStep<4"
                @click = "submitForm()">Отправить</v-btn>
     </div>
-  </transition>
 </template>
 
 <script>
@@ -162,8 +160,5 @@ export default {
 
   &__icon
     margin-bottom: $spacers.one.y
-
-slide-x(-660px, "feedback-form")
-
 
 </style>

@@ -1,9 +1,11 @@
 <template>
   <div class="main-content"
        :class="{ 'main-content--withForm':formActive }">
+
     <map-toolbar class="main-content__toolbar"
                  :selectedTheme="selectedTheme"
-                 ></map-toolbar>   
+                 ></map-toolbar>
+
     <div class="main-content__map">
       <app-map :messages = "localMessages"
                :active-message = "activeMessage"></app-map>
@@ -20,13 +22,16 @@
     <feedback-form :active="formActive"
                    @feedbackForm:closed="closeForm()"
                    :themes="themes"></feedback-form>
-    <div class="main-content__themes" v-if="themesIsShown">
-        <v-container>
-            <theme-list class="first-screen__theme-list"
-                        :themes="themes"
-                        :messages="localMessages"></theme-list>
-        </v-container>
-    </div>
+
+    <transition name="fade">
+        <div class="main-content__themes" v-if="themesIsShown">
+            <v-container>
+                <theme-list class="first-screen__theme-list"
+                            :themes="themes"
+                            :messages="localMessages"></theme-list>
+            </v-container>
+        </div>
+    </transition>
   </div>
 </template>
 
@@ -121,8 +126,14 @@ export default {
     bottom:0;
     transition: transform $primary-transition;
 
+    .feedback-form
+      transform: translate(-$feedback-form-width,0)
+
     &--withForm
       transform: translate($feedback-form-width,0)
+
+      .feedback-form
+          transform: translate(0,0)
 
     &__map
       position: absolute;
