@@ -19,10 +19,13 @@
 <script>
 import bus from "../js/eventBus"
 
+import Vue from "vue"
 import L from "leaflet"
-import vMap from "vue2-leaflet/src/components/Map.vue"
-import vTilelayer from "vue2-leaflet/src/components/TileLayer.vue"
-import vMarker from "vue2-leaflet/src/components/Marker.vue"
+import Vue2Leaflet from "vue2-leaflet/dist/vue2-leaflet.js"
+
+Vue.component('v-map', Vue2Leaflet.Map);
+Vue.component('v-tilelayer', Vue2Leaflet.TileLayer);
+Vue.component('v-marker', Vue2Leaflet.Marker);
 
 export default {
   props: [
@@ -30,9 +33,6 @@ export default {
     "activeMessage"
   ],
   components: {
-    vMap,
-    vTilelayer,
-    vMarker
   },
   data () {
     return {
