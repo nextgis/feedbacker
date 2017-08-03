@@ -1,11 +1,12 @@
 <template>
-    <div class="feedback-form" v-if="active">
+    <div class="feedback-form" @scroll="onFormScroll($event)">
       <v-icon class="feedback-form__closer"
               @click="triggerClose()">close</v-icon>
         <h2 class="feedback-form__title primary--text">Оставить сообщение</h2>
         <v-stepper v-model="feedbackStep" vertical>
+
           <v-stepper-step step="1" :complete="feedbackStep > 1">
-            <v-text-field
+            <v-text-field class=""
               v-model = "formValues.title"
               label="Заголовок"
               single-line
@@ -25,17 +26,20 @@
             ></v-select>
           </v-stepper-step>
           <v-stepper-content step="1">
-          <v-btn primary @click.native="feedbackStep = 2">Продолжить</v-btn>
-          </v-stepper-content> 
+          <v-btn primary :disabled="!formValues.theme || !formValues.type || !formValues.title" 
+                         @click.native="feedbackStep = 2">Продолжить</v-btn>
+          </v-stepper-content>
+
           <v-stepper-step step="2" :complete="feedbackStep > 2">
-            <div class="feedback-form__set-location bordered-block">
-              <v-icon large class="bordered-block__icon">my_location</v-icon>
-              <div class="bordered-block__text">Укажите место на карте</div>
-            </div>
+            <drawer class="feedback-form__set-location"
+                    :latlng = "formValues.latlng"
+                    ref="drawer"></drawer>
           </v-stepper-step>
           <v-stepper-content step="2">
-          <v-btn primary @click.native="feedbackStep = 3">Продолжить</v-btn>
+          <v-btn primary :disabled="!formValues.latlng"
+                         @click.native="feedbackStep = 3">Продолжить</v-btn>
           </v-stepper-content>
+
           <v-stepper-step step="3" :complete="feedbackStep > 3">
             <v-text-field
               :disabled = "feedbackStep < 3"
@@ -46,8 +50,10 @@
             ></v-text-field>
           </v-stepper-step>
           <v-stepper-content step="3">
-            <v-btn primary @click.native="feedbackStep = 4">Продолжить</v-btn>
+            <v-btn primary :disabled="!formValues.text"
+                           @click.native="feedbackStep = 4">Продолжить</v-btn>
           </v-stepper-content>
+
           <v-stepper-step step="4">
             <div class="feedback-form__set-location bordered-block">
               <v-icon large class="bordered-block__icon">photo</v-icon>
@@ -62,47 +68,70 @@
 
 <script>
 import bus from "../js/eventBus"
+import Drawer from "./Drawer"
 
 export default {
-  props: [ 
-    "active",
-    "themes"
-  ],
-  components: {
-  },
-  data () {
-    return {
-      feedbackStep: 1,
-      formValues: {
-        title: undefined,
-        text: undefined,
-        type: undefined,
-        theme: undefined
-      },
-      messageTypes: [
-        "Нарушение",
-        "Предложение",
-        "Природный объект"
-      ]
-    }
-  },
-  computed:{
-  },
-  methods: {
-    triggerClose(){
-      this.$emit("feedbackForm:closed");
+    props: [ 
+        "active",
+        "themes"
+    ],
+    components: {
+        Drawer
     },
-    resetForm(){
-      this.feedbackStep = 1;
-      for (let key in this.formValues) {
-        this.formValues[key] = undefined;
-      }
+    data () {
+        return {
+            feedbackStep: 1,
+            formValues: {
+                title: undefined,
+                text: undefined,
+                type: undefined,
+                theme: undefined,
+                latlng: undefined
+            },
+            messageTypes: [
+                "Нарушение",
+                "Предложение",
+                "Природный объект"
+            ]
+        }
     },
-    submitForm(){
-      this.triggerClose();
-      this.resetForm();
+    watch:{
+        feedbackStep(val){
+          switch (val) {
+            case 2:
+                this.$refs.drawer.activate();
+                break;
+          }
+        }
+    },
+    created(){
+        let that = this
+
+        bus.$on("map:markerAdded", function(latlng){
+            that.formValues.latlng = latlng
+        })
+    },
+    methods: {
+        triggerClose(){
+          this.$emit("feedbackForm:closed");
+          this.resetForm();
+        },
+        resetForm(){
+          this.feedbackStep = 1;
+          for (let key in this.formValues) {
+            this.formValues[key] = undefined;
+          }
+          this.$refs.drawer.reset();
+        },
+        submitForm(){
+          this.triggerClose();
+          this.resetForm();
+        },
+        onFormScroll(e){
+            if (this.$refs.drawer.active)
+                this.$refs.drawer.calcArrowPosition(e.target.scrollTop)
+        }
     }
-  }
 }
 </script>
 
@@ -117,48 +146,36 @@ export default {
 @require '~vuetify/src/stylus/trumps/_spacing.styl'
 
 .feedback-form
-  width: $feedback-form-width;
-  position: absolute;
-  left: - $feedback-form-width;
-  top:0;
-  bottom:0;
-  z-index: 1000;
-  background-color: #fff;
-  padding: 24px;
-  overflow: auto;
-
-  &__closer
+    width: $feedback-form-width;
     position: absolute;
-    right:$spacers.two.x;
-    top: $spacers.two.y;
-    cursor: pointer;
-    z-index:2;
+    left: - $feedback-form-width;
+    top:0;
+    bottom:0;
+    z-index: 1000;
+    background-color: #fff;
+    padding: 24px;
+    overflow: auto; 
 
-  &__title
-    margin-bottom: $spacers.one.y
+    &__closer
+        position: absolute;
+        right:$spacers.two.x;
+        top: $spacers.two.y;
+        cursor: pointer;
+        z-index:2;
 
-  .stepper 
-    margin-left: -24px;
-    margin-right: -24px;
+    &__title
+        margin-bottom: $spacers.one.y
 
-    &__step
-      align-items: flex-start
-      padding-bottom:0
+    .stepper 
+        margin-left: -24px;
+        margin-right: -24px;
 
-    &__label
-      width: 85%
+        &__step
+            align-items: flex-start
+            padding-bottom:0
 
-.bordered-block
-  width: 100%
-  height: 120px
-  display: flex
-  flex-direction: column
-  align-items:center
-  justify-content: center
-  border: 1px dashed $grey.base
-  border-radius:2px
-
-  &__icon
-    margin-bottom: $spacers.one.y
+        &__label
+            width: 85%
+            line-height: 30px
 
 </style>

@@ -43,6 +43,7 @@ export default {
     background-color: #fff;
     border-bottom: 1px solid $line-color;    
     min-width: $grid-breakpoints.md
+    z-index: 2000
 
     &__title
         position:absolute;

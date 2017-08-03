@@ -1,19 +1,21 @@
 <template>
-    <div class="map">
-        <v-map :zoom=6 :center="[64, 48]">
-            <v-tilelayer url="https://korona.geog.uni-heidelberg.de/tiles/roads/x={x}&y={y}&z={z}"></v-tilelayer>
-            <template v-for="message in messages">
-                <v-marker
-                       :icon = "message.id == activeMessage ? customIconActive : customIcon"
-                       :key="message.id"
-                       :lat-lng="message.coord"
-                        
-                       @l-add = "onMarkerAdd($event, message.id)"
-                       @l-click = "activateMessage($event)"
-                       ></v-marker>
-            </template>
-        </v-map>
-    </div>
+    <v-map class="map"
+           :zoom=6 
+           :center="[64, 48]"
+           :options="mapOptions"
+           ref="map">
+        <v-tilelayer url="https://korona.geog.uni-heidelberg.de/tiles/roads/x={x}&y={y}&z={z}"></v-tilelayer>
+        <template v-for="message in messages">
+            <v-marker
+                   :icon = "message.id == activeMessage ? customIconActive : customIcon"
+                   :key="message.id"
+                   :lat-lng="message.coord"
+                    
+                   @l-add = "onMarkerAdd($event, message.id)"
+                   @l-click = "activateMessage($event)"
+                   ></v-marker>
+        </template>
+    </v-map>
 </template>
 
 <script>
@@ -21,6 +23,7 @@ import bus from "../js/eventBus"
 
 import Vue from "vue"
 import L from "leaflet"
+import "leaflet-editable"
 import Vue2Leaflet from "vue2-leaflet/dist/vue2-leaflet.js"
 
 Vue.component('v-map', Vue2Leaflet.Map);
@@ -36,6 +39,9 @@ export default {
   },
   data () {
     return {
+        mapOptions: {
+           editable: true
+        }
     }
   },
   computed: {
@@ -47,7 +53,6 @@ export default {
             shadowSize:   [54, 61], // size of the shadow
             iconAnchor:   [12, 31], // point of the icon which will correspond to marker's location
             shadowAnchor: [24, 45],  // the same for the shadow
-            //popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
         });
     },
     customIconActive () {
@@ -58,9 +63,27 @@ export default {
             shadowSize:   [54, 61], // size of the shadow
             iconAnchor:   [12, 31], // point of the icon which will correspond to marker's location
             shadowAnchor: [24, 45],  // the same for the shadow
-            //popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
         });
+    },
+    mapObject(){
+        return this.$refs.map.mapObject
     }
+  },
+  mounted(){
+    let that = this
+
+    bus.$on("drawer:activated", function(){
+        that.mapObject.editTools.startMarker(null, {icon: that.customIconActive});
+    })
+
+    bus.$on("drawer:reseted", function(){      
+        that.mapObject.editTools.stopDrawing();
+        that.removeEditableLayers();
+    })
+
+    this.mapObject.on('editable:drawing:commit editable:dragend', function (e) {
+        bus.$emit("map:markerAdded", e.layer._latlng)
+    });
   },
   methods: {
     activateMessage(e){
@@ -68,6 +91,15 @@ export default {
     },
     onMarkerAdd(e, id){      
       e.target.messageId = id
+    },
+    removeEditableLayers(){
+        for (var id in this.mapObject.editTools.featuresLayer._layers){
+            this.removeLayer(this.mapObject.editTools.featuresLayer._layers[id]);
+        }
+    },
+    removeLayer(layer){
+        this.mapObject.editTools.featuresLayer.removeLayer(layer);
+        this.mapObject.removeLayer(layer);
     }
   }
 }
