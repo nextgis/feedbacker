@@ -79,7 +79,8 @@ import {latlngToCoord} from "../js/utilities"
 export default {
     props: [ 
         "active",
-        "themes"
+        "themes",
+        "selectedTheme"
     ],
     components: {
         Drawer
@@ -91,7 +92,7 @@ export default {
                 title: undefined,
                 text: undefined,
                 type: undefined,
-                theme: undefined,
+                theme: this.selectedTheme,
                 latlng: undefined
             },
             messageTypes: [
@@ -111,6 +112,9 @@ export default {
                 this.$refs.drawer.activate();
                 break;
           }
+        },
+        selectedTheme(val){
+            this.formValues.theme = this.selectedTheme
         }
     },
     created(){

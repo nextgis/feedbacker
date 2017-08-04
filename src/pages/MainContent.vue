@@ -23,7 +23,8 @@
                    @feedbackForm:closed="closeForm()"
                    @feedbackForm:submitted="showSnackbar('success', 'Сообщение отправлено')"
                    @feedbackForm:failed="showSnackbar('error', 'Произошла ошибка')"
-                   :themes="themes"></feedback-form>
+                   :themes="themes"
+                   :selectedTheme="selectedTheme"></feedback-form>
 
     <transition name="fade">
         <div class="main-content__themes" v-if="themesIsShown">
