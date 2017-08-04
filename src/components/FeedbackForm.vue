@@ -61,14 +61,20 @@
             </div>
           </v-stepper-step>
         </v-stepper>
-        <v-btn error large :disabled="feedbackStep<4"
+        <v-btn error large
+               :disabled="feedbackStep<4"
+               :class="{'btn--faded': formInProgress}"
                @click = "submitForm()">Отправить</v-btn>
+        <v-progress-circular indeterminate class="feedback-form__loader accent--text"
+                             v-if="formInProgress"></v-progress-circular>
     </div>
 </template>
 
 <script>
 import bus from "../js/eventBus"
 import Drawer from "./Drawer"
+import axios from 'axios'
+import {latlngToCoord} from "../js/utilities"
 
 export default {
     props: [ 
@@ -92,7 +98,10 @@ export default {
                 "Нарушение",
                 "Предложение",
                 "Природный объект"
-            ]
+            ],
+            nextgiscomUrl: "http://nastya.nextgis.com",
+            editableLayer: "17",
+            formInProgress: false
         }
     },
     watch:{
@@ -122,10 +131,40 @@ export default {
             this.formValues[key] = undefined;
           }
           this.$refs.drawer.reset();
+          this.$el.scrollTop = 0
         },
         submitForm(){
-          this.triggerClose();
-          this.resetForm();
+            if (!this.formInProgress){
+                let point = latlngToCoord(this.formValues.latlng)
+
+                this.formInProgress = true
+
+                axios.create({withCredentials: true})
+                     .post(this.nextgiscomUrl + "/api/resource/" + this.editableLayer + "/feature/",
+                            JSON.stringify( {
+                                geom: "POINT(" + point.x + " " + point.y + ")",
+                                fields: {
+                                    title: this.formValues.title,
+                                    type1: this.formValues.type,
+                                    theme: this.formValues.theme,
+                                    text: this.formValues.text,
+                                    author: "Иван Иванов",
+                                    date: new Date()
+                                }
+                            })
+                     )
+                     .then(response => {
+                        this.triggerClose()
+                        this.resetForm()
+                        this.formInProgress = false
+                        this.$emit("feedbackForm:submitted")
+                     })
+                     .catch(e => {
+                        this.formInProgress = false
+                        this.$emit("feedbackForm:failed", e)
+                        console.log(e)
+                     })
+            }
         },
         onFormScroll(e){
             if (this.$refs.drawer.active)
@@ -151,7 +190,7 @@ export default {
     left: - $feedback-form-width;
     top:0;
     bottom:0;
-    z-index: 1000;
+    z-index: 2;
     background-color: #fff;
     padding: 24px;
     overflow: auto; 
@@ -165,6 +204,11 @@ export default {
 
     &__title
         margin-bottom: $spacers.one.y
+
+    &__loader
+        position: relative;
+        top: 12px;
+        margin-left: 16px;
 
     .stepper 
         margin-left: -24px;

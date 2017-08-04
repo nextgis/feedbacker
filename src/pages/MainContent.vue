@@ -21,6 +21,8 @@
 
     <feedback-form :active="formActive"
                    @feedbackForm:closed="closeForm()"
+                   @feedbackForm:submitted="showSnackbar('success', 'Сообщение отправлено')"
+                   @feedbackForm:failed="showSnackbar('error', 'Произошла ошибка')"
                    :themes="themes"></feedback-form>
 
     <transition name="fade">
@@ -31,7 +33,16 @@
                             :messages="localMessages"></theme-list>
             </v-container>
         </div>
-    </transition>
+    </transition>    
+    <v-snackbar
+      :timeout="snackbar.timeout"
+      :success="snackbar.mode === 'success'"
+      :error="snackbar.mode === 'error'"
+      v-model="snackbar.visibility"
+    >
+      {{ snackbar.text }}
+      <v-btn dark flat @click.native="snackbar.visibility = false">Закрыть</v-btn>
+    </v-snackbar>
   </div>
 </template>
 
@@ -63,7 +74,13 @@ export default {
       activeMessage: null,
       formActive: false,
       localMessages: this.messages,
-      themesIsShown: false
+      themesIsShown: false,      
+      snackbar: {
+          visibility: false,
+          mode: undefined,
+          text: undefined,
+          timeout: 3000
+      }
     }
   },
   computed: {
@@ -103,6 +120,11 @@ export default {
     },
     showThemes(){
         this.themesIsShown = !this.themesIsShown
+    },
+    showSnackbar(mode, text){
+        this.snackbar.visibility = true
+        this.snackbar.mode = mode
+        this.snackbar.text = text
     }
   }
 }
@@ -124,16 +146,10 @@ export default {
     left: 0;
     top:0;
     bottom:0;
-    transition: transform $primary-transition;
-
-    .feedback-form
-      transform: translate(-$feedback-form-width,0)
+    transition: margin-left $primary-transition;
 
     &--withForm
-      transform: translate($feedback-form-width,0)
-
-      .feedback-form
-          transform: translate(0,0)
+      margin-left: $feedback-form-width
 
     &__map
       position: absolute;

@@ -1,11 +1,21 @@
 .btn
-	font-family: $heading-font-family
-	button($material-light)
-	
-	&--raised
-		box-shadow: none
-		
-	&--large
-		font-weight: 700
-		.btn__content
-			padding: 0 $spacers.four.x
+    font-family: $heading-font-family
+    button($material-light)
+    
+    &--raised
+        box-shadow: none
+        
+    &--large
+        font-weight: 700
+        .btn__content
+            padding: 0 $spacers.four.x
+            
+    &--faded::after
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.4);
+        border-radius: inherit;
