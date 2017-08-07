@@ -19,7 +19,7 @@
               bottom
             ></v-select>               
             <v-select
-              :items="themes"
+              :items="themeList"
               v-model = "formValues.theme"
               label="Тема сообщения"
               bottom
@@ -71,6 +71,7 @@
 </template>
 
 <script>
+import {config} from "../js/config"
 import bus from "../js/eventBus"
 import Drawer from "./Drawer"
 import axios from 'axios'
@@ -100,10 +101,14 @@ export default {
                 "Предложение",
                 "Природный объект"
             ],
-            nextgiscomUrl: "http://nastya.nextgis.com",
             editableLayer: "17",
             formInProgress: false
         }
+    },
+    computed:{
+      themeList(){
+        return this.themes.map(function(theme){ return theme.name })
+      }
     },
     watch:{
         feedbackStep(val){
@@ -121,6 +126,7 @@ export default {
         let that = this
 
         bus.$on("map:markerAdded", function(latlng){
+            console.log(latlng)
             that.formValues.latlng = latlng
         })
     },
@@ -144,7 +150,7 @@ export default {
                 this.formInProgress = true
 
                 axios.create({withCredentials: true})
-                     .post(this.nextgiscomUrl + "/api/resource/" + this.editableLayer + "/feature/",
+                     .post(config.nextgiscomUrl + "/api/resource/" + this.editableLayer + "/feature/",
                             JSON.stringify( {
                                 geom: "POINT(" + point.x + " " + point.y + ")",
                                 fields: {

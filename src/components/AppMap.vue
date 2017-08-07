@@ -5,16 +5,9 @@
            :options="mapOptions"
            ref="map">
         <v-tilelayer url="https://korona.geog.uni-heidelberg.de/tiles/roads/x={x}&y={y}&z={z}"></v-tilelayer>
-        <template v-for="message in messages">
-            <v-marker
-                   :icon = "message.id == activeMessage ? customIconActive : customIcon"
-                   :key="message.id"
-                   :lat-lng="message.coord"
-                    
-                   @l-add = "onMarkerAdd($event, message.id)"
-                   @l-click = "activateMessage($event)"
-                   ></v-marker>
-        </template>
+        <v-geojson-layer :geojson="geojson"
+                         :options="geojsonOptions"
+                         ref="geojson"></v-geojson-layer>
     </v-map>
 </template>
 
@@ -25,22 +18,41 @@ import Vue from "vue"
 import L from "leaflet"
 import "leaflet-editable"
 import Vue2Leaflet from "vue2-leaflet/dist/vue2-leaflet.js"
-
-Vue.component('v-map', Vue2Leaflet.Map);
-Vue.component('v-tilelayer', Vue2Leaflet.TileLayer);
-Vue.component('v-marker', Vue2Leaflet.Marker);
+import {coordToLatlng} from "../js/utilities"
 
 export default {
   props: [
     "messages",
-    "activeMessage"
+    "activeMessage",
+    "geojson"
   ],
   components: {
+    'v-map': Vue2Leaflet.Map,
+    'v-tilelayer': Vue2Leaflet.TileLayer,
+    'v-marker': Vue2Leaflet.Marker,
+    'v-geojson-layer' :Vue2Leaflet.GeoJSON
   },
   data () {
+    let that = this;
+
     return {
         mapOptions: {
            editable: true
+        },
+        geojsonOptions: {
+            coordsToLatLng: function(coords) {
+                return coordToLatlng(L.point(coords[0], coords[1]))
+            },
+            pointToLayer: function(feature, latlng) {
+                return L.marker(latlng, {icon: that.customIcon});
+            },
+            onEachFeature: function (feature, layer) {
+                layer.on({
+                    click: function(e){
+                        that.activateMessage(e.target, false)
+                    }
+                });
+            }
         }
     }
   },
@@ -67,6 +79,14 @@ export default {
     },
     mapObject(){
         return this.$refs.map.mapObject
+    },
+    geojsonObject(){
+        return this.$refs.geojson.$geoJSON
+    }
+  },
+  watch: {
+    activeMessage(value){
+        this.activateMessage(this.getActiveMarker())
     }
   },
   mounted(){
@@ -84,13 +104,25 @@ export default {
     this.mapObject.on('editable:drawing:commit editable:dragend', function (e) {
         bus.$emit("map:markerAdded", e.layer._latlng)
     });
+
+    bus.$on('card:cardClicked', function (cardId) {
+        that.activateMessage(that.getMarkerById(cardId), true)
+    })
   },
   methods: {
-    activateMessage(e){
-      bus.$emit("messages.messageActivated", e.target.messageId)
+    activateMessage(marker, withMoving){
+        let activeMarker = this.getActiveMarker()
+        if (activeMarker) this.deactivateMessage(this.getActiveMarker())
+
+        marker.setIcon(this.customIconActive)
+              .setZIndexOffset(1000)
+        bus.$emit("map:markerClicked", marker.feature.id)
+        
+        if (withMoving) this.mapObject.panTo(marker._latlng)
     },
-    onMarkerAdd(e, id){      
-      e.target.messageId = id
+    deactivateMessage(marker){
+        marker.setIcon(this.customIcon)
+              .setZIndexOffset(0)
     },
     removeEditableLayers(){
         for (var id in this.mapObject.editTools.featuresLayer._layers){
@@ -100,6 +132,22 @@ export default {
     removeLayer(layer){
         this.mapObject.editTools.featuresLayer.removeLayer(layer);
         this.mapObject.removeLayer(layer);
+    },
+    getActiveMarker(){        
+        let geojsonLayers = this.geojsonObject._layers;
+
+        for (let layer in geojsonLayers) {
+            if (geojsonLayers[layer].feature.id == this.activeMessage)
+                return geojsonLayers[layer]
+        }
+    },
+    getMarkerById(id){
+        let geojsonLayers = this.geojsonObject._layers;
+
+        for (let layer in geojsonLayers) {
+            if (geojsonLayers[layer].feature.id == id)
+                return geojsonLayers[layer]
+        }
     }
   }
 }

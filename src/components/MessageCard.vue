@@ -7,7 +7,7 @@
             <div class="message-card__text">{{ message.text }}</div>
             <div class="message-card__meta">
                 <span class="message-card__meta-item">{{ message.date }}</span>
-                <span class="message-card__meta-item"> <v-icon>comment</v-icon> {{ message.comments }}</span>
+                <span class="message-card__meta-item"> <v-icon>comment</v-icon> {{ message.comments || 0 }}</span>
                 <span class="message-card__meta-item">{{ message.type }}</span>
             </div>
       </v-container>
@@ -19,6 +19,7 @@ import bus from "../js/eventBus"
 
 export default {
   props: [
+    "id",
     "message",
     "isActive"
   ],
@@ -30,7 +31,7 @@ export default {
   },
   methods: {
     activateMessage(e){
-      bus.$emit("messages.messageActivated", this.message.id)
+      bus.$emit("card:cardClicked", this.id)
     }
   }
 }

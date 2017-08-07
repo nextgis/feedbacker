@@ -50,6 +50,7 @@ export default {
 
 .map-toolbar
     height: $map-toolbar-height
+    border-bottom: 1px solid $line-color
 
     &__item
         border-left: 1px solid $line-color

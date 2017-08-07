@@ -2,8 +2,10 @@
     <div class="message-list">
         <message-card v-for="message in messages" 
                  :key="message.id"
-                 :message="message"
-                 :isActive="message.id == activeMessage">
+                 :id="message.id"
+                 :message="message.properties"
+                 :isActive="message.id == activeMessage"
+                 ref="card">
         </message-card>
     </div>
 </template>
@@ -21,6 +23,37 @@ export default {
   },
   data () {
     return {
+    }
+  },
+  watch:{
+    activeMessage(value){
+      if (!this.isActiveCardInView)
+        this.activeCard.$el.scrollIntoView();
+    }
+  },
+  computed:{
+    activeCard(){
+      let that = this
+      return this.$refs.card.filter(function(card,){
+        return (card.id == that.activeMessage)
+      })[0]
+    },
+    activeCardRect(){      
+      let activeCardRectAbs = this.activeCard.$el.getBoundingClientRect()
+
+      return {
+        top: activeCardRectAbs.top - this.listRect.top,
+        left: activeCardRectAbs.left - this.listRect.left,
+        right: activeCardRectAbs.right - this.listRect.left,
+        bottom: activeCardRectAbs.bottom - this.listRect.top
+      }
+    },
+    listRect(){
+      return this.$el.getBoundingClientRect()
+    },
+    isActiveCardInView(){
+      return  ((this.activeCardRect.top > 0) && 
+              (this.activeCardRect.bottom < this.$el.clientHeight))
     }
   }
 }

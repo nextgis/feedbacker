@@ -3,13 +3,14 @@
        :class="{ 'main-content--withForm':formActive }">
 
     <map-toolbar class="main-content__toolbar"
-                 :selectedTheme="selectedTheme"
+                 :selectedTheme="selectedTheme.name"
                  ></map-toolbar>
 
     <div class="main-content__map">
-      <app-map :messages = "localMessages"
+      <app-map :geojson = "selectedTheme.geojson"
+               :messages = "localMessages"
                :active-message = "activeMessage"></app-map>
-      <message-list :messages = "localMessages"
+      <message-list :messages = "messages"
                     :activeMessage = "activeMessage"></message-list>
       <transition name="fade">
         <v-btn primary dark large
@@ -24,7 +25,7 @@
                    @feedbackForm:submitted="showSnackbar('success', 'Сообщение отправлено')"
                    @feedbackForm:failed="showSnackbar('error', 'Произошла ошибка')"
                    :themes="themes"
-                   :selectedTheme="selectedTheme"></feedback-form>
+                   :selectedTheme="selectedTheme.name"></feedback-form>
 
     <transition name="fade">
         <div class="main-content__themes" v-if="themesIsShown">
@@ -66,8 +67,7 @@ export default {
   },
   props:[
     "selectedThemeId",
-    "themes",
-    "messages"
+    "themes"
   ],
   data () {
     return {
@@ -87,11 +87,14 @@ export default {
   computed: {
     selectedTheme: function(){
       return this.themes[this.selectedThemeId]
+    },
+    messages: function(){
+      return this.selectedTheme.geojson.features
     }
   },
   created: function () {
     let that = this
-    bus.$on('messages.messageActivated', function (activeMessage) {
+    bus.$on('map:markerClicked', function (activeMessage) {
       that.activeMessage = activeMessage
     })
 

@@ -3,10 +3,8 @@
             height = "136px"
             @click = "activateTheme($event)">
         <v-container fill-height fluid>
-            <!-- <v-layout fill-height> -->
             <div class="theme-card__title">{{ theme }}</div>
             <div class="theme-card__meta" align-end flexbox>{{ messageCount }} сообщений</div>
-            <!-- </v-layout>     -->
         </v-container>
     </v-card>
 </template>
@@ -17,7 +15,7 @@ import bus from "../js/eventBus"
 export default {
   props: [
     "theme",
-    "themeId",
+    "themeIndex",
     "messageCount"
   ],
   components: {
@@ -28,7 +26,7 @@ export default {
   },
   methods: {
     activateTheme(e){
-      bus.$emit("themes:themeActivated", this.themeId)
+      bus.$emit("themes:themeActivated", this.themeIndex)
     }
   }
 }
