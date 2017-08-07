@@ -81,7 +81,8 @@ export default {
     props: [ 
         "active",
         "themes",
-        "selectedTheme"
+        "selectedThemeId",
+        "editableLayer"
     ],
     components: {
         Drawer
@@ -93,7 +94,7 @@ export default {
                 title: undefined,
                 text: undefined,
                 type: undefined,
-                theme: this.selectedTheme,
+                theme: this.themes[this.selectedThemeId].name,
                 latlng: undefined
             },
             messageTypes: [
@@ -101,7 +102,6 @@ export default {
                 "Предложение",
                 "Природный объект"
             ],
-            editableLayer: "17",
             formInProgress: false
         }
     },
@@ -126,7 +126,6 @@ export default {
         let that = this
 
         bus.$on("map:markerAdded", function(latlng){
-            console.log(latlng)
             that.formValues.latlng = latlng
         })
     },
@@ -167,11 +166,11 @@ export default {
                         this.triggerClose()
                         this.resetForm()
                         this.formInProgress = false
-                        this.$emit("feedbackForm:submitted")
+                        bus.$emit("feedbackForm:submitted", this.selectedThemeId)
                      })
                      .catch(e => {
                         this.formInProgress = false
-                        this.$emit("feedbackForm:failed", e)
+                        bus.$emit("feedbackForm:failed", e)
                         console.log(e)
                      })
             }

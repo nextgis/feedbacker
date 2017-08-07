@@ -50,6 +50,11 @@ export default {
       that.selectedThemeId = selectedThemeId
       that.currentPage = "MainContent"
     })
+
+    bus.$on('feedbackForm:submitted', function (selectedThemeId) {
+      that.getMessages(selectedThemeId)
+    })
+
   },
   methods: {
     initData(){
@@ -100,15 +105,15 @@ export default {
                 Object.assign(that.themes[index], {
                     editableLayer: editableLayer.resource
                 });
-                that.getMessages(editableLayer.resource.id, index)
+                that.getMessages(index)
             })
             .catch(e => {
                 console.log(e)
             })
         })
     },
-    getMessages(layerId, themeIndex){
-        axios.get(config.nextgiscomUrl + "/api/resource/" + layerId + "/geojson")
+    getMessages(themeIndex){
+        axios.get(config.nextgiscomUrl + "/api/resource/" + this.themes[themeIndex].editableLayer.id + "/geojson")
         .then(response => {
             Object.assign(this.themes[themeIndex], {
                 geojson: response.data

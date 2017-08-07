@@ -22,10 +22,9 @@
 
     <feedback-form :active="formActive"
                    @feedbackForm:closed="closeForm()"
-                   @feedbackForm:submitted="showSnackbar('success', 'Сообщение отправлено')"
-                   @feedbackForm:failed="showSnackbar('error', 'Произошла ошибка')"
                    :themes="themes"
-                   :selectedTheme="selectedTheme.name"></feedback-form>
+                   :selectedThemeId="selectedThemeId"
+                   :editableLayer="themes[selectedThemeId].editableLayer.id"></feedback-form>
 
     <transition name="fade">
         <div class="main-content__themes" v-if="themesIsShown">
@@ -104,6 +103,14 @@ export default {
 
     bus.$on('themes:themeActivated', function (selectedThemeId) {
       that.themesIsShown = false
+    })
+
+    bus.$on('feedbackForm:submitted', function (selectedThemeId) {
+      that.showSnackbar('success', 'Сообщение отправлено')
+    })
+
+    bus.$on('feedbackForm:failed', function (selectedThemeId) {
+      that.showSnackbar('error', 'Произошла ошибка')
     })
   },
   methods: {
