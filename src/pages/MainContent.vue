@@ -8,7 +8,6 @@
 
     <div class="main-content__map">
       <app-map :geojson = "selectedTheme.geojson"
-               :messages = "localMessages"
                :active-message = "activeMessage"></app-map>
       <message-list :messages = "messages"
                     :activeMessage = "activeMessage"></message-list>
@@ -70,7 +69,7 @@ export default {
   ],
   data () {
     return {
-      bufferMessages: [],
+      bufferFeatures: [],
       activeMessage: null,
       formActive: false,
       localMessages: this.messages,
@@ -123,11 +122,11 @@ export default {
       this.showMessages()
     },
     hideMessages(){
-      this.bufferMessages = this.messages
-      this.localMessages = []
+      this.bufferFeatures = this.selectedTheme.geojson.features
+      this.selectedTheme.geojson.features = []
     },
     showMessages(){
-      this.localMessages = this.bufferMessages
+      this.selectedTheme.geojson.features = this.bufferFeatures
     },
     showThemes(){
         this.themesIsShown = !this.themesIsShown

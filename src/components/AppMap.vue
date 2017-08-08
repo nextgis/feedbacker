@@ -23,7 +23,6 @@ import "../js/extendLeaflet"
 
 export default {
   props: [
-    "messages",
     "activeMessage",
     "geojson"
   ],
