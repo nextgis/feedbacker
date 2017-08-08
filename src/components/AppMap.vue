@@ -19,6 +19,7 @@ import L from "leaflet"
 import "leaflet-editable"
 import Vue2Leaflet from "vue2-leaflet/dist/vue2-leaflet.js"
 import {coordToLatlng} from "../js/utilities"
+import "../js/extendLeaflet"
 
 export default {
   props: [
@@ -37,7 +38,8 @@ export default {
 
     return {
         mapOptions: {
-           editable: true
+           editable: true,
+           offset:  [-220, 0]
         },
         geojsonOptions: {
             coordsToLatLng: function(coords) {
@@ -118,7 +120,7 @@ export default {
               .setZIndexOffset(1000)
         bus.$emit("map:markerClicked", marker.feature.id)
         
-        if (withMoving) this.mapObject.panTo(marker._latlng)
+        if (withMoving) this.mapObject.panToOffset(marker._latlng, this.mapOptions.offset)
     },
     deactivateMessage(marker){
         marker.setIcon(this.customIcon)
