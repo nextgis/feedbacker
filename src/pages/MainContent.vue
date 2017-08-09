@@ -94,7 +94,7 @@ export default {
     },
     activeMessage: function(){
       let that = this
-      return that.activeMessageId ? this.messages.filter(function(message){
+      return that.activeMessageId && that.messages.length ? that.messages.filter(function(message){
         return message.id==that.activeMessageId
       })[0].properties : null
     }

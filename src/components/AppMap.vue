@@ -45,7 +45,9 @@ export default {
                 return coordToLatlng(L.point(coords[0], coords[1]))
             },
             pointToLayer: function(feature, latlng) {
-                return L.marker(latlng, {icon: that.customIcon});
+                return L.marker(latlng, {
+                    icon: (feature.id===that.activeMessage) ? that.customIconActive : that.customIcon
+                });
             },
             onEachFeature: function (feature, layer) {
                 layer.on({
