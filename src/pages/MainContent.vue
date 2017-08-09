@@ -8,9 +8,12 @@
 
     <div class="main-content__map">
       <app-map :geojson = "selectedTheme.geojson"
-               :active-message = "activeMessage"></app-map>
-      <message-list :messages = "messages"
-                    :activeMessage = "activeMessage"></message-list>
+               :active-message = "activeMessageId"></app-map>
+      <detail-message v-show="activeMessageId"
+                      :message = "activeMessage"></detail-message>
+      <message-list v-show="!activeMessageId"
+                    :messages = "messages"
+                    :activeMessageId = "activeMessageId"></message-list>
       <transition name="fade">
         <v-btn primary dark large
                v-if="!formActive"
@@ -29,8 +32,7 @@
         <div class="main-content__themes" v-if="themesIsShown">
             <v-container>
                 <theme-list class="first-screen__theme-list"
-                            :themes="themes"
-                            :messages="localMessages"></theme-list>
+                            :themes="themes"></theme-list>
             </v-container>
         </div>
     </transition>    
@@ -54,6 +56,7 @@ import MapToolbar from "../components/MapToolbar"
 import MessageList from "../components/MessageList"
 import FeedbackForm from "../components/FeedbackForm"
 import ThemeList from "../components/ThemeList"
+import DetailMessage from "../components/DetailMessage"
 
 export default {
   components:{
@@ -61,7 +64,8 @@ export default {
     MapToolbar,
     MessageList,
     FeedbackForm,
-    ThemeList
+    ThemeList,
+    DetailMessage
   },
   props:[
     "selectedThemeId",
@@ -70,9 +74,8 @@ export default {
   data () {
     return {
       bufferFeatures: [],
-      activeMessage: null,
+      activeMessageId: null,
       formActive: false,
-      localMessages: this.messages,
       themesIsShown: false,      
       snackbar: {
           visibility: false,
@@ -88,12 +91,27 @@ export default {
     },
     messages: function(){
       return this.selectedTheme.geojson.features
+    },
+    activeMessage: function(){
+      let that = this
+      return that.activeMessageId ? this.messages.filter(function(message){
+        return message.id==that.activeMessageId
+      })[0].properties : null
+    }
+  },
+  watch:{
+    selectedThemeId(value){
+      this.activeMessageId = null
     }
   },
   created: function () {
     let that = this
-    bus.$on('map:markerClicked', function (activeMessage) {
-      that.activeMessage = activeMessage
+    bus.$on('map:markerClicked', function (activeMessageId) {
+      that.activeMessageId = activeMessageId
+    })
+
+    bus.$on('card:cardClicked', function (activeMessageId) {
+        that.activeMessageId = activeMessageId
     })
 
     bus.$on('maptoolbar:themeSwitcherClicked', function () {
@@ -110,6 +128,10 @@ export default {
 
     bus.$on('feedbackForm:failed', function (selectedThemeId) {
       that.showSnackbar('error', 'Произошла ошибка')
+    })
+
+    bus.$on("detailMessage:closed", function(){
+      that.activeMessageId = null
     })
   },
   methods: {

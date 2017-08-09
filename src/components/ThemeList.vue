@@ -16,7 +16,6 @@ import ThemeCard from "./ThemeCard"
 
 export default {
   props: [
-    "message",
     "themes"
   ],
   components: {
@@ -40,8 +39,5 @@ export default {
 @require '../styl/custom-vuetify/_typography'
 @require '~vuetify/src/stylus/trumps/_spacing.styl'
 @require '~vuetify/src/stylus/tools/_elevations.styl'
-
-.theme-list
-    //background-color: tomato !important;
 
 </style>

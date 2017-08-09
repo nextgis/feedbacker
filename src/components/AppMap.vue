@@ -38,7 +38,7 @@ export default {
     return {
         mapOptions: {
            editable: true,
-           offset:  [-220, 0]
+           offset:  [-200, 0]
         },
         geojsonOptions: {
             coordsToLatLng: function(coords) {
@@ -86,8 +86,14 @@ export default {
     }
   },
   watch: {
-    activeMessage(value){
-        this.activateMessage(this.getActiveMarker())
+    activeMessage(value, oldValue){
+        let activeMarker = this.getActiveMarker()
+
+        if (oldValue)
+            this.deactivateMessage(this.getMarkerById(oldValue))
+
+        if (value)
+            this.activateMessage(this.getMarkerById(value), true)
     }
   },
   mounted(){
@@ -102,24 +108,23 @@ export default {
         that.removeEditableLayers();
     })
 
+    bus.$on('card:cardClicked', function (messageId) {
+        that.panToMarker(messageId)
+    })
+
     this.mapObject.on('editable:drawing:commit editable:dragend', function (e) {
         bus.$emit("map:markerAdded", e.layer._latlng)
     });
-
-    bus.$on('card:cardClicked', function (cardId) {
-        that.activateMessage(that.getMarkerById(cardId), true)
-    })
   },
   methods: {
     activateMessage(marker, withMoving){
-        let activeMarker = this.getActiveMarker()
-        if (activeMarker) this.deactivateMessage(this.getActiveMarker())
-
         marker.setIcon(this.customIconActive)
               .setZIndexOffset(1000)
         bus.$emit("map:markerClicked", marker.feature.id)
-        
-        if (withMoving) this.mapObject.panToOffset(marker._latlng, this.mapOptions.offset)
+    },
+    panToMarker(markerId){
+        let marker = this.getMarkerById(markerId)
+        this.mapObject.panToOffset(marker._latlng, this.mapOptions.offset)
     },
     deactivateMessage(marker){
         marker.setIcon(this.customIcon)
