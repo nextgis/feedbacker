@@ -13,12 +13,21 @@
 </template>
 
 <script>
+import bus from "../../js/eventBus"
+
 export default {
     props:[ "value" ],
     data () {
         return {
             isOpened: false
         }
+    },
+    created(){
+        let that = this
+
+        bus.$on("themes:themeActivated", function(){
+            that.isOpened = false
+        })
     },
     methods:{
         onClick(){
