@@ -16,13 +16,14 @@
                     :activeMessageId = "activeMessageId"></message-list>
       <transition name="fade">
         <v-btn primary dark large
-               v-if="!formActive"
+               v-if="!formActive && themes[selectedThemeId].editableLayer"
                class="feedback-btn"
                @click="showForm()">Оставить сообщение</v-btn>
       </transition>
     </div>
 
-    <feedback-form :active="formActive"
+    <feedback-form v-if="themes[selectedThemeId].editableLayer"
+                   :active="formActive"
                    @feedbackForm:closed="closeForm()"
                    :themes="themes"
                    :selectedThemeId="selectedThemeId"
@@ -90,7 +91,7 @@ export default {
       return this.themes[this.selectedThemeId]
     },
     messages: function(){
-      return this.selectedTheme.geojson.features
+      return this.selectedTheme.geojson ? this.selectedTheme.geojson.features : []
     },
     activeMessage: function(){
       let that = this

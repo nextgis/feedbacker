@@ -101,11 +101,12 @@ export default {
                 let editableLayer = response.data.filter(function(item){
                     return item.resource.display_name == "Messages"
                 })[0]
-
-                Object.assign(that.themes[index], {
-                    editableLayer: editableLayer.resource
-                });
-                that.getMessages(index)
+                if (editableLayer){
+                    Object.assign(that.themes[index], {
+                        editableLayer: editableLayer.resource
+                    });
+                    that.getMessages(index)
+                }
             })
             .catch(e => {
                 console.log(e)

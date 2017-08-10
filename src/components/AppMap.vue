@@ -5,7 +5,8 @@
            :options="mapOptions"
            ref="map">
         <v-tilelayer url="https://korona.geog.uni-heidelberg.de/tiles/roads/x={x}&y={y}&z={z}"></v-tilelayer>
-        <v-geojson-layer :geojson="geojson"
+        <v-geojson-layer v-if="geojson"
+                         :geojson="geojson"
                          :options="geojsonOptions"
                          ref="geojson"></v-geojson-layer>
     </v-map>
@@ -18,6 +19,7 @@ import Vue from "vue"
 import L from "leaflet"
 import "leaflet-editable"
 import Vue2Leaflet from "vue2-leaflet/dist/vue2-leaflet.js"
+import VGeojsonLayer from "vue2-leaflet/src/components/GeoJSON"
 import {coordToLatlng} from "../js/utilities"
 import "../js/extendLeaflet"
 
@@ -30,7 +32,7 @@ export default {
     'v-map': Vue2Leaflet.Map,
     'v-tilelayer': Vue2Leaflet.TileLayer,
     'v-marker': Vue2Leaflet.Marker,
-    'v-geojson-layer' :Vue2Leaflet.GeoJSON
+    VGeojsonLayer
   },
   data () {
     let that = this;
@@ -84,17 +86,15 @@ export default {
         return this.$refs.map.mapObject
     },
     geojsonObject(){
-        return this.$refs.geojson.$geoJSON
+        return this.geojson ? this.$refs.geojson.$geoJSON : undefined
     }
   },
   watch: {
     activeMessage(value, oldValue){
-        let activeMarker = this.getActiveMarker()
-
-        if (oldValue)
+        if (oldValue && this.getMarkerById(oldValue))
             this.deactivateMessage(this.getMarkerById(oldValue))
 
-        if (value)
+        if (value && this.getMarkerById(value))
             this.activateMessage(this.getMarkerById(value), true)
     }
   },
@@ -150,11 +150,13 @@ export default {
         }
     },
     getMarkerById(id){
-        let geojsonLayers = this.geojsonObject._layers;
+        if (this.geojsonObject){
+            let geojsonLayers = this.geojsonObject._layers;
 
-        for (let layer in geojsonLayers) {
-            if (geojsonLayers[layer].feature.id == id)
-                return geojsonLayers[layer]
+            for (let layer in geojsonLayers) {
+                if (geojsonLayers[layer].feature.id == id)
+                    return geojsonLayers[layer]
+            }
         }
     }
   }
