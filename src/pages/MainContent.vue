@@ -28,7 +28,7 @@
                    @feedbackForm:closed="closeForm()"
                    :themes="themes"
                    :selectedThemeId="selectedThemeId"
-                   :editableLayer="themes[selectedThemeId].editableLayer.id"></feedback-form>
+                   :editableLayer="themes[selectedThemeId].editableLayer"></feedback-form>
 
     <transition name="fade">
         <div class="main-content__themes" v-if="themesIsShown">

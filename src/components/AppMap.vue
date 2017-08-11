@@ -5,6 +5,13 @@
            :options="mapOptions"
            ref="map">
         <v-tilelayer url="https://korona.geog.uni-heidelberg.de/tiles/roads/x={x}&y={y}&z={z}"></v-tilelayer>
+
+        <v-geojson-layer v-for="layer in relatedLayers"
+                         v-if="layer.geojson"
+                         :key="layer.resource.id"
+                         :geojson="layer.geojson"
+                         :options="relatedLayersGeojsonOptions"></v-geojson-layer>
+
         <v-geojson-layer v-if="messageGeojson"
                          :geojson="messageGeojson"
                          :options="messageGeojsonOptions"
@@ -13,6 +20,7 @@
 </template>
 
 <script>
+import {config} from "../js/config"
 import bus from "../js/eventBus"
 
 import Vue from "vue"
@@ -22,6 +30,7 @@ import Vue2Leaflet from "vue2-leaflet/dist/vue2-leaflet.js"
 import VGeojsonLayer from "vue2-leaflet/src/components/GeoJSON"
 import {coordToLatlng} from "../js/utilities"
 import "../js/extendLeaflet"
+import axios from 'axios'
 
 export default {
   props: [
@@ -59,6 +68,11 @@ export default {
                     }
                 });
             }
+        },
+        relatedLayersGeojsonOptions: {
+            coordsToLatLng: function(coords) {
+                return coordToLatlng(L.point(coords[0], coords[1]))
+            }
         }
     }
   },
@@ -94,7 +108,22 @@ export default {
 
         if (value && this.getMarkerById(value))
             this.activateMessage(this.getMarkerById(value), true)
-    }
+    },
+    relatedLayers(value){
+        let isDataLoaded = false
+
+        if (value)
+            value.forEach(function(layer){
+                if (layer.geojson) isDataLoaded = true
+            })
+
+        if (value && !isDataLoaded)
+            this.loadRelatedLayersData()
+    },
+  },
+  created(){
+    if (this.relatedLayers)
+        this.loadRelatedLayersData()
   },
   mounted(){
     let that = this
@@ -119,6 +148,17 @@ export default {
   methods: {
     geojsonObject(ref){
         return this[ref] ? this.$refs[ref].$geoJSON : undefined
+    },
+    loadRelatedLayersData(){
+        this.relatedLayers.forEach(function(layer, index){
+            axios.get(config.nextgiscomUrl + "/api/resource/" + layer.resource.id + "/geojson")
+            .then(response => {
+                bus.$emit("map:relateLayersLoaded", response.data, index)
+            })
+            .catch(e => {
+                console.log(e)
+            })
+        })
     },
     activateMessage(marker, withMoving){
         marker.setIcon(this.customIconActive)

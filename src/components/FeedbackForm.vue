@@ -118,8 +118,8 @@ export default {
                 break;
           }
         },
-        selectedTheme(val){
-            this.formValues.theme = this.selectedTheme
+        selectedThemeId(val){
+            this.$set(this.formValues, 'theme', this.themes[val].name)
         }
     },
     created(){
@@ -149,7 +149,7 @@ export default {
                 this.formInProgress = true
 
                 axios.create({withCredentials: true})
-                     .post(config.nextgiscomUrl + "/api/resource/" + this.editableLayer + "/feature/",
+                     .post(config.nextgiscomUrl + "/api/resource/" + this.editableLayer.resource.id + "/feature/",
                             JSON.stringify( {
                                 geom: "POINT(" + point.x + " " + point.y + ")",
                                 fields: {
