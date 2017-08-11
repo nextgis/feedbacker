@@ -5,10 +5,10 @@
            :options="mapOptions"
            ref="map">
         <v-tilelayer url="https://korona.geog.uni-heidelberg.de/tiles/roads/x={x}&y={y}&z={z}"></v-tilelayer>
-        <v-geojson-layer v-if="geojson"
-                         :geojson="geojson"
-                         :options="geojsonOptions"
-                         ref="geojson"></v-geojson-layer>
+        <v-geojson-layer v-if="messageGeojson"
+                         :geojson="messageGeojson"
+                         :options="messageGeojsonOptions"
+                         ref="messageGeojson"></v-geojson-layer>
     </v-map>
 </template>
 
@@ -26,7 +26,8 @@ import "../js/extendLeaflet"
 export default {
   props: [
     "activeMessage",
-    "geojson"
+    "messageGeojson",
+    "relatedLayers"
   ],
   components: {
     'v-map': Vue2Leaflet.Map,
@@ -42,7 +43,7 @@ export default {
            editable: true,
            offset:  [-200, 0]
         },
-        geojsonOptions: {
+        messageGeojsonOptions: {
             coordsToLatLng: function(coords) {
                 return coordToLatlng(L.point(coords[0], coords[1]))
             },
@@ -84,9 +85,6 @@ export default {
     },
     mapObject(){
         return this.$refs.map.mapObject
-    },
-    geojsonObject(){
-        return this.geojson ? this.$refs.geojson.$geoJSON : undefined
     }
   },
   watch: {
@@ -119,6 +117,9 @@ export default {
     });
   },
   methods: {
+    geojsonObject(ref){
+        return this[ref] ? this.$refs[ref].$geoJSON : undefined
+    },
     activateMessage(marker, withMoving){
         marker.setIcon(this.customIconActive)
               .setZIndexOffset(1000)
@@ -142,7 +143,7 @@ export default {
         this.mapObject.removeLayer(layer);
     },
     getActiveMarker(){        
-        let geojsonLayers = this.geojsonObject._layers;
+        let geojsonLayers = this.geojsonObject("messageGeojson")._layers;
 
         for (let layer in geojsonLayers) {
             if (geojsonLayers[layer].feature.id == this.activeMessage)
@@ -150,8 +151,8 @@ export default {
         }
     },
     getMarkerById(id){
-        if (this.geojsonObject){
-            let geojsonLayers = this.geojsonObject._layers;
+        if (this.geojsonObject("messageGeojson")){
+            let geojsonLayers = this.geojsonObject("messageGeojson")._layers;
 
             for (let layer in geojsonLayers) {
                 if (geojsonLayers[layer].feature.id == id)

@@ -78,8 +78,10 @@ export default {
                 that.themes.push({
                     id: resource.id,
                     name: resource.display_name,
-                    geojson: undefined,
-                    editableLayer: undefined
+                    editableLayer: {
+                        resource: undefined,
+                        geojson: undefined
+                    }
                 })
             })
             that.getMessageLayers()
@@ -98,15 +100,29 @@ export default {
                 }
             })
             .then(response => {
-                let editableLayer = response.data.filter(function(item){
-                    return item.resource.display_name == "Messages"
-                })[0]
+                let editableLayer,
+                    relatedLayers = []
+
+                response.data.forEach(function(item){
+                    if (item.resource.display_name == "Messages")
+                        editableLayer = item.resource
+                    else if (item.resource.cls == "vector_layer")
+                        relatedLayers.push(item.resource)
+                })
+
                 if (editableLayer){
                     Object.assign(that.themes[index], {
-                        editableLayer: editableLayer.resource
+                        editableLayer: {
+                            resource: editableLayer
+                        }
                     });
                     that.getMessages(index)
                 }
+
+                if (relatedLayers.length)
+                    Object.assign(that.themes[index], {
+                        relatedLayers: relatedLayers
+                    });
             })
             .catch(e => {
                 console.log(e)
@@ -114,10 +130,12 @@ export default {
         })
     },
     getMessages(themeIndex){
-        axios.get(config.nextgiscomUrl + "/api/resource/" + this.themes[themeIndex].editableLayer.id + "/geojson")
+        axios.get(config.nextgiscomUrl + "/api/resource/" + this.themes[themeIndex].editableLayer.resource.id + "/geojson")
         .then(response => {
             Object.assign(this.themes[themeIndex], {
-                geojson: response.data
+                editableLayer: {
+                    geojson: response.data
+                }
             });
         })
         .catch(e => {

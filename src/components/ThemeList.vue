@@ -2,7 +2,7 @@
     <div class="theme-list">
         <v-layout row wrap>
           <v-flex xs4 lg3 v-for="(theme, index) in themes" :key="index">
-            <theme-card :messageCount="theme.geojson ? theme.geojson.features.length : 0"
+            <theme-card :messageCount="theme.editableLayer.geojson ? theme.editableLayer.geojson.features.length : 0"
                         :theme="theme.name"
                         :themeIndex="index">
             </theme-card>
@@ -24,8 +24,6 @@ export default {
   data () {
     return {
     }
-  },
-  methods: {
   }
 }
 </script>

@@ -7,7 +7,8 @@
                  ></map-toolbar>
 
     <div class="main-content__map">
-      <app-map :geojson = "selectedTheme.geojson"
+      <app-map :messageGeojson = "selectedTheme.editableLayer.geojson"
+               :relatedLayers = "selectedTheme.relatedLayers"
                :active-message = "activeMessageId"></app-map>
       <detail-message v-show="activeMessageId"
                       :message = "activeMessage"></detail-message>
@@ -91,7 +92,7 @@ export default {
       return this.themes[this.selectedThemeId]
     },
     messages: function(){
-      return this.selectedTheme.geojson ? this.selectedTheme.geojson.features : []
+      return this.selectedTheme.editableLayer.geojson ? this.selectedTheme.editableLayer.geojson.features : []
     },
     activeMessage: function(){
       let that = this
@@ -145,11 +146,11 @@ export default {
       this.showMessages()
     },
     hideMessages(){
-      this.bufferFeatures = this.selectedTheme.geojson.features
-      this.selectedTheme.geojson.features = []
+      this.bufferFeatures = this.selectedTheme.editableLayer.geojson.features
+      this.selectedTheme.editableLayer.geojson.features = []
     },
     showMessages(){
-      this.selectedTheme.geojson.features = this.bufferFeatures
+      this.selectedTheme.editableLayer.geojson.features = this.bufferFeatures
     },
     showThemes(){
         this.themesIsShown = !this.themesIsShown

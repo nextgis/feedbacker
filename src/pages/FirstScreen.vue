@@ -14,8 +14,7 @@
             <v-container fluid >
                 <h1 class="first-screen__title white--text">Выберите тему, чтобы оставить сообщение</h1>
                 <theme-list class="first-screen__theme-list"
-                            :themes="themes"
-                            :messages="messages"></theme-list>
+                            :themes="themes"></theme-list>
             </v-container>
         </div>
   </div>
@@ -29,8 +28,7 @@ export default {
         ThemeList
     },
     props:[
-        "themes",
-        "messages"
+        "themes"
     ],
     data () {
         return {
