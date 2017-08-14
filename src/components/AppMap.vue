@@ -148,7 +148,7 @@ export default {
   },
   methods: {
     geojsonObject(ref){
-        return this[ref] ? this.$refs[ref].$geoJSON : undefined
+        return this.$refs[ref] ? this.$refs[ref].$geoJSON : undefined
     },
     loadRelatedLayersData(){
         this.relatedLayers.forEach(function(layer, index){
