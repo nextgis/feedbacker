@@ -9,7 +9,8 @@
     <div class="main-content__map">
       <app-map :messageGeojson = "selectedTheme.editableLayer.geojson"
                :relatedLayers = "selectedTheme.relatedLayers"
-               :active-message = "activeMessageId"></app-map>
+               :active-message = "activeMessageId"
+               ref="map"></app-map>
       <detail-message v-show="activeMessageId"
                       :message = "activeMessage"></detail-message>
       <message-list v-show="!activeMessageId"
@@ -75,7 +76,6 @@ export default {
   ],
   data () {
     return {
-      bufferFeatures: [],
       activeMessageId: null,
       formActive: false,
       themesIsShown: false,      
@@ -146,11 +146,10 @@ export default {
       this.showMessages()
     },
     hideMessages(){
-      this.bufferFeatures = this.selectedTheme.editableLayer.geojson.features
-      this.selectedTheme.editableLayer.geojson.features = []
+      this.$refs.map.messagesShown = false
     },
     showMessages(){
-      this.selectedTheme.editableLayer.geojson.features = this.bufferFeatures
+      this.$refs.map.messagesShown = true
     },
     showThemes(){
         this.themesIsShown = !this.themesIsShown
@@ -185,10 +184,14 @@ export default {
     &--withForm
       margin-left: $feedback-form-width
 
+      .main-content__map
+        @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none)
+          right: $feedback-form-width;
+
     &__map
       position: absolute;
-      width: 100%;
       left:0;
+      right:0;
       top: $map-toolbar-height;
       bottom:0;
 

@@ -12,7 +12,7 @@
                          :geojson="layer.geojson"
                          :options="relatedLayersGeojsonOptions"></v-geojson-layer>
 
-        <v-geojson-layer v-if="messageGeojson"
+        <v-geojson-layer v-if="messageGeojson && messagesShown"
                          :geojson="messageGeojson"
                          :options="messageGeojsonOptions"
                          ref="messageGeojson"></v-geojson-layer>
@@ -48,6 +48,7 @@ export default {
     let that = this;
 
     return {
+        messagesShown: true,
         mapOptions: {
            editable: true,
            offset:  [-200, 0]
