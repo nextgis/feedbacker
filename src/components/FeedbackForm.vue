@@ -137,7 +137,7 @@ export default {
         resetForm(){
           this.feedbackStep = 1;
           for (let key in this.formValues) {
-            this.formValues[key] = undefined;
+            if (key != "theme") this.formValues[key] = undefined;
           }
           this.$refs.drawer.reset();
           this.$el.scrollTop = 0
