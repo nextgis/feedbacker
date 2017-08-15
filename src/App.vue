@@ -86,16 +86,22 @@ export default {
                         resource: undefined,
                         geojson: undefined
                     },
-                    relatedLayers: []
+                    relatedLayers: [],
+                    extent: {
+                        top: undefined,
+                        right: undefined,
+                        bottom: undefined,
+                        left: undefined
+                    }
                 })
             })
-            that.getMessageLayers()
+            that.getLayers()
         })
         .catch(e => {
             console.log(e)
         })
     },
-    getMessageLayers(){
+    getLayers(){
         let that = this;
 
         this.themes.forEach(function(theme, index){
@@ -111,20 +117,16 @@ export default {
                 response.data.forEach(function(item){
                     if (item.resource.display_name == "Messages")
                         editableLayer = item.resource
-                    else if (item.resource.cls == "vector_layer")
-                        relatedLayers.push({
-                            resource: item.resource,
-                            geojson: undefined
-                        })
+                    else if (item.resource.cls == "webmap"){
+                        that.getRelatedLayers(item.resource.id, index)
+                        that.getExtent(item.resource.id, index)
+                    }
                 })
 
                 if (editableLayer){
                     that.$set(that.themes[index].editableLayer, 'resource', editableLayer)
                     that.getMessages(index)
                 }
-
-                if (relatedLayers.length)
-                    that.$set(that.themes[index], 'relatedLayers', relatedLayers)
 
             })
             .catch(e => {
@@ -136,6 +138,31 @@ export default {
         axios.get(config.nextgiscomUrl + "/api/resource/" + this.themes[themeIndex].editableLayer.resource.id + "/geojson")
         .then(response => {
             this.$set(this.themes[themeIndex].editableLayer, 'geojson', response.data)
+        })
+        .catch(e => {
+            console.log(e)
+        })
+    },
+    getRelatedLayers(mapId, themeIndex){
+        axios.get(config.nextgiscomUrl + "/api/resource/" + mapId)
+        .then(response => {
+            let relatedLayers = response.data.webmap.root_item.children.map(function(layer){
+                return layer.layer_style_id
+            }).reverse()
+            if (relatedLayers.length)
+                this.$set(this.themes[themeIndex], 'relatedLayers', relatedLayers)
+        })
+        .catch(e => {
+            console.log(e)
+        })
+    },
+    getExtent(mapId, themeIndex){
+        axios.get(config.nextgiscomUrl + "/api/resource/" + mapId)
+        .then(response => {
+            this.$set(this.themes[themeIndex].extent, 'left', response.data.webmap.extent_left)
+            this.$set(this.themes[themeIndex].extent, 'top', response.data.webmap.extent_top)
+            this.$set(this.themes[themeIndex].extent, 'rihgt', response.data.webmap.extent_rihgt)
+            this.$set(this.themes[themeIndex].extent, 'bottom', response.data.webmap.extent_bottom)
         })
         .catch(e => {
             console.log(e)
