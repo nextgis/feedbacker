@@ -2,6 +2,7 @@
     <div class="bordered-block">
         <v-icon large class="bordered-block__icon">{{ icon }}</v-icon>
         <div class="bordered-block__text">{{ text }}</div>
+        <slot></slot>
     </div>
 </template>
 

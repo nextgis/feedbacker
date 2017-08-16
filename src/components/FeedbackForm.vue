@@ -55,10 +55,7 @@
           </v-stepper-content>
 
           <v-stepper-step step="4">
-            <div class="feedback-form__set-location bordered-block">
-              <v-icon large class="bordered-block__icon">photo</v-icon>
-              <div class="bordered-block__text">Загрузите фото</div>
-            </div>
+            <file-uploader v-model="formValues.file"></file-uploader>
           </v-stepper-step>
         </v-stepper>
         <v-btn error large
@@ -74,8 +71,10 @@
 import {config} from "../js/config"
 import bus from "../js/eventBus"
 import Drawer from "./Drawer"
+import FileUploader from "./FileUploader"
 import axios from 'axios'
 import {latlngToCoord} from "../js/utilities"
+//import FileUpload from 'vue-upload-component'
 
 export default {
     props: [ 
@@ -85,7 +84,8 @@ export default {
         "editableLayer"
     ],
     components: {
-        Drawer
+        Drawer,
+        FileUploader
     },
     data () {
         return {
@@ -95,7 +95,8 @@ export default {
                 text: undefined,
                 type: undefined,
                 theme: this.themes[this.selectedThemeId].name,
-                latlng: undefined
+                latlng: undefined,
+                file: undefined
             },
             messageTypes: [
                 "Нарушение",
@@ -163,10 +164,18 @@ export default {
                             })
                      )
                      .then(response => {
-                        this.triggerClose()
-                        this.resetForm()
-                        this.formInProgress = false
-                        bus.$emit("feedbackForm:submitted", this.selectedThemeId)
+                        this.uploadFiles(response.data.id)
+                          .then(() => {
+                            this.triggerClose()
+                            this.resetForm()
+                            this.formInProgress = false
+                            bus.$emit("feedbackForm:submitted", this.selectedThemeId)
+                          })
+                          .catch(e => {
+                            this.formInProgress = false
+                            bus.$emit("feedbackForm:failed", e)
+                            console.log(e)
+                         })
                      })
                      .catch(e => {
                         this.formInProgress = false
@@ -178,6 +187,34 @@ export default {
         onFormScroll(e){
             if (this.$refs.drawer.active)
                 this.$refs.drawer.calcArrowPosition(e.target.scrollTop)
+        },
+        uploadFiles(featureId){
+          let that = this
+
+          return new Promise(function(resolve, reject){
+            if (that.formValues.file){
+              axios.create({withCredentials: true})
+                .put(config.nextgiscomUrl + "/api/component/file_upload/upload", that.formValues.file)
+                .then(function (res) {
+                  let attach_data = {}
+                  attach_data.file_upload = res.data
+
+                  axios.create({withCredentials: true})
+                    .post(config.nextgiscomUrl + "/api/resource/" + that.editableLayer.resource.id + "/feature/" + featureId + "/attachment/", JSON.stringify(attach_data))
+                    .then(function (res) {
+                      resolve(res)
+                    })
+                    .catch(function (err) {
+                      reject(err)
+                    });
+                })
+                .catch(function (err) {
+                  reject(err)
+                });
+            } else {
+              resolve()
+            }
+          })
         }
     }
 }
