@@ -1,8 +1,8 @@
 <template>
-    <div class="file-uploader">
+    <div class="file-uploader" :class="{'file-uploader--disabled':disabled}"">
         <bordered-block icon="photo"
-                        text="Загрузите фото: выберите его или перетащите сюда">
-            <file-upload
+                        text="Загрузите фото: <span class='link-style'>выберите его</span> или перетащите сюда">
+            <file-upload v-if = "!disabled"
                 :name="name"
                 :extensions="extensions"
                 :accept="accept"
@@ -16,19 +16,18 @@
                 ref="upload">
             </file-upload>
         </bordered-block>
-        <table v-if="files.length">
-            <tbody>
-              <tr v-for="(file, index) in files">
-                  <td v-if="file.type.substr(0, 6) == 'image/' && file.blob">
-                    <img :src="file.blob" width="50" height="auto" />
-                  </td>
-                  <td v-else></td>
-                  <td>{{file.name}}</td>
-                  <td>{{file.size}}</td>
-                  <td><button type="button" @click.prevent="$refs.upload.remove(file)">x</button></td>
-              </tr>
-            </tbody>
-        </table>
+        <div v-if="files.length" class="file-uploader__files">
+              <div class="file-uploader__file" v-for="(file, index) in files">
+                    <div class="file-uploader__file-image">
+                        <img v-if="file.type.substr(0, 6) == 'image/' && file.blob" :src="file.blob"/>
+                    </div>
+                    <div class="file-uploader__file-name">{{file.name}}</div>
+                    <div class="file-uploader__file-action">
+                        <v-icon class="file-uploader__file-remover" @click="$refs.upload.remove(file)">close</v-icon>
+                    </div>
+              </div>
+        </div>
+        <div v-else class="file-uploader__help-text caption">Загружать фото необязательно</div>
     </div>
 </template>
 
@@ -39,6 +38,7 @@ import FileUpload from 'vue-upload-component'
 
 export default {
   props: [
+    "disabled"
   ],
   components: {
     BorderedBlock,
@@ -79,9 +79,10 @@ export default {
 @require '../styl/custom-vuetify/_theme'
 @require '../styl/custom-vuetify/_variables'
 @require '../styl/variables'
-@require '~vuetify/src/stylus/elements/_typography.styl'
+@require '~vuetify/src/stylus/elements/_typography'
 @require '../styl/custom-vuetify/_typography'
-@require '~vuetify/src/stylus/trumps/_spacing.styl'
+@require '~vuetify/src/stylus/trumps/_spacing'
+@require '~vuetify/src/stylus/tools/_elevations'
 
 .file-uploader
     width: 100%;
@@ -97,5 +98,52 @@ export default {
         top:0
         cursor:pointer
         z-index: 2
+
+    &__files
+        display: table
+        width: 100%
+        margin-top: $spacer
+
+    &__file
+        display: table-row
+
+        &:hover
+            background-color: $light-bg
+
+
+    &__file-image,
+    &__file-name,
+    &__file-action
+        display: table-cell
+        vertical-align: middle
+        padding: $spacer*0.5 $spacer*0.5
+    
+    &__file-image
+        border-bottom-left-radius: $card-border-radius
+        border-top-left-radius: $card-border-radius
+
+        img
+            max-height: 60px
+            max-width: 150px
+            width: auto
+            height: auto
+            display: block
+            border-radius: $card-border-radius
+            elevation(3)
+
+    &__file-name
+        width: 100%
+    
+    &__file-action
+        text-align: right
+        padding-right: $spacer*0.75
+        border-bottom-right-radius: $card-border-radius
+        border-top-right-radius: $card-border-radius
+
+    &__file-remover
+        cursor: pointer
+
+    &__help-text
+        color: $grey.lighten-1
 
 </style>

@@ -1,7 +1,7 @@
 <template>
     <div class="bordered-block">
         <v-icon large class="bordered-block__icon">{{ icon }}</v-icon>
-        <div class="bordered-block__text">{{ text }}</div>
+        <div class="bordered-block__text" v-html="text"></div>
         <slot></slot>
     </div>
 </template>

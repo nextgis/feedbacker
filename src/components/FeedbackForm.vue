@@ -55,7 +55,8 @@
           </v-stepper-content>
 
           <v-stepper-step step="4">
-            <file-uploader v-model="formValues.file"></file-uploader>
+            <file-uploader :disabled="feedbackStep<4"
+                           v-model="formValues.file"></file-uploader>
           </v-stepper-step>
         </v-stepper>
         <v-btn error large
