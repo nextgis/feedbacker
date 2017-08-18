@@ -15,6 +15,7 @@
                 @input-file="inputFile"
                 ref="upload">
             </file-upload>
+            <div v-show="$refs.upload && $refs.upload.dropActive" class="drop-active"></div>
         </bordered-block>
         <div v-if="files.length" class="file-uploader__files">
               <div class="file-uploader__file" v-for="(file, index) in files">
@@ -54,6 +55,7 @@ export default {
         multiple: false,
         directory: false,
         drop: true,
+        dropElement: document.querySelector(".drop-active"),
         dropDirectory: false,
         thread: 3,
         name: 'file',
@@ -64,6 +66,9 @@ export default {
     value(value){
         if (!value.length) this.files = []
     }
+  },
+  mounted(){
+    this.$forceUpdate()
   },
   methods:{
     inputFile(newFile, oldFile) {
@@ -99,7 +104,8 @@ export default {
     .bordered-block
         position: relative
 
-    .file-uploads
+    .file-uploads,
+    .drop-active
         position: absolute
         width: 100%
         height: 100%
@@ -107,6 +113,10 @@ export default {
         top:0
         cursor:pointer
         z-index: 2
+
+    .drop-active
+        border-radius: 2px
+        background-color: rgba($theme.primary, .08)
 
     &__files
         display: table
