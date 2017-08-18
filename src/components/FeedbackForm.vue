@@ -56,7 +56,8 @@
 
           <v-stepper-step step="4">
             <file-uploader :disabled="feedbackStep<4"
-                           v-model="formValues.file"></file-uploader>
+                           :value="formValues.file"
+                           @fileUploader:changed="setFiles"></file-uploader>
           </v-stepper-step>
         </v-stepper>
         <v-btn error large
@@ -97,7 +98,7 @@ export default {
                 type: undefined,
                 theme: this.themes[this.selectedThemeId].name,
                 latlng: undefined,
-                file: undefined
+                file: []
             },
             messageTypes: [
                 "Нарушение",
@@ -128,7 +129,8 @@ export default {
         let that = this
 
         bus.$on("map:markerAdded", function(latlng){
-            that.formValues.latlng = latlng
+            //that.formValues.latlng = latlng
+            that.$set(that.formValues, 'latlng', latlng)
         })
     },
     methods: {
@@ -136,10 +138,14 @@ export default {
           this.$emit("feedbackForm:closed");
           this.resetForm();
         },
+        setFiles(files){
+          this.$set(this.formValues, 'file', files)
+        },
         resetForm(){
           this.feedbackStep = 1;
           for (let key in this.formValues) {
-            if (key != "theme") this.formValues[key] = undefined;
+            if (key == "file") this.$set(this.formValues, key, []) //this.formValues[key] = []
+            else if (key != "theme") this.$set(this.formValues, key, undefined) //this.formValues[key] = undefined;
           }
           this.$refs.drawer.reset();
           this.$el.scrollTop = 0
@@ -193,9 +199,9 @@ export default {
           let that = this
 
           return new Promise(function(resolve, reject){
-            if (that.formValues.file){
+            if (that.formValues.file.length){
               axios.create({withCredentials: true})
-                .put(config.nextgiscomUrl + "/api/component/file_upload/upload", that.formValues.file)
+                .put(config.nextgiscomUrl + "/api/component/file_upload/upload", that.formValues.file[0].file)
                 .then(function (res) {
                   let attach_data = {}
                   attach_data.file_upload = res.data

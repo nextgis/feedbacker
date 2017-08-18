@@ -1,5 +1,5 @@
 <template>
-    <div class="file-uploader" :class="{'file-uploader--disabled':disabled}"">
+    <div class="file-uploader" :class="{'file-uploader--disabled':disabled}">
         <bordered-block icon="photo"
                         text="Загрузите фото: <span class='link-style'>выберите его</span> или перетащите сюда">
             <file-upload v-if = "!disabled"
@@ -32,13 +32,15 @@
 </template>
 
 <script>
+import Vue from "vue"
 import bus from "../js/eventBus"
 import BorderedBlock from "./ui/BorderedBlock"
 import FileUpload from 'vue-upload-component'
 
 export default {
   props: [
-    "disabled"
+    "disabled",
+    "value"
   ],
   components: {
     BorderedBlock,
@@ -58,6 +60,11 @@ export default {
         auto: false
     }
   },
+  watch:{
+    value(value){
+        if (!value.length) this.files = []
+    }
+  },
   methods:{
     inputFile(newFile, oldFile) {
         if (newFile && !oldFile) {
@@ -66,10 +73,12 @@ export default {
               this.$refs.upload.update(newFile, {blob: URL.createObjectURL(newFile.file)})
             }
         }
-        if (newFile && oldFile) {
-            this.$emit("input", newFile.file)
-        }
-    },
+
+        let that = this
+        Vue.nextTick(function () {
+            that.$emit("fileUploader:changed", that.files)
+        })
+    }
   }
 }
 </script>
