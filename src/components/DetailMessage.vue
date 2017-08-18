@@ -87,7 +87,7 @@ export default {
         margin-top: 2px
     
     &__photo
-        margin: 16px -16px -16px
+        margin-top: 16px;
         background: #dedede
         min-height: 50px
 
