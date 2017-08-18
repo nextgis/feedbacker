@@ -3,7 +3,7 @@
         <message-card v-for="message in messages" 
                  :key="message.id"
                  :id="message.id"
-                 :message="message.properties"
+                 :message="message"
                  :isActive="message.id == activeMessageId"
                  ref="card">
         </message-card>

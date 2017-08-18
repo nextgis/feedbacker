@@ -5,12 +5,15 @@
         <v-card class="detail-message__inner">     
             <v-container  fluid>
                 <header class="detail-message__header">
-                    <div class="detail-message__theme">{{ message ? message.theme : "" }}, {{ message ? message.type1 : ""  }}</div>
-                    <h2 class="detail-message__title">{{ message ? message.title : "" }}</h2>
-                    <div class="detail-message__meta">{{ message ? message.date : ""  }}, {{ message ? message.author : "" }}</div>
+                    <div class="detail-message__theme">{{ message ? message.properties.theme : "" }}, {{ message ? message.properties.type1 : ""  }}</div>
+                    <h2 class="detail-message__title">{{ message ? message.properties.title : "" }}</h2>
+                    <div class="detail-message__meta">{{ message ? message.properties.date : ""  }}, {{ message ? message.properties.author : "" }}</div>
                 </header>
                 <div class="deatil-message__text">
-                    {{message ? message.text : "" }}
+                    {{message ? message.properties.text : "" }}
+                </div>
+                <div v-if="message && message.attachments" class="detail-message__photo">
+                    <img class="detail-message__pic" :src="message.attachments + '?size=400x800'" alt="">
                 </div>
             </v-container>
         </v-card>
@@ -19,6 +22,7 @@
 
 <script>
 import bus from "../js/eventBus"
+import axios from "axios"
 
 export default {
   props: [
@@ -81,5 +85,14 @@ export default {
     &__meta
         color: $grey.lighten-1
         margin-top: 2px
+    
+    &__photo
+        margin: 16px -16px -16px
+        background: #dedede
+        min-height: 50px
+
+    &__pic
+        max-width: 100%
+        display: block
 
 </style>

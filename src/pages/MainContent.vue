@@ -53,6 +53,8 @@
 
 <script>
 import bus from "../js/eventBus"
+import axios from "axios"
+import {config} from "../js/config"
 
 import AppMap from "../components/AppMap"
 import MapToolbar from "../components/MapToolbar"
@@ -89,16 +91,45 @@ export default {
   },
   computed: {
     selectedTheme: function(){
+      let that = this,
+          selectedTheme = this.themes[this.selectedThemeId]
+
+      selectedTheme.editableLayer.geojson.features.forEach(function(feature){
+
+        if ( !("attachments" in feature) ){
+
+          let featureApiUrl = config.nextgiscomUrl + "/api/resource/" + selectedTheme.editableLayer.resource.id + "/feature/" + feature.id
+          axios.create({withCredentials: true})
+               .get(featureApiUrl)
+               .then(function(response){
+                  if (response.data.extensions.attachment && response.data.extensions.attachment[0].is_image){
+                    let attachment = response.data.extensions.attachment[0],
+                        imgUrl = featureApiUrl + "/attachment/" + attachment.id + "/image"
+
+                    that.$set(feature, 'attachments', imgUrl)
+                  }
+               })
+               .catch(function(error){
+                  console.log(error)
+               })
+        }
+      })
+      
       return this.themes[this.selectedThemeId]
     },
     messages: function(){
       return this.selectedTheme.editableLayer.geojson ? this.selectedTheme.editableLayer.geojson.features : []
     },
     activeMessage: function(){
-      let that = this
-      return that.activeMessageId && that.messages.length ? that.messages.filter(function(message){
-        return message.id==that.activeMessageId
-      })[0].properties : null
+      if (this.activeMessageId){
+        let that = this,
+            activeMessage = that.activeMessageId && that.messages.length ? that.messages.filter(function(message){
+              return message.id==that.activeMessageId
+            })[0] : null,
+            featureApiUrl = "http://nastya.nextgis.com/api/resource/" + this.selectedTheme.editableLayer.resource.id + "/feature/" + activeMessage.id
+
+          return activeMessage
+      }
     }
   },
   watch:{

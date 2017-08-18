@@ -1,14 +1,21 @@
 <template>
     <v-card class="message-card"
-            :class="{ 'message-card--active':isActive }"
+            :class="{ 
+                'message-card--active':isActive,
+                'message-card--withImage':message.attachments,
+            }"
             @click = "activateMessage($event)">
         <v-container fluid>
-            <div class="message-card__title">{{ message.title }}</div>
-            <div class="message-card__text">{{ message.text }}</div>
+            <div class="message-card__title">{{ message.properties.title }}</div>
+            <div class="message-card__text">{{ message.properties.text }}</div>
             <div class="message-card__meta">
-                <span class="message-card__meta-item">{{ message.date }}</span>
-                <span class="message-card__meta-item"> <v-icon>comment</v-icon> {{ message.comments || 0 }}</span>
-                <span class="message-card__meta-item">{{ message.type }}</span>
+                <span class="message-card__meta-item">{{ message.properties.date }}</span>
+                <span class="message-card__meta-item"> <v-icon>comment</v-icon> {{ message.properties.comments || 0 }}</span>
+                <span class="message-card__meta-item">{{ message.properties.type }}</span>
+            </div>
+            <div v-if="message.attachments"
+                 class="message-card__photo"
+                 :style="'background-image: url(' + message.attachments + '?size=200x200'">
             </div>
       </v-container>
     </v-card>
@@ -55,8 +62,14 @@ export default {
     cursor: pointer;
     elevationTransition();
 
+    &--withImage .container
+      padding-right: 60px
+
     &:hover
       elevation(16)
+
+      .message-card__photo
+        elevation(4)
 
     &--active
       elevation(16);
@@ -68,6 +81,8 @@ export default {
 
     &__text
         color: rgba(0,0,0,.87)
+        max-height: 80px
+        overflow: hidden
 
     &__meta
         @extend .caption
@@ -84,4 +99,17 @@ export default {
             font-size: 16px;
             color: $grey.lighten-1
 
+    &__photo
+      position: absolute
+      width: 60px
+      height: 60px
+      z-index: 2
+      border-radius: 4px
+      background-size: cover
+      background-repeat: no-repeat
+      background-position: center center
+      background-color: #f5f5f5
+      right: -8px
+      top: 12px
+      elevation(1)
 </style>
