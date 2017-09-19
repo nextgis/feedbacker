@@ -11,17 +11,24 @@
             height: 28px;
             color: #fff;
             font-size: 14px;
-            fonr-weight: bold
+            font-weight: bold
+            background-color: $theme.secondary
             
             .icon
                 color: #fff
         &:not(.stepper__step--active):not(.stepper__step--complete)
             .stepper__step__step
-                background: rgba(0,0,0,.38);
+                background: rgba(0,0,0,.1)
+                color: rgba(0,0,0,.48)
                 
         &--inactive
             .stepper__label
                 opacity:.48
+        
+        &--active
+            .stepper__step__step
+                background-color: $theme.secondary
+                color: $theme.primary
     
 .stepper--vertical 
     .stepper

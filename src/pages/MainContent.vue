@@ -168,7 +168,7 @@ export default {
         top: $map-toolbar-height;
         bottom:0;
         overflow:auto;
-        background-color: #2ecc96;
+        background-color: $theme.secondary;
         padding: $spacers.five.y $spacers.four.y
 
         @media (max-width: $grid-breakpoints.lg)

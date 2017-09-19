@@ -2,7 +2,7 @@
     <div class="feedback-form" @scroll="onFormScroll($event)">
       <v-icon class="feedback-form__closer"
               @click="triggerClose()">close</v-icon>
-        <h2 class="feedback-form__title primary--text">Оставить сообщение</h2>
+        <h2 class="feedback-form__title">Оставить сообщение</h2>
         <v-stepper v-model="feedbackStep" vertical>
 
           <v-stepper-step step="1" :complete="feedbackStep > 1">
@@ -61,9 +61,9 @@
                            @fileUploader:changed="setFiles"></file-uploader>
           </v-stepper-step>
         </v-stepper>
-        <v-btn error large
+        <v-btn primary large
                :disabled="feedbackStep<4"
-               :class="{'btn--faded': formInProgress}"
+               :class="{'accent': true, 'btn--faded': formInProgress}"
                @click = "submitForm()">Отправить</v-btn>
         <v-progress-circular indeterminate class="feedback-form__loader accent--text"
                              v-if="formInProgress"></v-progress-circular>
@@ -310,7 +310,7 @@ export default {
         z-index:2;
 
     &__title
-        margin-bottom: $spacers.one.y
+        margin-bottom: $spacers.three.y
 
     &__loader
         position: relative;

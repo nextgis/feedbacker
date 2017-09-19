@@ -3,15 +3,14 @@
         <div class="first-screen__greeting" v-if="withGreeting">
             <v-container fluid>
                 <span class="first-screen__greeting-text">
-                    Участвуйте в&nbsp;защите природы Архангельской области.<br>
-                    Оставляйте сообщения о&nbsp;незаконных рубках, вносите предложения по&nbsp;охране 
-                    природных&nbsp;объектов. В&nbsp;тесном взаимодействии мы&nbsp;сможем многое!
+                    Мы&nbsp;&mdash; экологическое движение города N.<br>
+                    Помогаем людям жить более осознанно: питаться здоровой пищей, развиваться и&nbsp;не&nbsp;наносить вреда окружающей среде. Присоединяйся!
                 </span>
             </v-container>
         </div>
         <div class="first-screen__themes">   
             <v-container fluid >
-                <h1 class="first-screen__title white--text">Выберите тему, чтобы оставить сообщение</h1>
+                <h1 class="first-screen__title">Выберите тему, чтобы оставить сообщение</h1>
                 <theme-list class="first-screen__theme-list"
                             :themes="themes"></theme-list>
             </v-container>
@@ -82,7 +81,7 @@ export default {
             left:0;
             top: 0;
             bottom:0;
-            background-color: #2ecc96;
+            background-color: $theme.secondary;
             padding: $spacers.five.y $spacers.four.y
 
             @media (max-width: $grid-breakpoints.lg)
@@ -92,8 +91,7 @@ export default {
                 max-width: $grid-breakpoints.lg
 
         &__title
-            font-weight: 400 !important;
-            margin-bottom: $spacers.four.y;
+            margin-bottom: 32px;
             display: none
 
         &--withGreeting

@@ -1,19 +1,24 @@
 <template>
     <header class="header">
         <router-link class="header__title nolink" to="/">
-            <img class="header__logo" src="../assets/wwf_logo.svg" alt="Сбор общественных мнений">
-            <h1 class="header__title-text title">Сбор общественных мнений</h1>
+            <svg class="header__logo" version="1.1" width="22px" height="22px" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="3.2 1.9 20.1 20.5" style="enable-background:new 3.2 1.9 20.1 20.5;" xml:space="preserve">
+                <g transform="translate(0,-924.36218)">
+                    <path fill="#0070c5" d="M15.5,939.3l-1.6,2.3l3.4,5.2
+                        l5.9,0l-3.4-4.8l-3.1-4.5L15.5,939.3z"></path>
+                    <path fill="#000000" d="M8.9,946.8l7.2-10.2l-7.2-10.2
+                        H3.2l7.2,10.3l-7.1,10.2H8.9z"></path>
+                    <path fill="#0070c5" d="M15.8,928.9l-1.9,2.7l2.8,4
+                        l6.5-9.3h-2.8h-2.8L15.8,928.9z"></path>
+                </g>
+            </svg>
+            <h1 class="header__title-text title">Feedbacker</h1>
         </router-link>
-        <nav class="header-menu">
-            <a href="#" class="header__link">О проекте</a>
-            <a href="#" class="header__link">Инструкции</a>
-        </nav>
         <div class="header-actions">
             <router-link to="/signin" v-if="!user.name" href="#" class="header__login-link header__link" @click.prevent="$emit('header:loginLinkClicked')">Войти</router-link>
             <user-avatar v-else :userName="user.name"></user-avatar>
             <v-btn primary dark large
                    class="header__feedback-button feedback-button"
-                   :to="feedbackUrl">Оставить сообщение</v-btn>
+                   :to="feedbackUrl">Добавить точку</v-btn>
         </div>
     </header>
 </template>
@@ -62,7 +67,7 @@ export default {
     &__title
         position:absolute;
         line-height: $header-height;
-        left: $spacers.three.x;
+        left: 14px;
         top:0;
         white-space: nowrap;
   
@@ -74,11 +79,13 @@ export default {
         @extend .ml-2;
         display: inline;
         vertical-align: middle;
+        position: relative;
+        top: -1px;
 
     &__logo
         display: inline-block;
         vertical-align: middle;
-        height: 36px;
+        height: 24px;
         width: auto;
 
     &__feedback-button
