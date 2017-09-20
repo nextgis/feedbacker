@@ -12,12 +12,12 @@
               single-line
               id="testing"
             ></v-text-field>            
-            <v-select
-              :items="messageTypes"
-              v-model = "formValues.type"
-              label="Тип сообщения"
-              bottom
-            ></v-select>               
+            <!-- <v-select
+                          :items="messageTypes"
+                          v-model = "formValues.type"
+                          label="Тип сообщения"
+                          bottom
+                        ></v-select>    -->            
             <v-select
               :items="themeList"
               v-model = "formValues.theme"
@@ -27,7 +27,7 @@
             ></v-select>
           </v-stepper-step>
           <v-stepper-content step="1">
-          <v-btn primary :disabled="!formValues.theme || !formValues.type || !formValues.title" 
+          <v-btn primary :disabled="!formValues.theme || !formValues.title" 
                          @click.native="feedbackStep = 2">Продолжить</v-btn>
           </v-stepper-content>
 
