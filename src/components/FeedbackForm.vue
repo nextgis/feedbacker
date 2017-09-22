@@ -11,13 +11,7 @@
               label="Заголовок"
               single-line
               id="testing"
-            ></v-text-field>            
-            <!-- <v-select
-                          :items="messageTypes"
-                          v-model = "formValues.type"
-                          label="Тип сообщения"
-                          bottom
-                        ></v-select>    -->            
+            ></v-text-field>         
             <v-select
               :items="themeList"
               v-model = "formValues.theme"
@@ -45,8 +39,8 @@
             <v-text-field
               :disabled = "feedbackStep < 3"
               v-model = "formValues.text"
-              label="Текст сообщения"
-              placeholder="Опишите суть обращения"
+              label="Описание точки"
+              placeholder="Расскажите, что вы знаете об этом объекте"
               multi-line
             ></v-text-field>
           </v-stepper-step>

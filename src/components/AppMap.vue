@@ -1,6 +1,6 @@
 <template>
     <v-map class="map"
-           :options="mapOptions" 
+           :options="mapOptions"
            ref="map">
 
         <v-tilelayer url="https://korona.geog.uni-heidelberg.de/tiles/roads/x={x}&y={y}&z={z}"></v-tilelayer>
