@@ -23,6 +23,7 @@
               v-model = "formValues.theme"
               label="Тема сообщения"
               bottom
+              @input = "onThemeChanged($event)"
             ></v-select>
           </v-stepper-step>
           <v-stepper-content step="1">
@@ -96,7 +97,7 @@ export default {
                 title: undefined,
                 text: undefined,
                 type: undefined,
-                theme: this.themes[this.selectedThemeId].name,
+                theme: this.selectedThemeId ? this.themes[this.selectedThemeId].name : undefined,
                 latlng: undefined,
                 file: []
             },
@@ -121,8 +122,9 @@ export default {
                 break;
           }
         },
-        selectedThemeId(val){
-            this.$set(this.formValues, 'theme', this.themes[val].name)
+        selectedThemeId(val, oldVal){
+            if (val && val != oldVal)
+              this.$set(this.formValues, 'theme', this.themes[val].name);
         }
     },
     created(){
@@ -137,6 +139,10 @@ export default {
         triggerClose(){
           this.$emit("feedbackForm:closed");
           this.resetForm();
+        },
+        onThemeChanged(value){
+          let selectedThemeId = this.themes.findIndex((theme) => { return theme.name === value } );
+          bus.$emit("themes:themeActivated", selectedThemeId);
         },
         setFiles(files){
           this.$set(this.formValues, 'file', files)

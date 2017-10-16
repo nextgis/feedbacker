@@ -5,11 +5,15 @@
             <h1 class="header__title-text title">Сбор общественных мнений</h1>
         </div>
         <nav class="header-menu">
-            <a href="#" class="header-menu__link">О проекте</a>
-            <a href="#" class="header-menu__link">Инструкции</a>
+            <a href="#" class="header__link">О проекте</a>
+            <a href="#" class="header__link">Инструкции</a>
         </nav>
-        <v-btn primary dark large
-               class="header__login-button login-button">Войти</v-btn>
+        <div class="header-actions">
+            <a href="#" class="header__login-link header__link">Войти</a>
+            <v-btn primary dark large
+                   class="header__feedback-button feedback-button"
+                   @click.native="$emit('header:feedbackBtnClicked')">Оставить сообщение</v-btn>
+        </div>
     </header>
 </template>
 
@@ -66,30 +70,44 @@ export default {
         height: 36px;
         width: auto;
 
-    &__login-button
-        position: absolute;
-        right: $spacers.three.x;
-        top:0;
+    &__feedback-button
         margin:0;
-        bottom:0;
-        margin-top: auto;
-        margin-bottom: auto;
+        vertical-align: baseline;
   
         @media $display-breakpoints.xs-only
             right: $grid-gutters.xl;
 
-.header-menu
-    text-align: center;
-
-    &__link
+    .header__link
         @extend .title;
         @extend .mr-4;
         text-decoration: none;
         line-height: $header-height !important;
         color: $theme.primary
 
-        &:first-child{
-            margin-left: 24px;
-        }
+        &:hover
+            color: $theme.secondary
 
+    .header__login-link
+        color: #000;
+
+        &:hover
+            color: $theme.secondary
+
+.header-menu
+    text-align: center;
+
+    &__link
+        &:first-child
+            margin-left: 24px;
+
+.header-actions
+    position: absolute;
+    right: $spacers.three.x;
+    top:0;
+    bottom:0;    
+    margin-top: auto;
+    margin-bottom: auto;
+    .btn
+        margin-top: 0;
+        margin-bottom:0;
 </style>

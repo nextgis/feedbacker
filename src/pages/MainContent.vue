@@ -3,12 +3,12 @@
        :class="{ 'main-content--withForm':formActive }">
 
     <map-toolbar class="main-content__toolbar"
-                 :selectedTheme="selectedTheme.name"
+                 :selectedTheme="selectedTheme!=undefined ? selectedTheme.name : ''"
                  ></map-toolbar>
 
     <div class="main-content__map">
-      <app-map :messageGeojson = "selectedTheme.editableLayer.geojson"
-               :relatedLayers = "selectedTheme.relatedLayers"
+      <app-map :messageGeojson = "selectedTheme!=undefined ? selectedTheme.editableLayer.geojson : undefined"
+               :relatedLayers = "selectedTheme!=undefined ? selectedTheme.relatedLayers : undefined"
                :active-message = "activeMessageId"
                ref="map"></app-map>
       <detail-message v-show="activeMessageId"
@@ -16,20 +16,14 @@
       <message-list v-show="!activeMessageId"
                     :messages = "messages"
                     :activeMessageId = "activeMessageId"></message-list>
-      <transition name="fade">
-        <v-btn primary dark large
-               v-if="!formActive && themes[selectedThemeId].editableLayer"
-               class="feedback-btn"
-               @click="showForm()">Оставить сообщение</v-btn>
-      </transition>
     </div>
 
-    <feedback-form v-if="themes[selectedThemeId].editableLayer"
-                   :active="formActive"
+    <feedback-form :active="formActive"
                    @feedbackForm:closed="closeForm()"
                    :themes="themes"
                    :selectedThemeId="selectedThemeId"
-                   :editableLayer="themes[selectedThemeId].editableLayer"></feedback-form>
+                   :editableLayer="selectedThemeId!=undefined ? themes[selectedThemeId].editableLayer : undefined"></feedback-form>
+                   <!-- v-if="themes[selectedThemeId].editableLayer" -->
 
     <transition name="fade">
         <div class="main-content__themes" v-if="themesIsShown">
@@ -91,34 +85,37 @@ export default {
   },
   computed: {
     selectedTheme: function(){
-      let that = this,
-          selectedTheme = this.themes[this.selectedThemeId]
+      if (this.selectedThemeId!=undefined){
+        let that = this,
+            selectedTheme = this.themes[this.selectedThemeId]
 
-      selectedTheme.editableLayer.geojson.features.forEach(function(feature){
+        selectedTheme.editableLayer.geojson.features.forEach(function(feature){
 
-        if ( !("attachments" in feature) ){
+          if ( !("attachments" in feature) ){
 
-          let featureApiUrl = config.nextgiscomUrl + "/api/resource/" + selectedTheme.editableLayer.resource.id + "/feature/" + feature.id
-          axios.create({withCredentials: true})
-               .get(featureApiUrl)
-               .then(function(response){
-                  if (response.data.extensions.attachment && response.data.extensions.attachment[0].is_image){
-                    let attachment = response.data.extensions.attachment[0],
-                        imgUrl = featureApiUrl + "/attachment/" + attachment.id + "/image"
+            let featureApiUrl = config.nextgiscomUrl + "/api/resource/" + selectedTheme.editableLayer.resource.id + "/feature/" + feature.id
+            axios.create({withCredentials: true})
+                 .get(featureApiUrl)
+                 .then(function(response){
+                    if (response.data.extensions.attachment && response.data.extensions.attachment[0].is_image){
+                      let attachment = response.data.extensions.attachment[0],
+                          imgUrl = featureApiUrl + "/attachment/" + attachment.id + "/image"
 
-                    that.$set(feature, 'attachments', imgUrl)
-                  }
-               })
-               .catch(function(error){
-                  console.log(error)
-               })
-        }
-      })
-      
-      return this.themes[this.selectedThemeId]
+                      that.$set(feature, 'attachments', imgUrl)
+                    }
+                 })
+                 .catch(function(error){
+                    console.log(error)
+                 })
+          }
+        });
+        return this.themes[this.selectedThemeId]
+      } else {
+        return undefined;
+      }
     },
     messages: function(){
-      return this.selectedTheme.editableLayer.geojson ? this.selectedTheme.editableLayer.geojson.features : []
+      return this.selectedTheme && this.selectedTheme.editableLayer.geojson ? this.selectedTheme.editableLayer.geojson.features : []
     },
     activeMessage: function(){
       if (this.activeMessageId){

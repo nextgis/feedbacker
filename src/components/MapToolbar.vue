@@ -4,6 +4,7 @@
         <v-layout nowrap class="map-toolbar__layout ma-0" >
           <v-flex xs3 class="map-toolbar__item pa-0">
             <fake-select :value="selectedTheme"
+                         placeholder="Тема сообщения"
                          closeEvent="themes:themeActivated"
                          @fakeSelect:clicked = "onThemeSwitcherClicked()"></fake-select>
           </v-flex>

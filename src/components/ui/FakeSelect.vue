@@ -3,11 +3,12 @@
         class="fake-select"
         :class="{'fake-select--opened' : isOpened}"
         :value = "value"
+        :placeholder="placeholder"
         single-line
         full-width
         hide-details
         append-icon="arrow_drop_down"
-        readonly
+        readonly        
         @click.native = "onClick()"
     ></v-text-field>
 </template>
@@ -16,7 +17,7 @@
 import bus from "../../js/eventBus"
 
 export default {
-    props:[ "value" ],
+    props:[ "value", "placeholder" ],
     data () {
         return {
             isOpened: false

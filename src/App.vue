@@ -1,14 +1,16 @@
 <template>
   <v-app>
-    <app-header></app-header>
+    <app-header @header:feedbackBtnClicked="showFeedbackForm()"></app-header>
     <div class="content">
         <template v-if="currentPage == 'FirstScreen'">
             <first-screen :themes="themes" 
-                          :selectedThemeId="selectedThemeId"></first-screen>
+                          :selectedThemeId="selectedThemeId"
+                          ref="firstScreen"></first-screen>
         </template>
         <template v-else-if="currentPage == 'MainContent'">
             <main-content :themes="themes" 
-                          :selectedThemeId="selectedThemeId"></main-content>
+                          :selectedThemeId="selectedThemeId"
+                          ref="mainContent"></main-content>
         </template>
     </div>
   </v-app>
@@ -167,6 +169,14 @@ export default {
         .catch(e => {
             console.log(e)
         })
+    },
+    showFeedbackForm(){
+       // this.selectedThemeId = 2;
+        this.currentPage = "MainContent";
+
+        Vue.nextTick(() => {
+            this.$refs.mainContent.showForm();
+        });  
     }
   }
 }
