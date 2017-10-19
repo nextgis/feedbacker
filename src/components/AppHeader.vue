@@ -9,7 +9,8 @@
             <a href="#" class="header__link">Инструкции</a>
         </nav>
         <div class="header-actions">
-            <a href="#" class="header__login-link header__link">Войти</a>
+            <a v-if="!userName" href="#" class="header__login-link header__link" @click.prevent="$emit('header:loginLinkClicked')">Войти</a>
+            <user-avatar v-else :userName="userName"></user-avatar>
             <v-btn primary dark large
                    class="header__feedback-button feedback-button"
                    @click.native="$emit('header:feedbackBtnClicked')">Оставить сообщение</v-btn>
@@ -18,10 +19,15 @@
 </template>
 
 <script>
+import UserAvatar from "./UserAvatar"
+
 export default {
-  name: 'hello',
+  components: {
+    UserAvatar
+  },
   data () {
     return {
+        userName: undefined
     }
   }
 }
@@ -47,7 +53,7 @@ export default {
     background-color: #fff;
     border-bottom: 1px solid $line-color;    
     min-width: $grid-breakpoints.md
-    z-index: 2000
+    z-index: 2
 
     &__title
         position:absolute;
@@ -107,6 +113,8 @@ export default {
     bottom:0;    
     margin-top: auto;
     margin-bottom: auto;
+    line-height: $header-height;
+
     .btn
         margin-top: 0;
         margin-bottom:0;

@@ -222,6 +222,7 @@ export default {
       right:0;
       top: $map-toolbar-height;
       bottom:0;
+      z-index: 1;
 
     &__toolbar
       .input-group--single-line

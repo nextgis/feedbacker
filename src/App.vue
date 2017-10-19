@@ -1,18 +1,24 @@
 <template>
-  <v-app>
-    <app-header @header:feedbackBtnClicked="showFeedbackForm()"></app-header>
-    <div class="content">
-        <template v-if="currentPage == 'FirstScreen'">
-            <first-screen :themes="themes" 
-                          :selectedThemeId="selectedThemeId"
-                          ref="firstScreen"></first-screen>
-        </template>
-        <template v-else-if="currentPage == 'MainContent'">
-            <main-content :themes="themes" 
-                          :selectedThemeId="selectedThemeId"
-                          ref="mainContent"></main-content>
-        </template>
-    </div>
+  <v-app>    
+    <template v-if="currentPage!='Auth'">
+        <app-header @header:feedbackBtnClicked="showFeedbackForm()"
+                @header:loginLinkClicked="currentPage='Auth'"></app-header>
+        <div class="content">
+            <template v-if="currentPage == 'FirstScreen'">
+                <first-screen :themes="themes" 
+                              :selectedThemeId="selectedThemeId"
+                              ref="firstScreen"></first-screen>
+            </template>
+            <template v-else-if="currentPage == 'MainContent'">
+                <main-content :themes="themes" 
+                              :selectedThemeId="selectedThemeId"
+                              ref="mainContent"></main-content>
+            </template>
+        </div>
+    </template>    
+    <template v-else>
+        <auth @auth:closed="goToPage($event)" :previousPage="previousPage"></auth>
+    </template>
   </v-app>
 </template>
 
@@ -27,6 +33,7 @@ import bus from "./js/eventBus"
 import AppHeader from './components/AppHeader'
 import MainContent from './pages/MainContent'
 import FirstScreen from './pages/FirstScreen'
+import Auth from './pages/Auth'
 import axios from 'axios'
 
 export default {
@@ -34,13 +41,21 @@ export default {
   components: {
     AppHeader,
     MainContent,
-    FirstScreen
+    FirstScreen,
+    Auth
   },
   data () {
     return{
         selectedThemeId: undefined,
         themes: [],
-        currentPage: "FirstScreen"
+        previousPage: undefined,
+        currentPage: "FirstScreen",
+        dialog: true
+    }
+  },
+  watch: {
+    currentPage(value, oldValue){
+        this.previousPage = oldValue;
     }
   },
   created: function(){
@@ -60,7 +75,6 @@ export default {
     bus.$on("map:relateLayersLoaded", function(data, relatedLayerIndex){
         that.$set(that.themes[that.selectedThemeId].relatedLayers[relatedLayerIndex], 'geojson', data)
     })
-
   },
   methods: {
     initData(){
@@ -171,12 +185,14 @@ export default {
         })
     },
     showFeedbackForm(){
-       // this.selectedThemeId = 2;
         this.currentPage = "MainContent";
 
         Vue.nextTick(() => {
             this.$refs.mainContent.showForm();
         });  
+    },
+    goToPage(page){
+        this.currentPage = page;
     }
   }
 }

@@ -7,8 +7,18 @@
         
     &--large
         font-weight: 700
+        line-height: $button-large-height - 1;
         .btn__content
             padding: 0 $spacers.four.x
+            
+    &--xlarge
+        font-size: 18px;
+        height: 42px;
+        font-weight: 700;
+        
+        .btn__content
+            padding-left: 32px
+            padding-right: 32px
             
     &--faded::after
         content: "";

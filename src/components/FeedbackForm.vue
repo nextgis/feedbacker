@@ -97,7 +97,7 @@ export default {
                 title: undefined,
                 text: undefined,
                 type: undefined,
-                theme: this.selectedThemeId ? this.themes[this.selectedThemeId].name : undefined,
+                theme: this.selectedThemeId != undefined ? this.themes[this.selectedThemeId].name : undefined,
                 latlng: undefined,
                 file: []
             },
@@ -158,7 +158,8 @@ export default {
         },
         submitForm(){
             if (!this.formInProgress){
-                let point = latlngToCoord(this.formValues.latlng)
+                let point = latlngToCoord(this.formValues.latlng),
+                    date = new Date();
 
                 this.formInProgress = true
 
@@ -172,7 +173,7 @@ export default {
                                     theme: this.formValues.theme,
                                     text: this.formValues.text,
                                     author: "Иван Иванов",
-                                    date: new Date()
+                                    date: date.getDate() + "." + (date.getMonth() + 1) + "." + date.getFullYear()
                                 }
                             })
                      )
