@@ -26,7 +26,9 @@ export default {
   },
   methods: {
     activateTheme(e){
-      bus.$emit("themes:themeActivated", this.themeIndex)
+      this.$router.push({ path: '/map/' +  this.themeIndex });
+      this.$store.commit('selectTheme', this.themeIndex);
+      bus.$emit("themes:themeClicked", this.themeIndex);
     }
   }
 }

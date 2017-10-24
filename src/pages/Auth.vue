@@ -1,8 +1,8 @@
 <template>
     <v-layout class="auth" row wrap justify-center align-center ma-0>
         <v-container class="auth__inner">
-            <a href="#" class="nolink" @click="close()"><img class="auth__logo" src="../assets/wwf_logo.svg" alt="Сбор общественных мнений"></a>
-            <a href="#" class="nolink" @click="close()"><h1 class="auth__title">Сбор общественных мнений</h1></a>
+            <router-link class="nolink" to="/"><img class="auth__logo" src="../assets/wwf_logo.svg" alt="Сбор общественных мнений"></router-link>
+            <router-link class="nolink" to="/"><h1 class="auth__title">Сбор общественных мнений</h1></router-link>
             <v-text-field label="Логин" dark autofocus
             ></v-text-field>
             <v-text-field label="Пароль" dark
@@ -13,13 +13,8 @@
             <v-btn light class="btn--xlarge mt-3"
                    @click="submitForm()">Войти</v-btn>
         </v-container>
-        <v-icon large dark class="auth__closer" @click="close()">close</v-icon>
-    </v-layout>   
-
-               <!-- :disabled="feedbackStep<4"
-               :class="{'btn--faded': formInProgress}"
-               @click = "submitForm()" -->
-  
+        <v-icon large dark class="auth__closer" @click="$router.go(-1)">close</v-icon>
+    </v-layout>     
     </v-container>
 </template>
 
@@ -39,9 +34,6 @@ export default {
         }
     },
     methods:{
-        close(){
-            this.$emit("auth:closed", this.previousPage);
-        },
         submitForm(){
             axios.post(config.nextgiscomUrl + "/api/login?next=http://localhost:8080", "login=administrator&password=admin")
                  .then(response => {

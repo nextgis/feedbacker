@@ -5,7 +5,7 @@
           <v-flex xs3 class="map-toolbar__item pa-0">
             <fake-select :value="selectedTheme"
                          placeholder="Тема сообщения"
-                         closeEvent="themes:themeActivated"
+                         closeEvent="themes:themeClicked"
                          @fakeSelect:clicked = "onThemeSwitcherClicked()"></fake-select>
           </v-flex>
           <v-flex xs9 class="map-toolbar__item pa-0" >

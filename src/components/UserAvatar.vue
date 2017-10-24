@@ -36,11 +36,6 @@ export default {
       });
       return nameLetters; 
     }
-  },
-  methods: {
-    activateTheme(e){
-      bus.$emit("themes:themeActivated", this.themeIndex)
-    }
   }
 }
 </script>

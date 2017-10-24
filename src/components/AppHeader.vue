@@ -1,19 +1,21 @@
 <template>
     <header class="header">
-        <div href="#" class="header__title">
+        <router-link class="header__title nolink" to="/">
             <img class="header__logo" src="../assets/wwf_logo.svg" alt="Сбор общественных мнений">
             <h1 class="header__title-text title">Сбор общественных мнений</h1>
-        </div>
+        </router-link>
         <nav class="header-menu">
             <a href="#" class="header__link">О проекте</a>
             <a href="#" class="header__link">Инструкции</a>
         </nav>
         <div class="header-actions">
-            <a v-if="!userName" href="#" class="header__login-link header__link" @click.prevent="$emit('header:loginLinkClicked')">Войти</a>
+            <router-link to="/signin" v-if="!userName" href="#" class="header__login-link header__link" @click.prevent="$emit('header:loginLinkClicked')">Войти</router-link>
             <user-avatar v-else :userName="userName"></user-avatar>
             <v-btn primary dark large
                    class="header__feedback-button feedback-button"
-                   @click.native="$emit('header:feedbackBtnClicked')">Оставить сообщение</v-btn>
+                   @click.native="$emit('header:feedbackBtnClicked')"
+                   :to="feedbackUrl"
+                   append>Оставить сообщение</v-btn>
         </div>
     </header>
 </template>
@@ -27,7 +29,12 @@ export default {
   },
   data () {
     return {
-        userName: undefined
+        userName: undefined,
+    }
+  },
+  computed:{
+    feedbackUrl(){
+        return this.$store.state.selectedThemeId!=undefined ? "/map/" + this.$store.state.selectedThemeId + "?feedback=true" : "/map/?feedback=true"
     }
   }
 }

@@ -26,7 +26,7 @@ export default {
     created(){
         let that = this
 
-        bus.$on("themes:themeActivated", function(){
+        bus.$on("themes:themeClicked", function(){
             that.isOpened = false
         })
     },

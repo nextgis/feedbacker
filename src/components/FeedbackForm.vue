@@ -73,18 +73,16 @@
 <script>
 import {config} from "../js/config"
 import bus from "../js/eventBus"
+import {mapState} from "vuex"
+
 import Drawer from "./Drawer"
 import FileUploader from "./FileUploader"
 import axios from 'axios'
 import {latlngToCoord} from "../js/utilities"
-//import FileUpload from 'vue-upload-component'
 
 export default {
     props: [ 
-        "active",
-        "themes",
-        "selectedThemeId",
-        "editableLayer"
+        "active"
     ],
     components: {
         Drawer,
@@ -97,7 +95,7 @@ export default {
                 title: undefined,
                 text: undefined,
                 type: undefined,
-                theme: this.selectedThemeId != undefined ? this.themes[this.selectedThemeId].name : undefined,
+                theme: undefined,
                 latlng: undefined,
                 file: []
             },
@@ -110,8 +108,15 @@ export default {
         }
     },
     computed:{
+      ...mapState([
+          'themes',
+          'selectedThemeId'
+      ]),
       themeList(){
         return this.themes.map(function(theme){ return theme.name })
+      },
+      editableLayer(){
+        return this.selectedThemeId!=undefined ? this.themes[this.selectedThemeId].editableLayer : undefined;
       }
     },
     watch:{
@@ -123,26 +128,36 @@ export default {
           }
         },
         selectedThemeId(val, oldVal){
-            if (val && val != oldVal)
+            if (val!=undefined && val != oldVal && this.themes.length)
               this.$set(this.formValues, 'theme', this.themes[val].name);
+        },
+        themes(val, oldVal){
+          if (!oldVal.length)
+            this.$set(this.formValues, 'theme', this.themes[this.selectedThemeId].name);
         }
+    },
+    mounted(){
+      if (this.themes.length && this.selectedThemeId!=undefined)
+          this.$set(this.formValues, 'theme', this.themes[this.selectedThemeId].name);
     },
     created(){
         let that = this
 
         bus.$on("map:markerAdded", function(latlng){
-            //that.formValues.latlng = latlng
             that.$set(that.formValues, 'latlng', latlng)
-        })
+        });
     },
     methods: {
-        triggerClose(){
-          this.$emit("feedbackForm:closed");
+        triggerClose(){          
+          if (this.$store.state.selectedThemeId)
+            this.$router.push(this.$route.path)
+          else
+            this.$router.push("/");
           this.resetForm();
         },
         onThemeChanged(value){
           let selectedThemeId = this.themes.findIndex((theme) => { return theme.name === value } );
-          bus.$emit("themes:themeActivated", selectedThemeId);
+          this.$store.commit("selectTheme", selectedThemeId);
         },
         setFiles(files){
           this.$set(this.formValues, 'file', files)
@@ -150,8 +165,8 @@ export default {
         resetForm(){
           this.feedbackStep = 1;
           for (let key in this.formValues) {
-            if (key == "file") this.$set(this.formValues, key, []) //this.formValues[key] = []
-            else if (key != "theme") this.$set(this.formValues, key, undefined) //this.formValues[key] = undefined;
+            if (key == "file") this.$set(this.formValues, key, [])
+            else if (key != "theme") this.$set(this.formValues, key, undefined)
           }
           this.$refs.drawer.reset();
           this.$el.scrollTop = 0
@@ -180,20 +195,21 @@ export default {
                      .then(response => {
                         this.uploadFiles(response.data.id)
                           .then(() => {
-                            this.triggerClose()
-                            this.resetForm()
-                            this.formInProgress = false
-                            bus.$emit("feedbackForm:submitted", this.selectedThemeId)
+                            this.triggerClose();
+                            this.resetForm();
+                            this.formInProgress = false;
+                            this.$store.dispatch('updateMessages', this.selectedThemeId);
+                            this.$emit("feedbackForm:submitted", this.selectedThemeId);
                           })
                           .catch(e => {
-                            this.formInProgress = false
-                            bus.$emit("feedbackForm:failed", e)
-                            console.log(e)
+                            this.formInProgress = false;
+                            this.$emit("feedbackForm:failed", e);
+                            console.log(e);
                          })
                      })
                      .catch(e => {
                         this.formInProgress = false
-                        bus.$emit("feedbackForm:failed", e)
+                        this.$emit("feedbackForm:failed", e)
                         console.log(e)
                      })
             }

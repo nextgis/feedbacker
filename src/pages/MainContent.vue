@@ -1,6 +1,7 @@
 <template>
   <div class="main-content"
-       :class="{ 'main-content--withForm':formActive }">
+       :class="{ 'main-content--withForm':formActive }"
+       v-if="themes.length">
 
     <map-toolbar class="main-content__toolbar"
                  :selectedTheme="selectedTheme!=undefined ? selectedTheme.name : ''"
@@ -19,11 +20,8 @@
     </div>
 
     <feedback-form :active="formActive"
-                   @feedbackForm:closed="closeForm()"
-                   :themes="themes"
-                   :selectedThemeId="selectedThemeId"
-                   :editableLayer="selectedThemeId!=undefined ? themes[selectedThemeId].editableLayer : undefined"></feedback-form>
-                   <!-- v-if="themes[selectedThemeId].editableLayer" -->
+                   @feedbackForm:submitted="showSnackbar('success', 'Сообщение отправлено')"
+                   @feedbackForm:failed="showSnackbar('error', 'Произошла ошибка')"></feedback-form>
 
     <transition name="fade">
         <div class="main-content__themes" v-if="themesIsShown">
@@ -49,6 +47,7 @@
 import bus from "../js/eventBus"
 import axios from "axios"
 import {config} from "../js/config"
+import { mapState } from 'vuex'
 
 import AppMap from "../components/AppMap"
 import MapToolbar from "../components/MapToolbar"
@@ -67,14 +66,13 @@ export default {
     DetailMessage
   },
   props:[
-    "selectedThemeId",
-    "themes"
+    "themeId",
+    "messageId"
   ],
   data () {
     return {
       activeMessageId: null,
-      formActive: false,
-      themesIsShown: false,      
+      themesIsShown: false,
       snackbar: {
           visibility: false,
           mode: undefined,
@@ -84,32 +82,16 @@ export default {
     }
   },
   computed: {
-    selectedTheme: function(){
+    ...mapState([
+        'themes',
+        'selectedThemeId'
+    ]), 
+    formActive(){
+      return this.$route.query.feedback || false;
+    },
+    selectedTheme(){
       if (this.selectedThemeId!=undefined){
-        let that = this,
-            selectedTheme = this.themes[this.selectedThemeId]
-
-        selectedTheme.editableLayer.geojson.features.forEach(function(feature){
-
-          if ( !("attachments" in feature) ){
-
-            let featureApiUrl = config.nextgiscomUrl + "/api/resource/" + selectedTheme.editableLayer.resource.id + "/feature/" + feature.id
-            axios.create({withCredentials: true})
-                 .get(featureApiUrl)
-                 .then(function(response){
-                    if (response.data.extensions.attachment && response.data.extensions.attachment[0].is_image){
-                      let attachment = response.data.extensions.attachment[0],
-                          imgUrl = featureApiUrl + "/attachment/" + attachment.id + "/image"
-
-                      that.$set(feature, 'attachments', imgUrl)
-                    }
-                 })
-                 .catch(function(error){
-                    console.log(error)
-                 })
-          }
-        });
-        return this.themes[this.selectedThemeId]
+        return this.themes[this.selectedThemeId];
       } else {
         return undefined;
       }
@@ -131,8 +113,22 @@ export default {
   },
   watch:{
     selectedThemeId(value){
-      this.activeMessageId = null
+      this.activeMessageId = null;      
+      if (this.themes.length  && !("attachments" in this.themes[this.selectedThemeId].editableLayer.geojson.features[0])) 
+        this.$store.dispatch('updateAttachements', value);
+    },
+    themes(value, oldValue){
+      if (!oldValue.length) 
+        this.$store.dispatch('updateAttachements', this.themeId);
     }
+  },
+  mounted(){
+      var that = this;      
+      if (this.themeId) this.$store.commit('selectTheme', this.themeId);
+
+      bus.$on("themes:themeClicked", () => {      
+        that.themesIsShown = false;
+      });
   },
   created: function () {
     let that = this
@@ -145,19 +141,7 @@ export default {
     })
 
     bus.$on('maptoolbar:themeSwitcherClicked', function () {
-      that.showThemes()
-    })
-
-    bus.$on('themes:themeActivated', function (selectedThemeId) {
-      that.themesIsShown = false
-    })
-
-    bus.$on('feedbackForm:submitted', function (selectedThemeId) {
-      that.showSnackbar('success', 'Сообщение отправлено')
-    })
-
-    bus.$on('feedbackForm:failed', function (selectedThemeId) {
-      that.showSnackbar('error', 'Произошла ошибка')
+      that.showThemes();
     })
 
     bus.$on("detailMessage:closed", function(){
@@ -165,14 +149,6 @@ export default {
     })
   },
   methods: {
-    showForm(){
-      this.formActive = true
-      this.hideMessages()
-    },
-    closeForm: function(){
-      this.formActive = false
-      this.showMessages()
-    },
     hideMessages(){
       this.$refs.map.messagesShown = false
     },

@@ -9,8 +9,7 @@
                 </span>
             </v-container>
         </div>
-        <div class="first-screen__themes">
-           
+        <div class="first-screen__themes">   
             <v-container fluid >
                 <h1 class="first-screen__title white--text">Выберите тему, чтобы оставить сообщение</h1>
                 <theme-list class="first-screen__theme-list"
@@ -21,20 +20,24 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import ThemeList from "../components/ThemeList"
 
 export default {
     components:{
         ThemeList
     },
-    props:[
-        "themes"
-    ],
     data () {
         return {
           conditionalFillHeight: "fill-height",
           withGreeting: true
         }
+    },
+    computed: mapState([
+        'themes'
+    ]),
+    mounted(){
+        this.$store.commit('selectTheme', undefined);
     }
 }
 </script>
