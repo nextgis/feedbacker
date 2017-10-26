@@ -21,9 +21,6 @@
 </template>
 
 <script>
-import bus from "../js/eventBus"
-import axios from "axios"
-
 export default {
   props: [
     "message"
@@ -35,7 +32,7 @@ export default {
   },
   methods: {
     triggerClose(e){
-      bus.$emit("detailMessage:closed")
+        this.$router.push({path: '/map/' + this.$store.state.selectedThemeId});
     }
   }
 }

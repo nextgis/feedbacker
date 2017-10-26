@@ -4,7 +4,6 @@
                  :key="message.id"
                  :id="message.id"
                  :message="message"
-                 :isActive="message.id == activeMessageId"
                  ref="card">
         </message-card>
     </div>
@@ -15,8 +14,7 @@ import MessageCard from "../components/MessageCard"
 
 export default {
   props: [
-    "messages",
-    "activeMessageId"
+    "messages"
   ],
   components: {
     MessageCard

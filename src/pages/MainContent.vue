@@ -10,13 +10,12 @@
     <div class="main-content__map">
       <app-map :messageGeojson = "selectedTheme!=undefined ? selectedTheme.editableLayer.geojson : undefined"
                :relatedLayers = "selectedTheme!=undefined ? selectedTheme.relatedLayers : undefined"
-               :active-message = "activeMessageId"
+               :active-message = "messageId"
                ref="map"></app-map>
-      <detail-message v-show="activeMessageId"
+      <detail-message v-show="messageId"
                       :message = "activeMessage"></detail-message>
-      <message-list v-show="!activeMessageId"
-                    :messages = "messages"
-                    :activeMessageId = "activeMessageId"></message-list>
+      <message-list v-show="!messageId"
+                    :messages = "messages"></message-list>
     </div>
 
     <feedback-form :active="formActive"
@@ -71,7 +70,7 @@ export default {
   ],
   data () {
     return {
-      activeMessageId: null,
+      //messageId: null,
       themesIsShown: false,
       snackbar: {
           visibility: false,
@@ -100,12 +99,12 @@ export default {
       return this.selectedTheme && this.selectedTheme.editableLayer.geojson ? this.selectedTheme.editableLayer.geojson.features : []
     },
     activeMessage: function(){
-      if (this.activeMessageId){
+      if (this.messageId){
         let that = this,
-            activeMessage = that.activeMessageId && that.messages.length ? that.messages.filter(function(message){
-              return message.id==that.activeMessageId
-            })[0] : null,
-            featureApiUrl = "http://nastya.nextgis.com/api/resource/" + this.selectedTheme.editableLayer.resource.id + "/feature/" + activeMessage.id
+            activeMessage = that.messageId && that.messages.length ? that.messages.filter(function(message){
+              return message.id==that.messageId
+            })[0] : null;
+            //featureApiUrl = "http://nastya.nextgis.com/api/resource/" + this.selectedTheme.editableLayer.resource.id + "/feature/" + activeMessage.id
 
           return activeMessage
       }
@@ -113,7 +112,6 @@ export default {
   },
   watch:{
     selectedThemeId(value){
-      this.activeMessageId = null;      
       if (this.themes.length  && !("attachments" in this.themes[this.selectedThemeId].editableLayer.geojson.features[0])) 
         this.$store.dispatch('updateAttachements', value);
     },
@@ -131,21 +129,10 @@ export default {
       });
   },
   created: function () {
-    let that = this
-    bus.$on('map:markerClicked', function (activeMessageId) {
-      that.activeMessageId = activeMessageId
-    })
-
-    bus.$on('card:cardClicked', function (activeMessageId) {
-        that.activeMessageId = activeMessageId
-    })
+    let that = this;
 
     bus.$on('maptoolbar:themeSwitcherClicked', function () {
       that.showThemes();
-    })
-
-    bus.$on("detailMessage:closed", function(){
-      that.activeMessageId = null
     })
   },
   methods: {

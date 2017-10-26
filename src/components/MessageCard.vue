@@ -22,8 +22,6 @@
 </template>
 
 <script>
-import bus from "../js/eventBus"
-
 export default {
   props: [
     "id",
@@ -38,7 +36,7 @@ export default {
   },
   methods: {
     activateMessage(e){
-      bus.$emit("card:cardClicked", this.id)
+      this.$router.push({ path: '/map/' + this.$store.state.selectedThemeId + "/" + this.id});
     }
   }
 }

@@ -2,7 +2,7 @@
     <v-map class="map"
            :zoom=6 
            :center="[64, 48]"
-           :options="mapOptions"
+           :options="mapOptions" 
            ref="map">
 
         <v-tilelayer url="https://korona.geog.uni-heidelberg.de/tiles/roads/x={x}&y={y}&z={z}"></v-tilelayer>
@@ -49,7 +49,6 @@ export default {
     let that = this;
 
     return {
-        aaa: false,
         messagesShown: true,
         mapOptions: {
            editable: true,
@@ -104,6 +103,9 @@ export default {
   },
   watch: {
     activeMessage(value, oldValue){
+        if (value != undefined)
+            this.panToMarker(value);
+
         if (oldValue && this.getMarkerById(oldValue))
             this.deactivateMessage(this.getMarkerById(oldValue))
 
@@ -112,20 +114,24 @@ export default {
     }
   },
   mounted(){
-    let that = this
+    let that = this;
+
+    if(that.activeMessage){
+        that.geojsonAdded().then(() => {
+            //that.panToMarker(that.activeMessage);
+            if (that.getMarkerById(that.activeMessage))
+                that.activateMessage(that.getMarkerById(that.activeMessage), true)
+        });
+    };
 
     bus.$on("drawer:activated", function(){
         that.mapObject.editTools.startMarker(null, {icon: that.customIconActive});
-    })
+    });
 
     bus.$on("drawer:reseted", function(){      
         that.mapObject.editTools.stopDrawing();
         that.removeEditableLayers();
-    })
-
-    bus.$on('card:cardClicked', function (messageId) {
-        that.panToMarker(messageId)
-    })
+    });
 
     this.mapObject.on('editable:drawing:commit editable:dragend', function (e) {
         bus.$emit("map:markerAdded", e.layer._latlng)
@@ -135,14 +141,16 @@ export default {
     geojsonObject(ref){
         return this.$refs[ref] ? this.$refs[ref].$geoJSON : undefined
     },
-    activateMessage(marker, withMoving){
+    activateMessage(marker, withMoving){        
+        this.$router.push({ path: '/map/' + this.$store.state.selectedThemeId + "/" + marker.feature.id}); 
+        this.panToMarker(this.activeMessage);
         marker.setIcon(this.customIconActive)
-              .setZIndexOffset(1000)
-        bus.$emit("map:markerClicked", marker.feature.id)
+              .setZIndexOffset(1000);    
     },
     panToMarker(markerId){
-        let marker = this.getMarkerById(markerId)
-        this.mapObject.panToOffset(marker._latlng, this.mapOptions.offset)
+        let marker = this.getMarkerById(markerId);
+        if (marker)
+            this.mapObject.panToOffset(marker._latlng, this.mapOptions.offset);
     },
     deactivateMessage(marker){
         marker.setIcon(this.customIcon)
@@ -174,6 +182,18 @@ export default {
                     return geojsonLayers[layer]
             }
         }
+    },
+    geojsonAdded(){
+        let that = this;
+
+        return new Promise((resolve, reject) => {
+            let geoJsonCounter = 0;
+            this.geojsonObject("messageGeojson").on("layeradd", function(){ 
+                geoJsonCounter++;
+                if (geoJsonCounter == Object.keys(that.geojsonObject("messageGeojson")._layers).length)
+                    resolve();
+            });
+        });    
     }
   }
 }
