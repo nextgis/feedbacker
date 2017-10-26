@@ -20,4 +20,4 @@ const routes = [
     }
 ] 
 
-export default new VueRouter({ mode: 'history', routes })
+export default new VueRouter({ mode: 'history', base: '/demo/feedbacker/dist/', routes })

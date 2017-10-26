@@ -118,7 +118,6 @@ export default {
 
     if(that.activeMessage){
         that.geojsonAdded().then(() => {
-            //that.panToMarker(that.activeMessage);
             if (that.getMarkerById(that.activeMessage))
                 that.activateMessage(that.getMarkerById(that.activeMessage), true)
         });
