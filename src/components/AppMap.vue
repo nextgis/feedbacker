@@ -60,7 +60,7 @@ export default {
             },
             pointToLayer: function(feature, latlng) {
                 return L.marker(latlng, {
-                    icon: (feature.id===that.activeMessage) ? that.customIconActive : that.customIcon
+                    icon: (feature.id==that.activeMessage) ? that.customIconActive : that.customIcon
                 });
             },
             onEachFeature: function (feature, layer) {
@@ -117,10 +117,7 @@ export default {
     let that = this;
 
     if(that.activeMessage){
-        that.geojsonAdded().then(() => {
-            if (that.getMarkerById(that.activeMessage))
-                that.activateMessage(that.getMarkerById(that.activeMessage), true)
-        });
+        this.panToMarker(that.activeMessage);
     };
 
     bus.$on("drawer:activated", function(){
@@ -181,18 +178,6 @@ export default {
                     return geojsonLayers[layer]
             }
         }
-    },
-    geojsonAdded(){
-        let that = this;
-
-        return new Promise((resolve, reject) => {
-            let geoJsonCounter = 0;
-            this.geojsonObject("messageGeojson").on("layeradd", function(){ 
-                geoJsonCounter++;
-                if (geoJsonCounter == Object.keys(that.geojsonObject("messageGeojson")._layers).length)
-                    resolve();
-            });
-        });    
     }
   }
 }
