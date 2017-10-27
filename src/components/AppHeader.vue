@@ -9,8 +9,8 @@
             <a href="#" class="header__link">Инструкции</a>
         </nav>
         <div class="header-actions">
-            <router-link to="/signin" v-if="!userName" href="#" class="header__login-link header__link" @click.prevent="$emit('header:loginLinkClicked')">Войти</router-link>
-            <user-avatar v-else :userName="userName"></user-avatar>
+            <router-link to="/signin" v-if="!user.name" href="#" class="header__login-link header__link" @click.prevent="$emit('header:loginLinkClicked')">Войти</router-link>
+            <user-avatar v-else :userName="user.name"></user-avatar>
             <v-btn primary dark large
                    class="header__feedback-button feedback-button"
                    @click.native="$emit('header:feedbackBtnClicked')"
@@ -21,21 +21,20 @@
 </template>
 
 <script>
+import {mapState} from "vuex"
 import UserAvatar from "./UserAvatar"
 
 export default {
   components: {
     UserAvatar
   },
-  data () {
-    return {
-        userName: undefined,
-    }
-  },
   computed:{
     feedbackUrl(){
         return this.$store.state.selectedThemeId!=undefined ? "/map/" + this.$store.state.selectedThemeId + "?feedback=true" : "/map/?feedback=true"
-    }
+    },
+    ...mapState([
+        "user"
+    ])
   }
 }
 </script>

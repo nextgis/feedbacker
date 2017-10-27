@@ -7,7 +7,7 @@
         <v-list>
             <v-subheader>{{ userName }}</v-subheader>
             <v-divider></v-divider>
-            <v-list-tile>
+            <v-list-tile @click="logout()">
               <v-list-tile-title>Выйти</v-list-tile-title>
             </v-list-tile>
         </v-list>
@@ -28,13 +28,18 @@ export default {
   computed: {
     nameLetters(){
       let nameLetters = "";
-      console.log(this.userName)
       this.userName.split(" ").forEach((word, index) => {         
         if (index < 2) {
           nameLetters += word.charAt(0) 
         }
       });
       return nameLetters; 
+    }
+  },
+  methods: {
+    logout(){
+      localStorage.removeItem("clientId");
+      this.$store.commit("setUserData", {uid: undefined, name:undefined});
     }
   }
 }

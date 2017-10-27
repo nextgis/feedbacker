@@ -10,7 +10,11 @@ const debug = process.env.NODE_ENV !== 'production'
 export default new Vuex.Store({
     state:{
         themes: [],
-        selectedThemeId: undefined
+        selectedThemeId: undefined,
+        user: { 
+            uid: undefined,
+            name: undefined
+        }
     },
     getters:{
         getThemeById: (state) => (id) => {
@@ -31,6 +35,10 @@ export default new Vuex.Store({
             state.themes[params.id].editableLayer.geojson.features.forEach((feature, index) => {
                 Vue.set(feature, 'attachments', params.data[index]);
             });
+        },
+        setUserData(state, data){
+            Vue.set(state.user, 'uid', data.uid);
+            Vue.set(state.user, 'name', data.name);
         }
     },
     actions:{
@@ -41,6 +49,8 @@ export default new Vuex.Store({
                     commit('setData', themes);
                 });
             });
+
+            dispatch('getUserData');
         },
         updateMessages({dispatch, commit, getters}, themeId){
             let theme = getters.getThemeById(themeId);
@@ -251,6 +261,14 @@ export default new Vuex.Store({
                 });
             });    
         },
+        getUserData({commit}){
+            // get userData from NGW by API
+            if (localStorage.getItem("clientId")){
+                let clientIdDecoded = window.atob(localStorage.getItem("clientId")).split(":"),
+                    userData = config.users.filter((user) => {return (user.login === clientIdDecoded[0] && user.password === clientIdDecoded[1])})[0];
+                commit('setUserData', userData);
+            }
+        }
     },
     strict: debug
 })

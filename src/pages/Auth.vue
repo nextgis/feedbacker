@@ -4,12 +4,19 @@
             <router-link class="nolink" to="/"><img class="auth__logo" src="../assets/wwf_logo.svg" alt="Сбор общественных мнений"></router-link>
             <router-link class="nolink" to="/"><h1 class="auth__title">Сбор общественных мнений</h1></router-link>
             <v-text-field label="Логин" dark autofocus
+                          v-model="login"
+                          @input="hideError()"
             ></v-text-field>
             <v-text-field label="Пароль" dark
+                          v-model="password"
+                          @input="hideError()"
                           :append-icon="pwdVisibility ? 'visibility_off' : 'visibility'"
                           :append-icon-cb="function(){ pwdVisibility = !pwdVisibility }"              
                           :type="pwdVisibility ? 'text' : 'password'"              
             ></v-text-field>
+            <div v-if="error" class="auth__error">
+                {{ error }}
+            </div>
             <v-btn light class="btn--xlarge mt-3"
                    @click="submitForm()">Войти</v-btn>
         </v-container>
@@ -20,28 +27,47 @@
 
 <script>
 import {config} from "../js/config"
+import {mapState} from "vuex"
 import axios from 'axios'
 
 export default {
     components:{
     },
-    props:[
-        "previousPage"
-    ],
     data () {
         return {
-            pwdVisibility: false
+            login: undefined,
+            password: undefined,
+            pwdVisibility: false,
+            error: undefined
         }
+    },
+    computed: mapState([
+        "user"
+    ]),
+    created(){
+        if (this.user.uid && this.user.name)
+            this.$router.go(-1);
     },
     methods:{
         submitForm(){
-            axios.post(config.nextgiscomUrl + "/api/login?next=http://localhost:8080", "login=administrator&password=admin")
-                 .then(response => {
-                    console.log(response)
-                 })
-                 .catch(e => {
-                    console.log(e)
-                 })
+            if (this.login && this.password){
+                let userData = this.getUserData();
+                if (userData) {
+                    this.$store.commit('setUserData', userData);
+                    localStorage.setItem("clientId", window.btoa(this.login + ":" + this.password));
+                    this.$router.go(-1);
+                } else {
+                    this.error = "Логин и пароль неверны"
+                }
+            }
+        },
+        getUserData(){
+            // send request 'who am I'
+            let userData = config.users.filter((user) => { return ( user.login === this.login && user.password === this.password) })[0];
+            return userData;
+        },
+        hideError(){
+            this.error = undefined;
         }
     }
 }
@@ -60,6 +86,7 @@ export default {
     .auth
         min-height: 100%;
         background-color: $theme.primary-lighter;
+        color: #fff;
 
         @media (max-height: 600px)
             padding-top: 60px;
@@ -87,6 +114,10 @@ export default {
 
             &:hover
                 opacity: 1;
+
+        &__error
+            margin-top: -12px;
+            margin-bottom: 12px;
 
         .input-group.input-group--text-field.input-group--focused
             input 
