@@ -13,7 +13,7 @@ Vue.use(Vuetify)
 import {config} from "./js/config"
 import bus from "./js/eventBus"
 import axios from 'axios'
-import { mapActions } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 
 export default {
   name: 'app',
@@ -23,6 +23,14 @@ export default {
         themes: [],
         dialog: true
     }
+  },
+  computed: mapState(['user']),
+  watch: {
+      '$route' (to, from) {
+          if (!this.user.uid && to.query.feedback && from.path!='/signin'){
+              this.$router.push('/signin');
+          }
+      }
   },
   mounted(){
     this.initStoreData();

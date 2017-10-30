@@ -70,7 +70,6 @@ export default {
   ],
   data () {
     return {
-      //messageId: null,
       themesIsShown: false,
       snackbar: {
           visibility: false,
@@ -83,10 +82,11 @@ export default {
   computed: {
     ...mapState([
         'themes',
-        'selectedThemeId'
+        'selectedThemeId',
+        'user'
     ]), 
     formActive(){
-      return this.$route.query.feedback || false;
+      return ((this.$route.query.feedback) && this.user.uid) || false;
     },
     selectedTheme(){
       if (this.selectedThemeId!=undefined){
@@ -104,7 +104,6 @@ export default {
             activeMessage = that.messageId && that.messages.length ? that.messages.filter(function(message){
               return message.id==that.messageId
             })[0] : null;
-            //featureApiUrl = "http://nastya.nextgis.com/api/resource/" + this.selectedTheme.editableLayer.resource.id + "/feature/" + activeMessage.id
 
           return activeMessage
       }

@@ -14,8 +14,7 @@
             <v-btn primary dark large
                    class="header__feedback-button feedback-button"
                    @click.native="$emit('header:feedbackBtnClicked')"
-                   :to="feedbackUrl"
-                   append>Оставить сообщение</v-btn>
+                   :to="feedbackUrl">Оставить сообщение</v-btn>
         </div>
     </header>
 </template>
@@ -25,17 +24,17 @@ import {mapState} from "vuex"
 import UserAvatar from "./UserAvatar"
 
 export default {
-  components: {
-    UserAvatar
-  },
-  computed:{
-    feedbackUrl(){
-        return this.$store.state.selectedThemeId!=undefined ? "/map/" + this.$store.state.selectedThemeId + "?feedback=true" : "/map/?feedback=true"
+    components: {
+        UserAvatar
     },
-    ...mapState([
-        "user"
-    ])
-  }
+    computed:{
+        feedbackUrl(){
+            return this.$store.state.selectedThemeId!=undefined ? "/map/" + this.$store.state.selectedThemeId + "?feedback=true" : "/map/?feedback=true"
+        },
+        ...mapState([
+            "user"
+        ])
+    }
 }
 </script>
 

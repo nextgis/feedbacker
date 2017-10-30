@@ -110,7 +110,8 @@ export default {
     computed:{
       ...mapState([
           'themes',
-          'selectedThemeId'
+          'selectedThemeId',
+          'user'
       ]),
       themeList(){
         return this.themes.map(function(theme){ return theme.name })
@@ -148,11 +149,16 @@ export default {
         });
     },
     methods: {
-        triggerClose(){          
-          if (this.$store.state.selectedThemeId)
-            this.$router.push(this.$route.path)
-          else
+        triggerClose(){
+          if (this.$store.state.selectedThemeId){
+            if (this.$route.params.themeId==this.$store.state.selectedThemeId)
+              this.$router.push(this.$route.path)
+            else
+              this.$router.push("/map/" + this.$store.state.selectedThemeId)
+          }
+          else{
             this.$router.push("/");
+          }
           this.resetForm();
         },
         onThemeChanged(value){
@@ -187,7 +193,7 @@ export default {
                                     type1: this.formValues.type,
                                     theme: this.formValues.theme,
                                     text: this.formValues.text,
-                                    author: "Иван Иванов",
+                                    author: this.user.name,
                                     date: date.getDate() + "." + (date.getMonth() + 1) + "." + date.getFullYear()
                                 }
                             })

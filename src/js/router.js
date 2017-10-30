@@ -11,12 +11,24 @@ const routes = [
     { path: '/signin', component: Auth },
     { path: '/', component: BaseLayout,
       children: [
-        { path: '/', component: FirstScreen },
-        { path: '/map/', component: MainContent },
-        { path: '/map/:themeId', component: MainContent, props: true},
-        { path: '/map/:themeId/:messageId', component: MainContent, props: true},
-      ],
-      props: true
+        { path: '/', component: FirstScreen, props: true },
+        { path: '/map/:themeId?/:messageId?', component: MainContent, props: true,
+            beforeEnter: (to, from, next) => {
+                if (to.query.feedback){
+                    if (!localStorage.getItem("clientId")){
+                        if (from.path!='/signin')
+                            next('/signin')
+                        else
+                            next(to.path);
+                    } else {                        
+                        next();
+                    }
+                } else {
+                    next();
+                }
+            },
+        },
+      ]
     }
 ] 
 

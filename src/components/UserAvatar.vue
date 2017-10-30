@@ -40,6 +40,8 @@ export default {
     logout(){
       localStorage.removeItem("clientId");
       this.$store.commit("setUserData", {uid: undefined, name:undefined});
+      if (this.$route.query.feedback)
+        this.$router.push(this.$route.path);
     }
   }
 }
