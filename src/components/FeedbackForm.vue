@@ -150,7 +150,7 @@ export default {
     },
     methods: {
         triggerClose(){
-          if (this.$store.state.selectedThemeId){
+          if (this.$store.state.selectedThemeId!=undefined){
             if (this.$route.params.themeId==this.$store.state.selectedThemeId)
               this.$router.push(this.$route.path)
             else
