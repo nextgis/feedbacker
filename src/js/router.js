@@ -20,7 +20,7 @@ const routes = [
                             next('/signin')
                         else
                             next(to.path);
-                    } else {                        
+                    } else {
                         next();
                     }
                 } else {
@@ -33,5 +33,5 @@ const routes = [
 ] 
 
 export default new VueRouter({ mode: 'history', 
-    //base: '/demo/feedbacker/dist/', 
+    base: '/demo/feedbacker/dist/', 
     routes })
