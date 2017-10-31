@@ -1,5 +1,5 @@
 <template>
-    <v-menu v-else class="user-avatar mr-2">
+    <v-menu class="user-avatar mr-2">
         <template slot="activator">                    
             <div class="user-avatar__label"> {{ nameLetters }} </div>
             <v-icon class="user-avatar__icon icon--small">keyboard_arrow_down</v-icon>
@@ -15,8 +15,6 @@
 </template>
 
 <script>
-import bus from "../js/eventBus"
-
 export default {
   props: [
     "userName"

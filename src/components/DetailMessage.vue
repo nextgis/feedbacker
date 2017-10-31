@@ -1,11 +1,13 @@
 <template>
-    <div class="detail-message">
+    <div class="detail-message"
+         :class="{ 'detail-message--overflowed':isCardOverflowed }">
         <v-icon class="detail-message__closer"
-              @click="triggerClose($event)">close</v-icon>
-        <v-card class="detail-message__inner">     
-            <v-container  fluid>
+                @click="triggerClose($event)">close</v-icon>
+        <v-card class="detail-message__inner"
+                ref="container">     
+            <v-container ref="innerContainer" fluid>
                 <header class="detail-message__header">
-                    <div class="detail-message__theme">{{ message ? message.properties.theme : "" }}, {{ message ? message.properties.type1 : ""  }}</div>
+                    <div class="detail-message__theme">{{ message ? message.properties.theme : "" }}, {{ message ? message.properties.type : ""  }}</div>
                     <h2 class="detail-message__title">{{ message ? message.properties.title : "" }}</h2>
                     <div class="detail-message__meta">{{ message ? message.properties.date : ""  }}, {{ message ? message.properties.author : "" }}</div>
                 </header>
@@ -17,22 +19,58 @@
                 </div>
             </v-container>
         </v-card>
+        <v-menu class="detail-message__menu" bottom left 
+                v-if="user && message && user.uid === message.properties.author_id"
+                >
+            <v-btn slot="activator" class="detail-message__menu-button ma-0" icon small
+                   ref="menuButton">
+                <v-icon class="icon--small">more_vert</v-icon>
+            </v-btn>
+            <v-list>
+                <v-list-tile @click="onDeleteClick(message.id)">
+                    <v-list-tile-title>Удалить</v-list-tile-title>
+                </v-list-tile>
+            </v-list>
+        </v-menu>
     </div>
 </template>
 
 <script>
+import bus from "../js/eventBus"
+import Vue from "vue"
+import {mapState} from "vuex"
+
 export default {
   props: [
     "message"
   ],
+  data(){
+    return {
+        isCardOverflowed: false
+    }
+  },
+  computed: {
+    ...mapState([
+        "user"
+    ])
+  },
   watch:{
     message(value){
-        this.$el.scrollTop = 0
+        this.$el.scrollTop = 0;
+        if (value!=undefined) Vue.nextTick(()=>{ 
+            this.checkCardOverflowing();
+        })        
     }
   },
   methods: {
     triggerClose(e){
         this.$router.push({path: '/map/' + this.$store.state.selectedThemeId});
+    },
+    checkCardOverflowing(){
+        this.isCardOverflowed = (this.$refs.innerContainer.offsetHeight > this.$refs.container.offsetHeight)
+    },
+    onDeleteClick(messageId){
+        bus.$emit('detailMessage:deleteClicked', messageId);
     }
   }
 }
@@ -50,26 +88,35 @@ export default {
 
 .detail-message
     position: absolute;
-    right:0;
-    top:0;
+    right:16px;
+    top: 12px;
     z-index: 1000;
-    max-height: 100%;
-    overflow: auto
 
     &__inner
-        margin: 12px 16px;        
         width: 400px;
-        box-shadow: none;
+        box-shadow: none;        
+        max-height: "calc(100vh - 24px - %s - %s)" % ($header-height $map-toolbar-height);
+        overflow: auto;
 
         .container
             padding-bottom: 24px
 
-    &__closer
-        position: fixed
-        margin-left:388px
-        margin-top: 16px
-        cursor: pointer
-        z-index:2
+    &__closer,
+    &__menu
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        cursor: pointer;
+        z-index:2;
+        transition: right .2s;
+
+    &__menu
+        top: auto;
+        margin-right: -2px;
+        bottom: 8px;
+
+    &__menu-button
+        background-color: rgba(255,255,255,.92);
 
     &__header
         margin-bottom: 16px;
@@ -91,5 +138,10 @@ export default {
     &__pic
         max-width: 100%
         display: block
+
+    &--overflowed
+        .detail-message__closer,
+        .detail-message__menu
+            right: 16px;
 
 </style>

@@ -4,7 +4,8 @@
                 'message-card--active':isActive,
                 'message-card--withImage':message.attachments,
             }"
-            @click = "activateMessage($event)">
+            @click = "activateMessage($event)"
+           >
         <v-container fluid>
             <div class="message-card__title">{{ message.properties.title }}</div>
             <div class="message-card__text">{{ message.properties.text }}</div>
@@ -17,26 +18,45 @@
                  class="message-card__photo"
                  :style="'background-image: url(' + message.attachments + '?size=200x200'">
             </div>
+            <v-menu class="message-card__menu" bottom left 
+                    v-if="user && user.uid === message.properties.author_id">
+                <v-btn slot="activator" class="ma-0" icon small
+                       ref="menuButton">
+                    <v-icon class="icon--small">more_vert</v-icon>
+                </v-btn>
+                <v-list>
+                    <v-list-tile @click="onDeleteClick(message.id)">
+                        <v-list-tile-title>Удалить</v-list-tile-title>
+                    </v-list-tile>
+                </v-list>
+            </v-menu>
       </v-container>
     </v-card>
 </template>
 
 <script>
+import bus from "../js/eventBus"
+import { mapState } from 'vuex'
+import { closest } from '../js/utilities'
+closest();
+
 export default {
   props: [
     "id",
     "message",
     "isActive"
   ],
-  components: {
-  },
-  data () {
-    return {
-    }
-  },
+  computed: mapState([
+    "selectedThemeId",
+    "user"
+  ]),
   methods: {
     activateMessage(e){
-      this.$router.push({ path: '/map/' + this.$store.state.selectedThemeId + "/" + this.id});
+        if (!this.$refs.menuButton || (e.target != this.$refs.menuButton.$el && e.target.closest('.btn') != this.$refs.menuButton.$el))
+            this.$router.push({ path: '/map/' + this.$store.state.selectedThemeId + "/" + this.id});
+    },
+    onDeleteClick(messageId){
+        bus.$emit('messageCard:deleteClicked', messageId);
     }
   }
 }
@@ -110,4 +130,12 @@ export default {
       right: -8px
       top: 12px
       elevation(1)
+
+    &__menu
+        position: absolute;
+        right: 8px;
+        bottom: 12px;
+
+        .btn--icon .icon
+            color: $grey.lighten-1;
 </style>

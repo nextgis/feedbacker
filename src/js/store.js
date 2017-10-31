@@ -268,6 +268,18 @@ export default new Vuex.Store({
                     userData = config.users.filter((user) => {return (user.login === clientIdDecoded[0] && user.password === clientIdDecoded[1])})[0];
                 commit('setUserData', userData);
             }
+        },
+        deleteMessage({state, dispatch, commit}, params){
+            let featureApiUrl = config.nextgiscomUrl + "/api/resource/" + state.themes[params.themeId].editableLayer.resource.id + "/feature/" + params.messageId;
+
+            axios.create({withCredentials: true})
+                .delete(featureApiUrl)
+                .then(function(response){
+                    dispatch("updateMessages", params.themeId);
+                })
+                .catch(e => {
+                    console.error(e)
+                }); 
         }
     },
     strict: debug

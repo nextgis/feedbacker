@@ -12,10 +12,7 @@
                :relatedLayers = "selectedTheme!=undefined ? selectedTheme.relatedLayers : undefined"
                :active-message = "messageId"
                ref="map"></app-map>
-      <detail-message v-show="messageId"
-                      :message = "activeMessage"></detail-message>
-      <message-list v-show="!messageId"
-                    :messages = "messages"></message-list>
+      <messages :activeMessageId="messageId"></messages>
     </div>
 
     <feedback-form :active="formActive"
@@ -50,19 +47,17 @@ import { mapState } from 'vuex'
 
 import AppMap from "../components/AppMap"
 import MapToolbar from "../components/MapToolbar"
-import MessageList from "../components/MessageList"
+import Messages from "../components/Messages"
 import FeedbackForm from "../components/FeedbackForm"
 import ThemeList from "../components/ThemeList"
-import DetailMessage from "../components/DetailMessage"
 
 export default {
   components:{
     AppMap,
     MapToolbar,
-    MessageList,
+    Messages,
     FeedbackForm,
     ThemeList,
-    DetailMessage
   },
   props:[
     "themeId",
@@ -95,29 +90,16 @@ export default {
         return undefined;
       }
     },
-    messages: function(){
-      return this.selectedTheme && this.selectedTheme.editableLayer.geojson ? this.selectedTheme.editableLayer.geojson.features : []
-    },
-    activeMessage: function(){
-      if (this.messageId){
-        let that = this,
-            activeMessage = that.messageId && that.messages.length ? that.messages.filter(function(message){
-              return message.id==that.messageId
-            })[0] : null;
-
-          return activeMessage
-      }
-    }
   },
   watch:{
     selectedThemeId(value){
-      if (this.themes.length  && !("attachments" in this.themes[this.selectedThemeId].editableLayer.geojson.features[0])) 
+      if (this.themes.length && this.themes[this.selectedThemeId].editableLayer.geojson.features.length && !("attachments" in this.themes[this.selectedThemeId].editableLayer.geojson.features[0])) 
         this.$store.dispatch('updateAttachements', value);
     },
     themes(value, oldValue){
       if (!oldValue.length) 
         this.$store.dispatch('updateAttachements', this.themeId);
-    }
+    },
   },
   mounted(){
       var that = this;      

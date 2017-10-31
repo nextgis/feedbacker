@@ -190,10 +190,11 @@ export default {
                                 geom: "POINT(" + point.x + " " + point.y + ")",
                                 fields: {
                                     title: this.formValues.title,
-                                    type1: this.formValues.type,
+                                    type: this.formValues.type,
                                     theme: this.formValues.theme,
                                     text: this.formValues.text,
                                     author: this.user.name,
+                                    author_id: this.user.uid,
                                     date: date.getDate() + "." + (date.getMonth() + 1) + "." + date.getFullYear()
                                 }
                             })
