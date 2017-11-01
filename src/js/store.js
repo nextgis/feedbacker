@@ -272,8 +272,12 @@ export default new Vuex.Store({
         deleteMessage({state, dispatch, commit}, params){
             let featureApiUrl = config.nextgiscomUrl + "/api/resource/" + state.themes[params.themeId].editableLayer.resource.id + "/feature/" + params.messageId;
 
-            axios.create({withCredentials: true})
-                .delete(featureApiUrl)
+           // axios.create({withCredentials: true})
+                axios.delete(featureApiUrl,{
+                    headers:{
+                        "Authorization": "Basic " + window.btoa("administrator:q1w2e3q1w2e3")
+                    }
+                })
                 .then(function(response){
                     dispatch("updateMessages", params.themeId);
                 })

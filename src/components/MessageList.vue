@@ -39,8 +39,8 @@ export default {
   position: absolute;
   right:0;
   top:0;
-  bottom:0;
   z-index: 1000;
-  overflow-y: scroll;
+  max-height: 100%;
+  overflow: auto;
 
 </style>
