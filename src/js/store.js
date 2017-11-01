@@ -37,8 +37,8 @@ export default new Vuex.Store({
             });
         },
         setUserData(state, data){
-            Vue.set(state.user, 'uid', data.uid);
-            Vue.set(state.user, 'name', data.name);
+            Vue.set(state.user, 'uid', data.id);
+            Vue.set(state.user, 'name', data.display_name);
         }
     },
     actions:{
@@ -49,8 +49,14 @@ export default new Vuex.Store({
                     commit('setData', themes);
                 });
             });
-
-            dispatch('getUserData');
+            if (localStorage.getItem("clientId")){
+                dispatch('getUserData', localStorage.getItem("clientId")).then((userData) =>{
+                    if (userData.keyname != "guest")
+                        commit('setUserData', userData)
+                    else
+                        localStorage.removeItem("clientId");
+                });
+            }
         },
         updateMessages({dispatch, commit, getters}, themeId){
             let theme = getters.getThemeById(themeId);
@@ -234,8 +240,7 @@ export default new Vuex.Store({
                     let featureApiUrl = config.nextgiscomUrl + "/api/resource/" + theme.editableLayer.resource.id + "/feature/" + feature.id;
 
                     featurePromises[index] = new Promise( (resolve, reject) => {
-                        axios.create({withCredentials: true})
-                        .get(featureApiUrl)
+                        axios.get(featureApiUrl)
                         .then(function(response){
                             let attachment,
                                 imgUrl;
@@ -261,25 +266,35 @@ export default new Vuex.Store({
                 });
             });    
         },
-        getUserData({commit}){
-            // get userData from NGW by API
-            if (localStorage.getItem("clientId")){
-                let clientIdDecoded = window.atob(localStorage.getItem("clientId")).split(":"),
-                    userData = config.users.filter((user) => {return (user.login === clientIdDecoded[0] && user.password === clientIdDecoded[1])})[0];
-                commit('setUserData', userData);
-            }
+        getUserData({commit}, clientId){
+            return new Promise( (resolve, reject) => {                
+                axios.get(config.nextgiscomUrl + "/api/component/auth/current_user",{
+                    headers: {
+                        "Authorization" : "Basic " + clientId
+                    }
+                })
+                .then(response => {
+                    resolve(response.data);
+                })
+                .catch(e => {
+                    reject(e)
+                });
+            });
         },
         deleteMessage({state, dispatch, commit}, params){
             let featureApiUrl = config.nextgiscomUrl + "/api/resource/" + state.themes[params.themeId].editableLayer.resource.id + "/feature/" + params.messageId;
 
-            axios.create({withCredentials: true})
-                .delete(featureApiUrl)
-                .then(function(response){
-                    dispatch("updateMessages", params.themeId);
-                })
-                .catch(e => {
-                    console.error(e)
-                }); 
+            axios.delete(featureApiUrl, { 
+                headers: {
+                  "Authorization": "Basic " + localStorage.getItem("clientId")
+                }
+            })
+            .then(function(response){
+                dispatch("updateMessages", params.themeId);
+            })
+            .catch(e => {
+                console.error(e)
+            }); 
         }
     },
     strict: debug

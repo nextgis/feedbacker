@@ -13,7 +13,6 @@
             <user-avatar v-else :userName="user.name"></user-avatar>
             <v-btn primary dark large
                    class="header__feedback-button feedback-button"
-                   @click.native="$emit('header:feedbackBtnClicked')"
                    :to="feedbackUrl">Оставить сообщение</v-btn>
         </div>
     </header>

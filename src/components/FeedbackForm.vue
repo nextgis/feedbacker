@@ -184,41 +184,44 @@ export default {
 
                 this.formInProgress = true
 
-                axios.create({withCredentials: true})
-                     .post(config.nextgiscomUrl + "/api/resource/" + this.editableLayer.resource.id + "/feature/",
-                            JSON.stringify( {
-                                geom: "POINT(" + point.x + " " + point.y + ")",
-                                fields: {
-                                    title: this.formValues.title,
-                                    type: this.formValues.type,
-                                    theme: this.formValues.theme,
-                                    text: this.formValues.text,
-                                    author: this.user.name,
-                                    author_id: this.user.uid,
-                                    date: date.getDate() + "." + (date.getMonth() + 1) + "." + date.getFullYear()
-                                }
-                            })
-                     )
-                     .then(response => {
-                        this.uploadFiles(response.data.id)
-                          .then(() => {
-                            this.triggerClose();
-                            this.resetForm();
-                            this.formInProgress = false;
-                            this.$store.dispatch('updateMessages', this.selectedThemeId);
-                            this.$emit("feedbackForm:submitted", this.selectedThemeId);
-                          })
-                          .catch(e => {
-                            this.formInProgress = false;
-                            this.$emit("feedbackForm:failed", e);
-                            console.log(e);
-                         })
+                axios.post(config.nextgiscomUrl + "/api/resource/" + this.editableLayer.resource.id + "/feature/",
+                    JSON.stringify( {
+                        geom: "POINT(" + point.x + " " + point.y + ")",
+                        fields: {
+                            title: this.formValues.title,
+                            type: this.formValues.type,
+                            theme: this.formValues.theme,
+                            text: this.formValues.text,
+                            author: this.user.name,
+                            author_id: this.user.uid,
+                            date: date.getDate() + "." + (date.getMonth() + 1) + "." + date.getFullYear()
+                        }
+                    }), {
+                        headers: {
+                            "Authorization": "Basic " + localStorage.getItem("clientId")
+                        } 
+                    }
+                 )
+                 .then(response => {
+                    this.uploadFiles(response.data.id)
+                      .then(() => {
+                        this.triggerClose();
+                        this.resetForm();
+                        this.formInProgress = false;
+                        this.$store.dispatch('updateMessages', this.selectedThemeId);
+                        this.$emit("feedbackForm:submitted", this.selectedThemeId);
+                      })
+                      .catch(e => {
+                        this.formInProgress = false;
+                        this.$emit("feedbackForm:failed", e);
+                        console.log(e);
                      })
-                     .catch(e => {
-                        this.formInProgress = false
-                        this.$emit("feedbackForm:failed", e)
-                        console.log(e)
-                     })
+                 })
+                 .catch(e => {
+                    this.formInProgress = false
+                    this.$emit("feedbackForm:failed", e)
+                    console.log(e)
+                 })
             }
         },
         onFormScroll(e){
@@ -230,24 +233,30 @@ export default {
 
           return new Promise(function(resolve, reject){
             if (that.formValues.file.length){
-              axios.create({withCredentials: true})
-                .put(config.nextgiscomUrl + "/api/component/file_upload/upload", that.formValues.file[0].file)
-                .then(function (res) {
-                  let attach_data = {}
-                  attach_data.file_upload = res.data
+              axios.put(config.nextgiscomUrl + "/api/component/file_upload/upload", that.formValues.file[0].file,{
+                headers: {
+                  "Authorization": "Basic " + localStorage.getItem("clientId")
+                }
+              })
+              .then(function (res) {
+                let attach_data = {}
+                attach_data.file_upload = res.data
 
-                  axios.create({withCredentials: true})
-                    .post(config.nextgiscomUrl + "/api/resource/" + that.editableLayer.resource.id + "/feature/" + featureId + "/attachment/", JSON.stringify(attach_data))
-                    .then(function (res) {
-                      resolve(res)
-                    })
-                    .catch(function (err) {
-                      reject(err)
-                    });
+                axios.post(config.nextgiscomUrl + "/api/resource/" + that.editableLayer.resource.id + "/feature/" + featureId + "/attachment/", JSON.stringify(attach_data),{
+                  headers: {
+                    "Authorization": "Basic " + localStorage.getItem("clientId")
+                  }
+                })
+                .then(function (res) {
+                  resolve(res)
                 })
                 .catch(function (err) {
                   reject(err)
                 });
+              })
+              .catch(function (err) {
+                reject(err)
+              });
             } else {
               resolve()
             }

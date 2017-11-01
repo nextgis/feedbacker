@@ -44,21 +44,23 @@ export default {
     computed: mapState([
         "user"
     ]),
-    created(){
-        if (this.user.uid && this.user.name)
-            this.$router.go(-1);
-    },
     methods:{
         submitForm(){
             if (this.login && this.password){
-                let userData = this.getUserData();
-                if (userData) {
-                    this.$store.commit('setUserData', userData);
-                    localStorage.setItem("clientId", window.btoa(this.login + ":" + this.password));
-                    this.$router.go(-1);
-                } else {
-                    this.error = "Логин и пароль неверны"
-                }
+                let clientId = window.btoa(this.login + ":" + this.password); 
+                this.$store.dispatch('getUserData', clientId)
+                .then((userData) => {
+                    if (userData.keyname != "guest"){
+                        localStorage.setItem("clientId", clientId);
+                        this.$store.commit('setUserData', userData);
+                        this.$router.go(-1);
+                    } else {
+                        this.error = "Логин и пароль неверны"
+                    }
+                })
+                .catch((e) => {
+                    this.error = e;
+                });
             }
         },
         getUserData(){

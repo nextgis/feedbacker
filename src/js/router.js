@@ -8,7 +8,15 @@ import FirstScreen from '../pages/FirstScreen'
 import Auth from '../pages/Auth'
 
 const routes = [
-    { path: '/signin', component: Auth },
+    { path: '/signin', component: Auth,
+        beforeEnter: (to, from, next) => {
+            if (localStorage.getItem("clientId")){
+                next('/');
+            } else {
+                next();
+            }
+        }, 
+    },
     { path: '/', component: BaseLayout,
       children: [
         { path: '/', component: FirstScreen, props: true },
