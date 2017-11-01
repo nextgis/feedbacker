@@ -71,11 +71,13 @@ export default new Vuex.Store({
             })
         },
         updateAttachements({dispatch, commit, getters}, themeId){
-            let theme = getters.getThemeById(themeId);
-            dispatch('getAttachements', theme)
-            .then((data) => {
-                commit('setAttachements', {id: themeId, data: data});
-            })
+            if (themeId){
+                let theme = getters.getThemeById(themeId);
+                dispatch('getAttachements', theme)
+                .then((data) => {
+                    commit('setAttachements', {id: themeId, data: data});
+                })
+            }
         },
         getThemes(){
             return new Promise(function(resolve, reject) {
