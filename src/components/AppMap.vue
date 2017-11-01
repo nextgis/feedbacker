@@ -98,7 +98,7 @@ export default {
         return this.$refs.map.mapObject
     },
     relatedLayersUrl(){
-        return this.relatedLayers && this.relatedLayers.length ? "http://nastya.nextgis.com/api/component/render/tile?x={x}&y={y}&z={z}&resource=" + this.relatedLayers.toString() : undefined
+        return this.relatedLayers && this.relatedLayers.length ? config.nextgiscomUrl + "/api/component/render/tile?x={x}&y={y}&z={z}&resource=" + this.relatedLayers.toString() : undefined
     } 
   },
   watch: {

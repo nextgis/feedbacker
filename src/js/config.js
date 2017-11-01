@@ -1,6 +1,6 @@
 export const config = {
-	nextgiscomUrl:  "http://nastya.nextgis.com",
-	baseResourceId: 19,
+	nextgiscomUrl:  "http://dev.nextgis.ru/practice2",
+	baseResourceId: 472,
 	users: [
 		{
 			uid: 1,
