@@ -279,9 +279,9 @@ export default {
     overflow: auto; 
 
     &__closer
-        position: absolute;
-        right:$spacers.two.x;
-        top: $spacers.two.y;
+        position: fixed;
+        margin-left: $feedback-form-width - 65px;
+        margin-top: -12px;
         cursor: pointer;
         z-index:2;
 
