@@ -63,11 +63,6 @@ export default {
                 });
             }
         },
-        getUserData(){
-            // send request 'who am I'
-            let userData = config.users.filter((user) => { return ( user.login === this.login && user.password === this.password) })[0];
-            return userData;
-        },
         hideError(){
             this.error = undefined;
         }

@@ -17,14 +17,11 @@ import { mapState, mapActions } from 'vuex'
 
 export default {
   name: 'app',
-  data () {
-    return{
-        selectedThemeId: undefined,
-        themes: [],
-        dialog: true
-    }
-  },
-  computed: mapState(['user']),
+  computed: mapState([
+    'user',
+    'themes',
+    'selectedThemeId'
+  ]),
   watch: {
       '$route' (to, from) {
           if (!this.user.uid && to.query.feedback && from.path!='/signin'){
