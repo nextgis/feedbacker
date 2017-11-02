@@ -3,22 +3,24 @@
         <v-container class="auth__inner">
             <router-link class="nolink" to="/"><img class="auth__logo" src="../assets/wwf_logo.svg" alt="Сбор общественных мнений"></router-link>
             <router-link class="nolink" to="/"><h1 class="auth__title">Сбор общественных мнений</h1></router-link>
-            <v-text-field label="Логин" dark autofocus
-                          v-model="login"
-                          @input="hideError()"
-            ></v-text-field>
-            <v-text-field label="Пароль" dark
-                          v-model="password"
-                          @input="hideError()"
-                          :append-icon="pwdVisibility ? 'visibility_off' : 'visibility'"
-                          :append-icon-cb="function(){ pwdVisibility = !pwdVisibility }"              
-                          :type="pwdVisibility ? 'text' : 'password'"              
-            ></v-text-field>
-            <div v-if="error" class="auth__error">
-                {{ error }}
-            </div>
-            <v-btn light class="btn--xlarge mt-3"
-                   @click="submitForm()">Войти</v-btn>
+            <form name="auth-form" @submit.prevent="submitForm()">
+                <v-text-field label="Логин" dark autofocus
+                              v-model="login"
+                              @input="hideError()"
+                ></v-text-field>
+                <v-text-field label="Пароль" dark
+                              v-model="password"
+                              @input="hideError()"
+                              :append-icon="pwdVisibility ? 'visibility_off' : 'visibility'"
+                              :append-icon-cb="function(){ pwdVisibility = !pwdVisibility }"              
+                              :type="pwdVisibility ? 'text' : 'password'"              
+                ></v-text-field>
+                <div v-if="error" class="auth__error">
+                    {{ error }}
+                </div>
+                <v-btn light class="btn--xlarge mt-3"
+                       type="submit">Войти</v-btn>
+            </form>           
         </v-container>
         <v-icon large dark class="auth__closer" @click="$router.go(-1)">close</v-icon>
     </v-layout>     
