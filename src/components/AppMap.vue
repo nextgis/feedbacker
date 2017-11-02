@@ -1,7 +1,5 @@
 <template>
     <v-map class="map"
-           :zoom=6 
-           :center="[64, 48]"
            :options="mapOptions" 
            ref="map">
 
@@ -23,6 +21,7 @@ import {config} from "../js/config"
 import bus from "../js/eventBus"
 
 import Vue from "vue"
+import {mapState} from "vuex"
 import L from "leaflet"
 import "leaflet-editable"
 import Vue2Leaflet from "vue2-leaflet/dist/vue2-leaflet.js"
@@ -36,7 +35,7 @@ export default {
   props: [
     "activeMessage",
     "messageGeojson",
-    "relatedLayers"
+    "relatedLayers",
   ],
   components: {
     'v-map': Vue2Leaflet.Map,
@@ -74,7 +73,19 @@ export default {
     }
   },
   computed: {
-    customIcon () {
+    ...mapState([
+        'themes',
+        'selectedThemeId'
+    ]),
+    extent(){
+        let selectedTheme = this.themes[this.selectedThemeId];
+
+        if (selectedTheme.extent.top && selectedTheme.extent.left && selectedTheme.extent.bottom && selectedTheme.extent.right)
+            return selectedTheme.extent
+        else 
+            return undefined;
+    },
+    customIcon() {
         return L.icon({
             iconUrl: require('../assets/custom-marker.svg'),
             shadowUrl: require('../assets/custom-marker-shadow.png'),
@@ -111,10 +122,16 @@ export default {
 
         if (value && this.getMarkerById(value))
             this.activateMessage(this.getMarkerById(value), true)
+    },
+    extent(value, oldValue){
+        if (value!=oldValue)
+            this.setExtent(value);
     }
   },
   mounted(){
     let that = this;
+
+    this.setExtent(this.extent);
 
     if(that.activeMessage){
         this.panToMarker(that.activeMessage);
@@ -177,6 +194,17 @@ export default {
                 if (geojsonLayers[layer].feature.id == id)
                     return geojsonLayers[layer]
             }
+        }
+    },
+    setExtent(extent){
+        if (extent){
+            let southWest = L.latLng(extent.bottom, extent.left),
+                northEast = L.latLng(extent.top, extent.right),
+                bounds = L.latLngBounds(southWest, northEast);
+
+            this.mapObject.fitBounds(bounds,{
+                paddingBottomRight:[200, 0]
+            });
         }
     }
   }
