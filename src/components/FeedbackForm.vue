@@ -163,7 +163,7 @@ export default {
         },
         onThemeChanged(value){
           let selectedThemeId = this.themes.findIndex((theme) => { return theme.name === value } );
-          this.$store.commit("selectTheme", selectedThemeId);
+          this.$store.dispatch("selectTheme", selectedThemeId);
         },
         setFiles(files){
           this.$set(this.formValues, 'file', files)

@@ -4,8 +4,11 @@ import Vue from 'vue'
 import App from './App'
 import router from './js/router'
 import store from './js/store'
+import { sync } from 'vuex-router-sync'
 
 Vue.config.productionTip = false
+
+const unsync = sync(store, router)
 
 /* eslint-disable no-new */
 new Vue({

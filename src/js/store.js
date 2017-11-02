@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 Vue.use(Vuex)
 
 import {config} from "./config"
+import router from "./router"
 import axios from 'axios'
 
 const debug = process.env.NODE_ENV !== 'production'
@@ -11,6 +12,7 @@ export default new Vuex.Store({
     state:{
         themes: [],
         selectedThemeId: undefined,
+        messageId: undefined,
         user: { 
             uid: undefined,
             name: undefined
@@ -23,9 +25,9 @@ export default new Vuex.Store({
     },
     mutations:{
         setData(state, data){
-            state.themes = data
+            state.themes = data;
         },
-        selectTheme(state, id){
+        setSelectedThemeId(state, id){
             state.selectedThemeId = id;
         },
         setMessages(state, params){
@@ -42,11 +44,22 @@ export default new Vuex.Store({
         }
     },
     actions:{
+        initRoutesData({state, commit, dispatch}){
+            dispatch('selectTheme', state.route.params.themeId);
+        },
+        checkRoutes({state, dispatch}){
+            if (state.selectedThemeId!=undefined && !state.themes[state.selectedThemeId] && state.themes.length){
+                router.push("/map");
+            } else if (state.themes[state.selectedThemeId]) {
+                dispatch('updateAttachements', state.selectedThemeId);
+            }
+        },
         initStoreData({dispatch, commit}){
             dispatch('getThemes')
             .then((themes) => {
                 dispatch('getLayers', themes).then((themes) => {
                     commit('setData', themes);
+                    dispatch('checkRoutes');
                 });
             });
             if (localStorage.getItem("clientId")){
@@ -297,7 +310,11 @@ export default new Vuex.Store({
             .catch(e => {
                 console.error(e)
             }); 
-        }
+        },
+        selectTheme({commit, dispatch}, id){
+            commit('setSelectedThemeId', id);
+            dispatch('checkRoutes');
+        },
     },
     strict: debug
 })

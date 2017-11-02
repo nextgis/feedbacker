@@ -27,10 +27,13 @@ export default {
           if (!this.user.uid && to.query.feedback && from.path!='/signin'){
               this.$router.push('/signin');
           }
+
+          this.initRoutesData();
       }
   },
   mounted(){
     this.initStoreData();
+    this.initRoutesData();
   },
   methods: {    
     showFeedbackForm(){
@@ -39,7 +42,8 @@ export default {
         });  
     },
     ...mapActions([ 
-        "initStoreData"
+        "initStoreData",
+        "initRoutesData"
     ])
   }
 }

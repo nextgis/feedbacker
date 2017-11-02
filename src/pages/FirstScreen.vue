@@ -37,7 +37,7 @@ export default {
         'themes'
     ]),
     mounted(){
-        this.$store.commit('selectTheme', undefined);
+        this.$store.dispatch('selectTheme', undefined);
     }
 }
 </script>

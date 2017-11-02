@@ -91,19 +91,8 @@ export default {
       }
     },
   },
-  watch:{
-    selectedThemeId(value){
-      if (this.themes.length && this.themes[this.selectedThemeId].editableLayer.geojson.features.length && !("attachments" in this.themes[this.selectedThemeId].editableLayer.geojson.features[0])) 
-        this.$store.dispatch('updateAttachements', value);
-    },
-    themes(value, oldValue){
-      if (!oldValue.length) 
-        this.$store.dispatch('updateAttachements', this.themeId);
-    },
-  },
   mounted(){
-      var that = this;      
-      if (this.themeId) this.$store.commit('selectTheme', this.themeId);
+      var that = this;
 
       bus.$on("themes:themeClicked", () => {      
         that.themesIsShown = false;
