@@ -64,7 +64,7 @@ export default {
             <path d='M165.4,24.5c10-0.8,20-1.6,30-2.5c1.9-0.2,1.9-3.2,0-3c-10,0.8-20,1.6-30,2.5C163.5,21.6,163.5,24.6,165.4,24.5 L165.4,24.5z'/>\
         </svg>";
 
-        document.body.append(this.arrow)
+        document.body.appendChild(this.arrow)
 
     },
     showArrow(){

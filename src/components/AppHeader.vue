@@ -64,6 +64,7 @@ export default {
         line-height: $header-height;
         left: $spacers.three.x;
         top:0;
+        white-space: nowrap;
   
         @media $display-breakpoints.xs-only
             left: $grid-gutters.xl;

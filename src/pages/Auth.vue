@@ -1,6 +1,6 @@
 <template>
-    <v-layout class="auth" row wrap justify-center align-center ma-0>
-        <v-container class="auth__inner">
+    <v-layout class="auth ma-0" row wrap justify-center align-center>
+        <v-container class="auth__inner ma-0">
             <router-link class="nolink" to="/"><img class="auth__logo" src="../assets/wwf_logo.svg" alt="Сбор общественных мнений"></router-link>
             <router-link class="nolink" to="/"><h1 class="auth__title">Сбор общественных мнений</h1></router-link>
             <form name="auth-form" @submit.prevent="submitForm()">
@@ -83,7 +83,8 @@ export default {
     @require '~vuetify/src/stylus/trumps/_spacing.styl'
 
     .auth
-        min-height: 100%;
+        min-height: 600px;
+        height: 100%;
         background-color: $theme.primary-lighter;
         color: #fff;
 
