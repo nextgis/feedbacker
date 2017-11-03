@@ -42,5 +42,7 @@ export default {
   z-index: 1000;
   max-height: 100%;
   overflow: auto;
+  padding-bottom: 16px;
+  width: 400px;
 
 </style>

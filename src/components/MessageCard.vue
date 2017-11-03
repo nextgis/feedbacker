@@ -76,7 +76,6 @@ export default {
     background-color: #fff;
     box-shadow: none;
     margin: 12px 16px;
-    width: 360px;
     cursor: pointer;
     elevationTransition();
     min-height: 108px;
