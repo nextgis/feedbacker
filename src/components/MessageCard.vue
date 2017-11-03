@@ -11,7 +11,7 @@
             <div class="message-card__text">{{ message.properties.text }}</div>
             <div class="message-card__meta">
                 <span class="message-card__meta-item">{{ message.properties.date }}</span>
-                <span class="message-card__meta-item"> <v-icon>comment</v-icon> {{ message.properties.comments || 0 }}</span>
+                <!-- <span class="message-card__meta-item"> <v-icon>comment</v-icon> {{ message.properties.comments || 0 }}</span> -->
                 <span class="message-card__meta-item">{{ message.properties.type }}</span>
             </div>
             <div v-if="message.attachments"
