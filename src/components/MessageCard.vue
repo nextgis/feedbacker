@@ -79,6 +79,10 @@ export default {
     width: 360px;
     cursor: pointer;
     elevationTransition();
+    min-height: 108px;
+
+    .container
+      padding-bottom: 40px
 
     &--withImage .container
       padding-right: 60px
@@ -103,9 +107,10 @@ export default {
         overflow: hidden
 
     &__meta
+        position: absolute;
         @extend .caption
         color: $grey.lighten-1
-        margin-top: $spacers.two.y
+        bottom: 13px;
 
     &__meta-item
         margin-left: $spacers.three.x
@@ -128,13 +133,13 @@ export default {
       background-position: center center
       background-color: #f5f5f5
       right: -8px
-      top: 12px
+      top: 8px
       elevation(1)
 
     &__menu
         position: absolute;
         right: 8px;
-        bottom: 12px;
+        bottom: 8px;
 
         .btn--icon .icon
             color: $grey.lighten-1;
