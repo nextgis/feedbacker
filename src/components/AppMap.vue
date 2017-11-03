@@ -24,9 +24,7 @@ import Vue from "vue"
 import {mapState} from "vuex"
 import L from "leaflet"
 import "leaflet-editable"
-import Vue2Leaflet from "vue2-leaflet/dist/vue2-leaflet.js"
-import VGeojsonLayer from "vue2-leaflet/src/components/GeoJSON"
-import VTilelayer from "vue2-leaflet/src/components/TileLayer"
+import Vue2Leaflet from "vue2-leaflet"
 import {coordToLatlng} from "../js/utilities"
 import "../js/extendLeaflet"
 import axios from 'axios'
@@ -39,10 +37,9 @@ export default {
   ],
   components: {
     'v-map': Vue2Leaflet.Map,
-    //'v-tilelayer': Vue2Leaflet.TileLayer,
-    'v-marker': Vue2Leaflet.Marker,
-    VGeojsonLayer,
-    VTilelayer
+    'v-tilelayer': Vue2Leaflet.TileLayer,
+    'v-geojson-layer': Vue2Leaflet.GeoJSON,
+    'v-marker': Vue2Leaflet.Marker
   },
   data () {
     let that = this;
