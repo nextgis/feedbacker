@@ -85,6 +85,9 @@ export default {
         else 
             return undefined;
     },
+    mapPaddingRight(){
+        return this.messageGeojson.features.length ? 400 : 0;
+    },
     customIcon() {
         return L.icon({
             iconUrl: require('../assets/custom-marker.svg'),
@@ -126,6 +129,14 @@ export default {
     extent(value, oldValue){
         if (value!=oldValue)
             this.setExtent(value);
+    },
+    messageGeojson(value, oldValue){
+        let messagesCount = value.features.length,
+            messagesCountOld = oldValue.features.length;           
+
+        if ((!messagesCount || !messagesCountOld) && messagesCount!=messagesCountOld){
+            this.setExtent(this.extent);
+        }
     }
   },
   mounted(){
@@ -203,7 +214,7 @@ export default {
                 bounds = L.latLngBounds(southWest, northEast);
 
             this.mapObject.fitBounds(bounds,{
-                paddingBottomRight:[200, 0]
+                paddingBottomRight:[this.mapPaddingRight, 0]
             });
         }
     }
