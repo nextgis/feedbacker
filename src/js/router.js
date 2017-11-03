@@ -37,7 +37,8 @@ const routes = [
             },
         },
       ]
-    }
+    },
+    { path: '/index.html', redirect: '/' }
 ] 
 
 export default new VueRouter({ mode: 'history', 
