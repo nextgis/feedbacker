@@ -233,26 +233,41 @@ export default {
 
           return new Promise(function(resolve, reject){
             if (that.formValues.file.length){
-              axios.put(config.nextgiscomUrl + "/api/component/file_upload/upload", that.formValues.file[0].file,{
+              let files = that.formValues.file.map( item => { return item.file }),
+                  formData = new FormData();
+
+              files.forEach(function(file) {
+                formData.append("files[]", file);
+              });
+
+              axios.post(config.nextgiscomUrl + "/api/component/file_upload/upload", formData, {
                 headers: {
                   "Authorization": "Basic " + localStorage.getItem("clientId")
                 }
               })
               .then(function (res) {
-                let attach_data = {}
-                attach_data.file_upload = res.data
+                  let uplodedFiles = res.data.upload_meta,
+                      successCounter = 0;
 
-                axios.post(config.nextgiscomUrl + "/api/resource/" + that.editableLayer.resource.id + "/feature/" + featureId + "/attachment/", JSON.stringify(attach_data),{
-                  headers: {
-                    "Authorization": "Basic " + localStorage.getItem("clientId")
-                  }
-                })
-                .then(function (res) {
-                  resolve(res)
-                })
-                .catch(function (err) {
-                  reject(err)
-                });
+                  uplodedFiles.forEach(function(file) {
+
+                    let attach_data = {};
+                    attach_data.file_upload = file;
+
+                    axios.post(config.nextgiscomUrl + "/api/resource/" + that.editableLayer.resource.id + "/feature/" + featureId + "/attachment/", JSON.stringify(attach_data),{
+                      headers: {
+                        "Authorization": "Basic " + localStorage.getItem("clientId")
+                      }
+                    })
+                    .then(function (res) {
+                      successCounter ++;
+                      if (successCounter === uplodedFiles.length) resolve(res);
+                    })                      
+                    .catch(function (err) {
+                      reject(err)
+                    });
+
+                  });  
               })
               .catch(function (err) {
                 reject(err)

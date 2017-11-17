@@ -10,6 +10,7 @@ const debug = process.env.NODE_ENV !== 'production'
 
 export default new Vuex.Store({
     state:{
+        dataLoaded: false,
         themes: [],
         selectedThemeId: undefined,
         messageId: undefined,
@@ -26,6 +27,7 @@ export default new Vuex.Store({
     mutations:{
         setData(state, data){
             state.themes = data;
+            state.dataLoaded = true;
         },
         setSelectedThemeId(state, id){
             state.selectedThemeId = id;
@@ -45,13 +47,10 @@ export default new Vuex.Store({
     },
     actions:{
         initRoutesData({state, commit, dispatch}){
-            dispatch('selectTheme', state.route.params.themeId);
-        },
-        checkRoutes({state, dispatch}){
-            if (state.selectedThemeId!=undefined && !state.themes[state.selectedThemeId] && state.themes.length){
-                router.push("/map");
-            } else if (state.themes[state.selectedThemeId]) {
-                dispatch('updateAttachements', state.selectedThemeId);
+            if (state.selectedThemeId != state.route.params.themeId){
+                if (!state.themes[ state.route.params.themeId] && state.route.params.themeId )
+                    router.push("/map");
+                dispatch('selectTheme', state.route.params.themeId);
             }
         },
         initStoreData({dispatch, commit}){
@@ -59,7 +58,7 @@ export default new Vuex.Store({
             .then((themes) => {
                 dispatch('getLayers', themes).then((themes) => {
                     commit('setData', themes);
-                    dispatch('checkRoutes');
+                    dispatch('initRoutesData');
                 });
             });
             if (localStorage.getItem("clientId")){
@@ -258,14 +257,16 @@ export default new Vuex.Store({
                         axios.get(featureApiUrl)
                         .then(function(response){
                             let attachment,
-                                imgUrl;
-
-                            if (response.data.extensions.attachment && response.data.extensions.attachment[0].is_image){
-                                attachment = response.data.extensions.attachment[0],
-                                imgUrl = featureApiUrl + "/attachment/" + attachment.id + "/image"
-                              //that.$set(feature, 'attachments', imgUrl)
-                            }
-                            resolve(imgUrl);
+                                imgUrls = [];
+                            if (response.data.extensions.attachment){
+                                response.data.extensions.attachment.forEach(attachment  => {
+                                    if (attachment.is_image){  
+                                        imgUrls.push(featureApiUrl + "/attachment/" + attachment.id + "/image");
+                                    }       
+                                });
+                            }   
+                            
+                            resolve(imgUrls);
                         })
                         .catch(e => {
                             reject(e)
@@ -311,9 +312,10 @@ export default new Vuex.Store({
                 console.error(e)
             }); 
         },
-        selectTheme({commit, dispatch}, id){
+        selectTheme({state, commit, dispatch}, id){
             commit('setSelectedThemeId', id);
-            dispatch('checkRoutes');
+            if (state.themes[id])
+                dispatch('updateAttachements', id);
         },
     },
     strict: debug

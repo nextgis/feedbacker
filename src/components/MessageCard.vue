@@ -14,9 +14,11 @@
                 <!-- <span class="message-card__meta-item"> <v-icon>comment</v-icon> {{ message.properties.comments || 0 }}</span> -->
                 <span class="message-card__meta-item">{{ message.properties.type }}</span>
             </div>
-            <div v-if="message.attachments"
+            <div v-if="message.attachments && message.attachments.length"
                  class="message-card__photo"
-                 :style="'background-image: url(' + message.attachments + '?size=200x200'">
+                 :style="'background-image: url(' + message.attachments[0] + '?size=200x200'">
+                 <span v-if="message.attachments.length > 1"
+                       class="message-card__photo-num"> {{ message.attachments.length }} фото</span>
             </div>
             <v-menu class="message-card__menu" bottom left 
                     v-if="user && user.uid === message.properties.author_id">
@@ -134,6 +136,15 @@ export default {
       right: -8px
       top: 8px
       elevation(1)
+
+    &__photo-num
+      position: absolute;
+      width: 100%;
+      text-align: center;
+      background: rgba(0, 0, 0, 0.3);
+      color: #fff;
+      bottom: 0;
+      @extend .caption;
 
     &__menu
         position: absolute;

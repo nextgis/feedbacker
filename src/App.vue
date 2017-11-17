@@ -1,6 +1,9 @@
 <template>
   <v-app>
-    <router-view ></router-view>
+    <router-view v-if="dataLoaded"></router-view>
+    <template v-else>
+      <v-progress-circular indeterminate class="loader primary--text" :size="48"></v-progress-circular>
+    </template>
   </v-app>
 </template>
 
@@ -20,7 +23,8 @@ export default {
   computed: mapState([
     'user',
     'themes',
-    'selectedThemeId'
+    'selectedThemeId',
+    'dataLoaded'
   ]),
   watch: {
       '$route' (to, from) {
@@ -32,8 +36,8 @@ export default {
       }
   },
   mounted(){
+    let that = this;
     this.initStoreData();
-    this.initRoutesData();
   },
   methods: {    
     showFeedbackForm(){
@@ -52,4 +56,12 @@ export default {
 <style lang="styl">
   @import "./styl/variables"
   @import "./styl/vuetify"
+
+  .loader
+    position: fixed;
+    top:0;
+    bottom:0;
+    left:0;
+    right:0;
+    margin: auto;
 </style>

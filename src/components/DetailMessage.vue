@@ -14,9 +14,12 @@
                 <div class="deatil-message__text">
                     {{message ? message.properties.text : "" }}
                 </div>
-                <div v-if="message && message.attachments" class="detail-message__photo">
-                    <img class="detail-message__pic" :src="message.attachments + '?size=400x800'" alt="">
-                </div>
+                <template v-if="message && message.attachments">
+                    <div v-for="attachment in message.attachments"
+                         class="detail-message__photo">
+                        <img class="detail-message__pic" :src="attachment + '?size=400x800'" alt="">
+                    </div>
+                </template>    
             </v-container>
         </v-card>
         <v-menu class="detail-message__menu" bottom left 
@@ -136,7 +139,7 @@ export default {
         min-height: 50px
 
     &__pic
-        max-width: 100%
+        width: 100%
         display: block
 
     &--overflowed

@@ -52,7 +52,7 @@ export default {
         files: [],
         accept: 'image/png,image/gif,image/jpeg,image/webp',
         extensions: 'gif,jpg,jpeg,png,webp',
-        multiple: false,
+        multiple: true,
         directory: false,
         drop: true,
         dropElement: document.querySelector(".drop-active"),
