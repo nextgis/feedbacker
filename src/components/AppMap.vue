@@ -5,7 +5,7 @@
 
         <v-tilelayer url="https://korona.geog.uni-heidelberg.de/tiles/roads/x={x}&y={y}&z={z}"></v-tilelayer>
 
-        <v-tilelayer v-if="relatedLayersUrl"
+        <v-tilelayer v-show="relatedLayersUrl"
                      :url="relatedLayersUrl"
                      ref="relatedLayers"></v-tilelayer>
 
@@ -76,7 +76,6 @@ export default {
     ]),
     extent(){
         let selectedTheme = this.themes[this.selectedThemeId];
-
         if (selectedTheme.extent.top && selectedTheme.extent.left && selectedTheme.extent.bottom && selectedTheme.extent.right)
             return selectedTheme.extent
         else 
@@ -109,7 +108,7 @@ export default {
         return this.$refs.map.mapObject
     },
     relatedLayersUrl(){
-        return this.relatedLayers && this.relatedLayers.length ? config.nextgiscomUrl + "/api/component/render/tile?x={x}&y={y}&z={z}&resource=" + this.relatedLayers.toString() : undefined
+        return this.relatedLayers && this.relatedLayers.length ? config.nextgiscomUrl + "/api/component/render/tile?x={x}&y={y}&z={z}&resource=" + this.relatedLayers.toString() : '#'
     } 
   },
   watch: {
@@ -160,9 +159,9 @@ export default {
   },
   methods: {
     geojsonObject(ref){
-        return this.$refs[ref] ? this.$refs[ref].$geoJSON : undefined
+        return this.$refs[ref] ? this.$refs[ref].mapObject : undefined
     },
-    activateMessage(marker, withMoving){        
+    activateMessage(marker, withMoving){
         this.$router.push({ path: '/map/' + this.$store.state.selectedThemeId + "/" + marker.feature.id}); 
         this.panToMarker(this.activeMessage);
         marker.setIcon(this.customIconActive)
