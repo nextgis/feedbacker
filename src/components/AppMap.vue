@@ -76,7 +76,7 @@ export default {
     ]),
     extent(){
         let selectedTheme = this.themes[this.selectedThemeId];
-        if (selectedTheme.extent.top && selectedTheme.extent.left && selectedTheme.extent.bottom && selectedTheme.extent.right)
+        if (selectedTheme && selectedTheme.extent.top && selectedTheme.extent.left && selectedTheme.extent.bottom && selectedTheme.extent.right)
             return selectedTheme.extent
         else 
             return undefined;
@@ -123,12 +123,12 @@ export default {
             this.activateMessage(this.getMarkerById(value), true)
     },
     extent(value, oldValue){
-        if (value!=oldValue)
+        if (value && value!=oldValue)
             this.setExtent(value);
     },
     messageGeojson(value, oldValue){
-        let messagesCount = value.features.length,
-            messagesCountOld = oldValue.features.length;           
+        let messagesCount = value ? value.features.length:0,
+            messagesCountOld = oldValue ? oldValue.features.length: 0;
 
         if ((!messagesCount || !messagesCountOld) && messagesCount!=messagesCountOld){
             this.setExtent(this.extent);
@@ -138,7 +138,10 @@ export default {
   mounted(){
     let that = this;
 
-    this.setExtent(this.extent);
+    if (this.extent)
+        this.setExtent(this.extent);
+    else
+        this.mapObject.setView([64.539393, 40.516939], 5);
 
     if(that.activeMessage){
         this.panToMarker(that.activeMessage);
