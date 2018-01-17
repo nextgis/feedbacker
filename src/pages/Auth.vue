@@ -1,8 +1,13 @@
 <template>
     <v-layout class="auth ma-0" row wrap justify-center align-center>
         <v-container class="auth__inner ma-0">
-            <router-link class="nolink" to="/"><img class="auth__logo" src="../assets/wwf_logo.svg" alt="Сбор общественных мнений"></router-link>
-            <router-link class="nolink" to="/"><h1 class="auth__title">Сбор общественных мнений</h1></router-link>
+            <router-link class="nolink" to="/">
+                <img v-if="logoUrl" class="auth__logo" :src="logoUrl" alt="Feedbacker">
+                <div v-else class="auth__logo-wrapper">
+                    <img class="auth__logo" src="../assets/ng_logo.svg" alt="Feedbacker">
+                </div>    
+            </router-link>
+            <router-link class="nolink" to="/"><h1 class="auth__title">Feedbacker</h1></router-link>
             <form name="auth-form" @submit.prevent="submitForm()">
                 <v-text-field label="Логин" dark autofocus
                               v-model="login"
@@ -43,9 +48,15 @@ export default {
             error: undefined
         }
     },
-    computed: mapState([
-        "user"
-    ]),
+    computed:{ 
+        ...mapState([
+            "user"
+        ]),
+        logoUrl(){
+            let logoFile = config.logoFile;
+            return config.logoFile ? require('../assets/' + logoFile) : undefined;
+        }
+    },
     methods:{
         submitForm(){
             if (this.login && this.password){
@@ -79,13 +90,14 @@ export default {
     @require '../styl/variables'
     @require '~vuetify/src/stylus/elements/_typography.styl'
     @require '../styl/custom-vuetify/_typography'
-    @require '../styl/custom-vuetify/_transitions'
+    @require '../styl/custom-vuetify/_transitions'    
     @require '~vuetify/src/stylus/trumps/_spacing.styl'
+    @require '~vuetify/src/stylus/tools/_elevations'
 
     .auth
         min-height: 600px;
         height: 100%;
-        background-color: $theme.primary-lighter;
+        background-color: $theme.primary;
         color: #fff;
 
         @media (max-height: 600px)
@@ -102,8 +114,21 @@ export default {
             margin-bottom: 36px;
             margin-top: $spacers.three.y;
 
+        &__logo-wrapper
+            height: 44px;
+            width: 44px;
+            line-height: 44px;
+            border-radius: 4px;
+            text-align: center;
+            margin-left: auto;
+            margin-right: auto;
+            background-color: #fff;
+            elevation(2);
+
+            .auth__logo
+                vertical-align: middle;
         &__logo
-            height: 48px;
+            max-height: 48px;
 
         &__closer
             position: absolute;
@@ -129,5 +154,7 @@ export default {
             &:not(.input-group--single-line):not(.input-group--error) label,
             .input-group__input .icon
                 color: #fff;
+
+
         
 </style>

@@ -10,9 +10,9 @@
             <div class="message-card__title">{{ message.properties.title }}</div>
             <div class="message-card__text">{{ message.properties.text }}</div>
             <div class="message-card__meta">
-                <span class="message-card__meta-item">{{ message.properties.date }}</span>
+                <span class="message-card__meta-item" v-if="message.properties.date">{{ message.properties.date }}</span>
                 <!-- <span class="message-card__meta-item"> <v-icon>comment</v-icon> {{ message.properties.comments || 0 }}</span> -->
-                <span class="message-card__meta-item">{{ message.properties.type }}</span>
+                <span class="message-card__meta-item" v-if="message.properties.type">{{ message.properties.type }}</span>
             </div>
             <div v-if="message.attachments && message.attachments.length"
                  class="message-card__photo"
@@ -21,7 +21,7 @@
                        class="message-card__photo-num"> {{ message.attachments.length }} фото</span>
             </div>
             <v-menu class="message-card__menu" bottom left 
-                    v-if="user && user.uid === message.properties.author_id">
+                    v-if="user.uid && user.uid === message.properties.author_id">
                 <v-btn slot="activator" class="ma-0" icon small
                        ref="menuButton">
                     <v-icon class="icon--small">more_vert</v-icon>
