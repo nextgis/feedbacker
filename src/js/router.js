@@ -6,6 +6,7 @@ import BaseLayout from '../pages/BaseLayout'
 import MainContent from '../pages/MainContent'
 import FirstScreen from '../pages/FirstScreen'
 import Auth from '../pages/Auth'
+import NotFound from '../pages/NotFound'
 
 const routes = [
     { path: '/signin', component: Auth,
@@ -20,7 +21,9 @@ const routes = [
     { path: '/', component: BaseLayout,
       children: [
         { path: '/', component: FirstScreen, props: true },
-        { path: '/map/:themeId?/:messageId?', component: MainContent, props: true,
+        { path: '/map/:themeId?/:messageId?', 
+            component: MainContent,
+            props: true,
             beforeEnter: (to, from, next) => {
                 if (to.query.feedback){
                     if (!localStorage.getItem("clientId")){
@@ -36,9 +39,11 @@ const routes = [
                 }
             },
         },
+        { path: '*', component: NotFound  }
       ]
     },
-    { path: '/index.html', redirect: '/' }
+    { path: '/index.html', redirect: '/' },    
+    { path: '/404', component: NotFound }
 ] 
 
 export default new VueRouter({ mode: 'history', 

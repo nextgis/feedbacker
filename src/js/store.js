@@ -48,8 +48,20 @@ export default new Vuex.Store({
     actions:{
         initRoutesData({state, commit, dispatch}){
             if (state.selectedThemeId != state.route.params.themeId){
-                if (!state.themes[ state.route.params.themeId] && state.route.params.themeId )
-                    router.push("/map");
+                let themeNonexistent = state.route.params.themeId && !state.themes[ state.route.params.themeId];
+                if (themeNonexistent)
+                    router.push("/404");
+
+                if (!themeNonexistent){
+                    let activeMessage = state.themes[ state.route.params.themeId].editableLayer.geojson.features.filter( feature => {
+                        return parseInt(feature.id) == state.route.params.messageId;
+                    })[0],
+                    messageNonexistent = state.route.params.messageId && !activeMessage;
+
+                    if (messageNonexistent)
+                            router.push("/404");
+                }
+
                 dispatch('selectTheme', state.route.params.themeId);
             }
         },
