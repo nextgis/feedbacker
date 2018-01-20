@@ -47,5 +47,5 @@ const routes = [
 ] 
 
 export default new VueRouter({ mode: 'history', 
-    base: '/demo/ngw-feedbacker/dist/', 
+    base: '/demo/ngw-feedbacker/feedbacker/dist/', 
     routes })
