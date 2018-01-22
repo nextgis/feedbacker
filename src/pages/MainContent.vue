@@ -139,7 +139,7 @@ export default {
     width: 100%;
     left: 0;
     top:0;
-    bottom:0;
+    bottom: $footer-height;
     transition: margin-left $primary-transition;
 
     &--withForm

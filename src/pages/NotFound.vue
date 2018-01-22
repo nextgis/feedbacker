@@ -12,8 +12,6 @@ import {mapState} from "vuex"
 import axios from 'axios'
 
 export default {
-    components:{
-    },
     data () {
         return {
             login: undefined,

@@ -21,7 +21,6 @@
 <script>
 import { mapState } from 'vuex'
 import ThemeList from "../components/ThemeList"
-
 export default {
     components:{
         ThemeList
@@ -80,7 +79,7 @@ export default {
             width: 100%;
             left:0;
             top: 0;
-            bottom:0;
+            bottom: $footer-height;
             background-color: $theme.secondary;
             padding: $spacers.five.y $spacers.four.y
 

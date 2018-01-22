@@ -109,7 +109,7 @@ export default {
     },
     relatedLayersUrl(){
         return this.relatedLayers && this.relatedLayers.length ? config.nextgiscomUrl + "/api/component/render/tile?x={x}&y={y}&z={z}&resource=" + this.relatedLayers.toString() : '#'
-    } 
+    }
   },
   watch: {
     activeMessage(value, oldValue){
@@ -159,6 +159,11 @@ export default {
     this.mapObject.on('editable:drawing:commit editable:dragend', function (e) {
         bus.$emit("map:markerAdded", e.layer._latlng)
     });
+
+    this.setAttribution();
+  },
+  destroyed(){
+    this.removeAttribution();
   },
   methods: {
     geojsonObject(ref){
@@ -216,6 +221,14 @@ export default {
                 paddingBottomRight:[this.mapPaddingRight, 0]
             });
         }
+    },
+    setAttribution(){
+        let attributionControl = this.mapObject.attributionControl.getContainer();
+        attributionControl.style.display = "none";
+        this.$store.commit('setAttribution', attributionControl.innerHTML);
+    },
+    removeAttribution(){
+        this.$store.commit('setAttribution', "");
     }
   }
 }

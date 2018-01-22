@@ -4,14 +4,19 @@
         <div class="content">
             <router-view></router-view>
         </div>
+        <app-footer></app-footer>
     </div>    
 </template>
 
 <script>
 import AppHeader from '../components/AppHeader'
+import AppFooter from '../components/AppFooter'
 
 export default {
-    components:{ AppHeader },
+    components:{ 
+        AppHeader,
+        AppFooter
+    },
     props:[
     ],
     data () {

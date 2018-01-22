@@ -14,6 +14,7 @@ export default new Vuex.Store({
         themes: [],
         selectedThemeId: undefined,
         messageId: undefined,
+        attribution: "",
         user: { 
             uid: undefined,
             name: undefined
@@ -43,6 +44,9 @@ export default new Vuex.Store({
         setUserData(state, data){
             Vue.set(state.user, 'uid', data.id);
             Vue.set(state.user, 'name', data.display_name);
+        },
+        setAttribution(state, attribution){
+            state.attribution = attribution;
         }
     },
     actions:{
