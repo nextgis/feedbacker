@@ -52,17 +52,17 @@ export default new Vuex.Store({
     actions:{
         initRoutesData({state, commit, dispatch}){
             if (state.selectedThemeId != state.route.params.themeId){
-                let themeNonexistent = state.route.params.themeId && !state.themes[ state.route.params.themeId];
-                if (themeNonexistent)
+                let themeExist = state.route.params.themeId && state.themes[ state.route.params.themeId];
+                if (!themeExist && state.route.params.themeId!=undefined)
                     router.push("/404");
 
-                if (!themeNonexistent){
-                    let activeMessage = state.themes[ state.route.params.themeId].editableLayer.geojson.features.filter( feature => {
+                if (themeExist){
+                    let activeMessage = state.themes[state.route.params.themeId].editableLayer.geojson.features.filter( feature => {
                         return parseInt(feature.id) == state.route.params.messageId;
                     })[0],
-                    messageNonexistent = state.route.params.messageId && !activeMessage;
+                    messageExist = state.route.params.messageId && activeMessage;
 
-                    if (messageNonexistent)
+                    if (!messageExist && state.route.params.messageId!=undefined)
                             router.push("/404");
                 }
 
