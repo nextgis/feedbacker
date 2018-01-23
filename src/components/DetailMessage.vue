@@ -20,7 +20,8 @@
                         <img class="detail-message__pic" :src="attachment + '?size=400x800'" alt=""
                              @click="galleryIndex = id">
                     </div>
-                    <vue-gallery :images="message.attachments"
+                    <vue-gallery class="detail-message__gallery"
+                                 :images="message.attachments"
                                  :index="galleryIndex"
                                  @close="galleryIndex = null"
                                  ref="gallery"></vue-gallery>
@@ -166,55 +167,55 @@ export default {
         .detail-message__menu
             right: 16px;
 
-.blueimp-gallery
-    & > .close,
-    & > .next,
-    & > .prev
-        font-size:0;
-        border:0;
-        background: none;
-        padding:0;
+    &__gallery.blueimp-gallery
+        & > .close,
+        & > .next,
+        & > .prev
+            font-size:0;
+            border:0;
+            background: none;
+            padding:0;
 
-        &::before
-            position: absolute;
+            &::before
+                position: absolute;
+                top:0;
+                bottom:0;
+                left:0;
+                right:0;
+                margin: auto;
+                font-family: "Material Icons";
+                font-size: 42px;
+                width:42px;
+                height: 42px;
+                line-height: 42px;
+
+        & > .close        
+            width: 72px;
+            height: 72px;
+
+            &::before
+                content: "close"
+
+        & > .next,
+        & > .prev
             top:0;
             bottom:0;
-            left:0;
+            height:auto;
+            width: 50%;
+
+        & > .next
             right:0;
-            margin: auto;
-            font-family: "Material Icons";
-            font-size: 42px;
-            width:42px;
-            height: 42px;
-            line-height: 42px;
 
-    & > .close        
-        width: 72px;
-        height: 72px;
+            &::before
+                content: "arrow_forward";
+                left: auto;
+                right: 15px;
 
-        &::before
-            content: "close"
-
-    & > .next,
-    & > .prev
-        top:0;
-        bottom:0;
-        height:auto;
-        width: 50%;
-
-    & > .next
-        right:0;
-
-        &::before
-            content: "arrow_forward";
-            left: auto;
-            right: 15px;
-
-    & > .prev
-        left:0;
-        &::before
-            content: "arrow_back";
-            right: auto;
-            left: 15px;
+        & > .prev
+            left:0;
+            &::before
+                content: "arrow_back";
+                right: auto;
+                left: 15px;
 
 </style>
