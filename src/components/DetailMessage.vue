@@ -117,7 +117,7 @@ export default {
     &__inner
         width: 400px;
         box-shadow: none;        
-        max-height: "calc(100vh - 24px - %s - %s)" % ($header-height $map-toolbar-height);
+        max-height: "calc(100vh - 24px - %s - %s - %s)" % ($header-height $map-toolbar-height $footer-height);
         overflow: auto;
 
         .container
