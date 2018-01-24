@@ -81,6 +81,9 @@ export default {
         }
     }
   },
+  beforeDestroy(){
+    if (this.$refs.gallery) document.body.removeChild(this.$refs.gallery.$el);
+  },
   methods: {
     triggerClose(e){
         this.$router.push({path: '/map/' + this.$store.state.selectedThemeId});
