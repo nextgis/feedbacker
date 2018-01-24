@@ -1,66 +1,73 @@
 <template>
     <div class="feedback-form" @scroll="onFormScroll($event)">
-      <v-icon class="feedback-form__closer"
-              @click="triggerClose()">close</v-icon>
-        <h2 class="feedback-form__title">Оставить сообщение</h2>
-        <v-stepper v-model="feedbackStep" vertical>
+        <div class="feedback-form__header">
+            <v-icon class="feedback-form__closer"
+                  @click="triggerClose()">close</v-icon>
+            <h2 class="feedback-form__title">Оставить сообщение</h2>
+        </div>
+        <div class="feedback-form__main">
+            <v-stepper v-model="feedbackStep" vertical>
+              <v-stepper-step step="1" :complete="feedbackStep > 1">
+                <v-text-field class=""
+                  v-model = "formValues.title"
+                  label="Заголовок"
+                  single-line
+                  id="testing"
+                ></v-text-field>         
+                <v-select
+                  :items="themeList"
+                  v-model = "formValues.theme"
+                  label="Тема сообщения"
+                  bottom
+                  @input = "onThemeChanged($event)"
+                ></v-select>
+              </v-stepper-step>
+              <v-stepper-content step="1">
+              <v-btn primary :disabled="!formValues.theme || !formValues.title" 
+                             @click.native="feedbackStep = 2">Продолжить</v-btn>
+              </v-stepper-content>
 
-          <v-stepper-step step="1" :complete="feedbackStep > 1">
-            <v-text-field class=""
-              v-model = "formValues.title"
-              label="Заголовок"
-              single-line
-              id="testing"
-            ></v-text-field>         
-            <v-select
-              :items="themeList"
-              v-model = "formValues.theme"
-              label="Тема сообщения"
-              bottom
-              @input = "onThemeChanged($event)"
-            ></v-select>
-          </v-stepper-step>
-          <v-stepper-content step="1">
-          <v-btn primary :disabled="!formValues.theme || !formValues.title" 
-                         @click.native="feedbackStep = 2">Продолжить</v-btn>
-          </v-stepper-content>
+              <v-stepper-step step="2" :complete="feedbackStep > 2">
+                <drawer class="feedback-form__set-location"
+                        :latlng = "formValues.latlng"
+                        ref="drawer"></drawer>
+              </v-stepper-step>
+              <v-stepper-content step="2">
+              <v-btn primary :disabled="!formValues.latlng"
+                             @click.native="feedbackStep = 3">Продолжить</v-btn>
+              </v-stepper-content>
 
-          <v-stepper-step step="2" :complete="feedbackStep > 2">
-            <drawer class="feedback-form__set-location"
-                    :latlng = "formValues.latlng"
-                    ref="drawer"></drawer>
-          </v-stepper-step>
-          <v-stepper-content step="2">
-          <v-btn primary :disabled="!formValues.latlng"
-                         @click.native="feedbackStep = 3">Продолжить</v-btn>
-          </v-stepper-content>
+              <v-stepper-step step="3" :complete="feedbackStep > 3">
+                <v-text-field
+                  :disabled = "feedbackStep < 3"
+                  v-model = "formValues.text"
+                  label="Описание точки"
+                  placeholder="Расскажите, что вы знаете об этом объекте"
+                  rows="3"
+                  multi-line
+                ></v-text-field>
+              </v-stepper-step>
+              <v-stepper-content step="3">
+                <v-btn primary :disabled="!formValues.text"
+                               @click.native="feedbackStep = 4">Продолжить</v-btn>
+              </v-stepper-content>
 
-          <v-stepper-step step="3" :complete="feedbackStep > 3">
-            <v-text-field
-              :disabled = "feedbackStep < 3"
-              v-model = "formValues.text"
-              label="Описание точки"
-              placeholder="Расскажите, что вы знаете об этом объекте"
-              multi-line
-            ></v-text-field>
-          </v-stepper-step>
-          <v-stepper-content step="3">
-            <v-btn primary :disabled="!formValues.text"
-                           @click.native="feedbackStep = 4">Продолжить</v-btn>
-          </v-stepper-content>
-
-          <v-stepper-step step="4">
-            <file-uploader :disabled="feedbackStep<4"
-                           :value="formValues.file"
-                           @fileUploader:changed="setFiles"></file-uploader>
-          </v-stepper-step>
-        </v-stepper>
-        <v-btn primary large
-               :disabled="feedbackStep<4"
-               :class="{'accent': true, 'btn--faded': formInProgress}"
-               @click = "submitForm()">Отправить</v-btn>
-        <v-progress-circular indeterminate class="feedback-form__loader accent--text"
+              <v-stepper-step step="4">
+                <file-uploader :disabled="feedbackStep<4"
+                               :value="formValues.file"
+                               @fileUploader:changed="setFiles"></file-uploader>
+              </v-stepper-step>
+            </v-stepper>
+        </div>
+        <div class="feedback-form__footer">
+            <v-btn primary large
+                   :disabled="feedbackStep<4"
+                   class="feedback-form__btn"
+                   :class="{'accent': true, 'btn--faded': formInProgress}"
+                   @click = "submitForm()">Отправить</v-btn>
+            <v-progress-circular indeterminate class="feedback-form__loader accent--text"
                              v-if="formInProgress"></v-progress-circular>
+        </div>
     </div>
 </template>
 
@@ -285,6 +292,9 @@ export default {
 @require '../styl/custom-vuetify/_transitions'
 @require '~vuetify/src/stylus/trumps/_spacing.styl'
 
+$ff-header-height := 64px;
+$ff-footer-height := 72px;
+
 .feedback-form
     width: $feedback-form-width;
     position: absolute;
@@ -293,18 +303,51 @@ export default {
     bottom:0;
     z-index: 2;
     background-color: #fff;
-    padding: 24px;
-    overflow: auto; 
+    border-right: 1px solid $line-color;
+
+    &__header
+        position: absolute;
+        top:0;
+        width: 100%;
+        height: $ff-header-height;
+        padding: 0 24px;
+        background-color: $theme.secondary;
+        border-bottom: 1px solid $line-color;
+
+    &__main
+        padding: $ff-header-height 24px $ff-footer-height;
+        height: 100%;
+
+    &__footer
+        position: absolute;
+        bottom:0;
+        width: 100%;
+        height: $ff-footer-height;
+        padding: 0 24px;
+        background-color: $grey.lighten-4;
+        border-top: 1px solid $line-color;
 
     &__closer
-        position: fixed;
-        margin-left: $feedback-form-width - 65px;
-        margin-top: -12px;
-        cursor: pointer;
+        position: absolute;
+        top: -2px;
+        bottom: 0;
+        right: 16px;
+        margin-top: auto;
+        margin-bottom: auto;
         z-index:2;
+        height: 24px;
+        cursor: pointer;
 
     &__title
-        margin-bottom: $spacers.three.y
+        line-height: $ff-header-height !important;
+
+    &__btn
+        position: absolute;
+        left: 20px;
+        top: 0;
+        bottom: 0;
+        margin-top: auto;
+        margin-bottom: auto;
 
     &__loader
         position: relative;
@@ -314,6 +357,10 @@ export default {
     .stepper 
         margin-left: -24px;
         margin-right: -24px;
+        padding-top: 12px;
+        padding-bottom: 16px;
+        height: 100%;
+        overflow: auto;
 
         &__step
             align-items: flex-start
