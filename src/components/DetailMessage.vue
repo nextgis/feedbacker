@@ -7,7 +7,7 @@
                 ref="container">     
             <v-container ref="innerContainer" fluid>
                 <header class="detail-message__header">
-                    <div class="detail-message__theme">{{ message ? message.properties.theme : "" }}, {{ message ? message.properties.type : ""  }}</div>
+                    <div class="detail-message__theme">{{ message ? message.properties.theme : "" }}</div>
                     <h2 class="detail-message__title">{{ message ? message.properties.title : "" }}</h2>
                     <div class="detail-message__meta">{{ message ? message.properties.date : ""  }}, {{ message ? message.properties.author : "" }}</div>
                 </header>
