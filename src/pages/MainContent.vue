@@ -78,11 +78,9 @@ export default {
     ...mapState([
         'themes',
         'selectedThemeId',
-        'user'
-    ]), 
-    formActive(){
-      return ((this.$route.query.feedback) && this.user.uid) || false;
-    },
+        'user',
+        'formActive'
+    ]),
     selectedTheme(){
       if (this.selectedThemeId!=undefined){
         return this.themes[this.selectedThemeId];

@@ -9,7 +9,7 @@
             <user-avatar v-else :userName="user.name"></user-avatar>
             <v-btn primary dark large
                    class="header__feedback-button feedback-button"
-                   :to="feedbackUrl">Добавить точку</v-btn>
+                   @click="goToFeedback()">Добавить точку</v-btn>
         </div>
     </header>
 </template>
@@ -23,12 +23,18 @@ export default {
         UserAvatar
     },
     computed:{
-        feedbackUrl(){
-            return this.$store.state.selectedThemeId!=undefined ? "/map/" + this.$store.state.selectedThemeId + "?feedback=true" : "/map/?feedback=true"
-        },
         ...mapState([
             "user"
         ])
+    },
+    methods:{
+        goToFeedback(){
+            let feedbackPath = this.$route.params.themeId != undefined ? "/map/" + this.$route.params.themeId : "/map/";
+            this.$router.push({
+                path: feedbackPath,
+                query: Object.assign({}, this.$route.query, {feedback: true})
+            })
+        }
     }
 }
 </script>
@@ -121,4 +127,5 @@ export default {
     .btn
         margin-top: 0;
         margin-bottom:0;
+        display: inline-block;
 </style>

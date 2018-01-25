@@ -14,11 +14,14 @@ export default new Vuex.Store({
         themes: [],
         selectedThemeId: undefined,
         messageId: undefined,
+        searchQuery: undefined,
         attribution: "",
         user: { 
             uid: undefined,
             name: undefined
-        }
+        },
+        formActive: false,
+        previousRoute: null
     },
     getters:{
         getThemeById: (state) => (id) => {
@@ -47,10 +50,23 @@ export default new Vuex.Store({
         },
         setAttribution(state, attribution){
             state.attribution = attribution;
+        },
+        setSearchQuery(state, searchQuery){
+            state.searchQuery = searchQuery;
+        },
+        setFormActive(state, formActive){
+            state.formActive = formActive;
+        },
+        setPreviousRoute(state, route){
+            state.previousRoute = route
         }
     },
     actions:{
         initRoutesData({state, commit, dispatch}){
+            dispatch('initRoutesTheme');
+            dispatch('initRoutesFeedback');
+        },
+        initRoutesTheme({state, commit, dispatch}){
             if (state.selectedThemeId != state.route.params.themeId){
                 let themeExist = state.route.params.themeId && state.themes[ state.route.params.themeId];
                 if (!themeExist && state.route.params.themeId!=undefined)
@@ -67,6 +83,11 @@ export default new Vuex.Store({
                 }
 
                 dispatch('selectTheme', state.route.params.themeId);
+            }
+        },
+        initRoutesFeedback({state, commit, dispatch}){
+            if (state.route.query.feedback != state.formActive ){
+                commit("setFormActive", state.route.query.feedback)
             }
         },
         initStoreData({dispatch, commit}){

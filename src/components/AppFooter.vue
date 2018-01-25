@@ -38,9 +38,6 @@ export default {
     line-height: $footer-height;
     height: $footer-height;
 
-    &--withForm
-        left: $feedback-form-width;
-
     a
         color: #dedede;
 

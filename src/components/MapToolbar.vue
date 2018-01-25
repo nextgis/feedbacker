@@ -15,6 +15,8 @@
               full-width
               hide-details
               prepend-icon="search"
+              v-model="searchQueryComputed"
+              @input="onSearchInput"
             ></v-text-field>
           </v-flex>
         </v-layout>
@@ -23,19 +25,36 @@
 </template>
 
 <script>
+import {mapState} from "vuex"
 import bus from "../js/eventBus"
 import FakeSelect from "./ui/FakeSelect"
+import Vue from "vue"
 
 export default {
     components: { FakeSelect },   
     props:[ "selectedTheme" ],
-    data () {
-        return {
+    computed: {
+      ...mapState([
+          'searchQuery'
+      ]),
+      searchQueryComputed: {
+        get () { 
+          return this.searchQuery 
+        },
+        set (value) {
+          if (!value) value = undefined;
+          this.$store.commit('setSearchQuery', value) 
         }
+      }
     },
     methods: {
         onThemeSwitcherClicked(){
-            bus.$emit('maptoolbar:themeSwitcherClicked')
+          bus.$emit('maptoolbar:themeSwitcherClicked')
+        },
+        onSearchInput(value){
+          this.$router.push({ 
+            query: Object.assign({}, this.$route.query, { search: this.searchQueryComputed })
+          });
         }
     }
 }

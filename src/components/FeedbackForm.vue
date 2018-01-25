@@ -3,7 +3,7 @@
         <div class="feedback-form__header">
             <v-icon class="feedback-form__closer"
                   @click="triggerClose()">close</v-icon>
-            <h2 class="feedback-form__title">Оставить сообщение</h2>
+            <h2 class="feedback-form__title">Добавить точку</h2>
         </div>
         <div class="feedback-form__main">
             <v-stepper v-model="feedbackStep" vertical>
@@ -151,15 +151,9 @@ export default {
     },
     methods: {
         triggerClose(){
-          if (this.$store.state.selectedThemeId!=undefined){
-            if (this.$route.params.themeId==this.$store.state.selectedThemeId)
-              this.$router.push(this.$route.path)
-            else
-              this.$router.push("/map/" + this.$store.state.selectedThemeId)
-          }
-          else{
-            this.$router.push("/");
-          }
+          this.$router.push({ 
+            query: Object.assign({}, this.$route.query, { feedback: undefined })
+          });
           this.resetForm();
         },
         onThemeChanged(value){

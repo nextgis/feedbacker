@@ -28,6 +28,8 @@ export default {
   ]),
   watch: {
       '$route' (to, from) {
+          this.$store.commit("setPreviousRoute", from); // store the previouse route
+
           if (!this.user.uid && to.query.feedback && from.path!='/signin'){
               this.$router.push('/signin');
           }

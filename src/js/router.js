@@ -23,21 +23,7 @@ const routes = [
         { path: '/', component: FirstScreen, props: true },
         { path: '/map/:themeId?/:messageId?', 
             component: MainContent,
-            props: true,
-            beforeEnter: (to, from, next) => {
-                if (to.query.feedback){
-                    if (!localStorage.getItem("clientId")){
-                        if (from.path!='/signin')
-                            next('/signin')
-                        else
-                            next(to.path);
-                    } else {
-                        next();
-                    }
-                } else {
-                    next();
-                }
-            },
+            props: true
         },
         { path: '*', component: NotFound  }
       ]

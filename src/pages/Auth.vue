@@ -27,7 +27,7 @@
                        type="submit">Войти</v-btn>
             </form>           
         </v-container>
-        <v-icon large dark class="auth__closer" @click="$router.go(-1)">close</v-icon>
+        <v-icon large dark class="auth__closer" @click="close()">close</v-icon>
     </v-layout>     
     </v-container>
 </template>
@@ -50,7 +50,8 @@ export default {
     },
     computed:{ 
         ...mapState([
-            "user"
+            "user",
+            "previousRoute"
         ]),
         logoUrl(){
             let logoFile = config.logoFile;
@@ -66,7 +67,13 @@ export default {
                     if (userData.keyname != "guest"){
                         localStorage.setItem("clientId", clientId);
                         this.$store.commit('setUserData', userData);
-                        this.$router.go(-1);
+
+                        if (this.previousRoute){
+                            this.$router.push(this.previousRoute);
+                        } else {
+                            this.$router.push("/");
+                        }
+
                     } else {
                         this.error = "Логин и пароль неверны"
                     }
@@ -78,6 +85,17 @@ export default {
         },
         hideError(){
             this.error = undefined;
+        },
+        close(){
+            if (this.previousRoute){
+                this.$router.push({
+                    path: this.previousRoute.path,
+                    params: this.previousRoute.params,
+                    query: Object.assign({}, this.previousRoute.query, {feedback: undefined})
+                });
+            } else {
+                this.$router.push("/");
+            }
         }
     }
 }
