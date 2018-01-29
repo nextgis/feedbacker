@@ -20,6 +20,7 @@
 
 <script>
 import {mapState} from "vuex"
+import {mapGetters} from "vuex"
 import bus from "../js/eventBus"
 import MessageList from "../components/MessageList"
 import DetailMessage from "../components/DetailMessage"
@@ -45,9 +46,11 @@ export default {
         "themes",
         "selectedThemeId"
     ]),
-    messages: function(){
-      let selectedTheme = this.themes[this.selectedThemeId];
-      return selectedTheme && selectedTheme.editableLayer.geojson ? selectedTheme.editableLayer.geojson.features : []
+    ...mapGetters([
+        "filteredCurrentLayer"
+    ]),
+    messages(){
+      return this.filteredCurrentLayer ? this.filteredCurrentLayer.features : [];
     },
     activeMessage: function(){
       if (this.activeMessageId){

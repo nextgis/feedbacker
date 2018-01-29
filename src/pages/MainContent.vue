@@ -8,7 +8,7 @@
                  ></map-toolbar>
 
     <div class="main-content__map">
-      <app-map :messageGeojson = "selectedTheme!=undefined ? selectedTheme.editableLayer.geojson : undefined"
+      <app-map :messageGeojson = "selectedTheme!=undefined ? filteredCurrentLayer : undefined"
                :relatedLayers = "selectedTheme!=undefined ? selectedTheme.relatedLayers : undefined"
                :active-message = "messageId"
                ref="map"></app-map>
@@ -44,6 +44,7 @@ import bus from "../js/eventBus"
 import axios from "axios"
 import {config} from "../js/config"
 import { mapState } from 'vuex'
+import { mapGetters } from 'vuex'
 
 import AppMap from "../components/AppMap"
 import MapToolbar from "../components/MapToolbar"
@@ -80,6 +81,9 @@ export default {
         'selectedThemeId',
         'user',
         'formActive'
+    ]),
+    ...mapGetters([
+        'filteredCurrentLayer'
     ]),
     selectedTheme(){
       if (this.selectedThemeId!=undefined){

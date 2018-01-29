@@ -86,7 +86,10 @@ export default {
   },
   methods: {
     triggerClose(e){
-        this.$router.push({path: '/map/' + this.$store.state.selectedThemeId});
+        this.$router.push({
+            path: '/map/' + this.$store.state.selectedThemeId,
+            query: this.$route.query
+        });
     },
     checkCardOverflowing(){
         this.isCardOverflowed = (this.$refs.innerContainer.offsetHeight > this.$refs.container.offsetHeight)

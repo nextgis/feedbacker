@@ -8,7 +8,7 @@
            >
         <v-container fluid>
             <div class="message-card__title">{{ message.properties.title }}</div>
-            <div class="message-card__text">{{ message.properties.text }}</div>
+            <div class="message-card__text" v-html="highlightedText"></div>
             <div class="message-card__meta">
                 <span class="message-card__meta-item" v-if="message.properties.date">{{ message.properties.date }}</span>
                 <!-- <span class="message-card__meta-item"> <v-icon>comment</v-icon> {{ message.properties.comments || 0 }}</span> -->
@@ -48,14 +48,25 @@ export default {
     "message",
     "isActive"
   ],
-  computed: mapState([
-    "selectedThemeId",
-    "user"
-  ]),
+  computed: {
+    ...mapState([
+      "selectedThemeId",
+      "user",
+      "searchQuery"
+    ]),
+    highlightedText(){
+      let regex = new RegExp('\\' + this.searchQuery, "ig");
+      return this.searchQuery ? this.message.properties.text.replace(regex, "<span class='yellow'>" + this.searchQuery + "</span>") : this.message.properties.text;
+    }
+  },
   methods: {
     activateMessage(e){
-        if (!this.$refs.menuButton || (e.target != this.$refs.menuButton.$el && e.target.closest('.btn') != this.$refs.menuButton.$el))
-            this.$router.push({ path: '/map/' + this.$store.state.selectedThemeId + "/" + this.id});
+        if (!this.$refs.menuButton || (e.target != this.$refs.menuButton.$el && e.target.closest('.btn') != this.$refs.menuButton.$el)){
+            this.$router.push({ 
+              path: '/map/' + this.$store.state.selectedThemeId + "/" + this.id,
+              query: this.$route.query
+            });
+        }    
     },
     onDeleteClick(messageId){
         bus.$emit('messageCard:deleteClicked', messageId);

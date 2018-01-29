@@ -62,7 +62,7 @@ export default {
             onEachFeature: function (feature, layer) {
                 layer.on({
                     click: function(e){
-                        that.activateMessage(e.target, false)
+                        that.showMessage(e.target, false)
                     }
                 });
             }
@@ -117,22 +117,14 @@ export default {
             this.panToMarker(value);
 
         if (oldValue && this.getMarkerById(oldValue))
-            this.deactivateMessage(this.getMarkerById(oldValue))
+            this.unhighlightMessage(this.getMarkerById(oldValue))
 
         if (value && this.getMarkerById(value))
-            this.activateMessage(this.getMarkerById(value), true)
+            this.highlightMessage(this.getMarkerById(value), true)
     },
     extent(value, oldValue){
         if (value && value!=oldValue)
             this.setExtent(value);
-    },
-    messageGeojson(value, oldValue){
-        let messagesCount = value ? value.features.length:0,
-            messagesCountOld = oldValue ? oldValue.features.length: 0;
-
-        if ((!messagesCount || !messagesCountOld) && messagesCount!=messagesCountOld){
-            this.setExtent(this.extent);
-        }
     }
   },
   mounted(){
@@ -169,8 +161,14 @@ export default {
     geojsonObject(ref){
         return this.$refs[ref] ? this.$refs[ref].mapObject : undefined
     },
-    activateMessage(marker, withMoving){
-        this.$router.push({ path: '/map/' + this.$store.state.selectedThemeId + "/" + marker.feature.id}); 
+    showMessage(marker){
+        this.$router.push({ 
+            path: '/map/' + this.$store.state.selectedThemeId + "/" + marker.feature.id,
+            query: this.$route.query
+        });   
+        this.highlightMessage(marker)
+    },
+    highlightMessage(marker){
         this.panToMarker(this.activeMessage);
         marker.setIcon(this.customIconActive)
               .setZIndexOffset(1000);    
@@ -180,7 +178,7 @@ export default {
         if (marker)
             this.mapObject.panToOffset(marker._latlng, this.mapOptions.offset);
     },
-    deactivateMessage(marker){
+    unhighlightMessage(marker){
         marker.setIcon(this.customIcon)
               .setZIndexOffset(0)
     },

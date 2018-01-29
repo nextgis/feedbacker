@@ -18,10 +18,6 @@ export default {
   ],
   components: {
     MessageCard
-  },
-  data () {
-    return {
-    }
   }
 }
 </script>

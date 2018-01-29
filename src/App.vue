@@ -24,7 +24,8 @@ export default {
     'user',
     'themes',
     'selectedThemeId',
-    'dataLoaded'
+    'dataLoaded',
+    'searchQuery'
   ]),
   watch: {
       '$route' (to, from) {

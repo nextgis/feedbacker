@@ -26,6 +26,19 @@ export default new Vuex.Store({
     getters:{
         getThemeById: (state) => (id) => {
             return state.themes[id]
+        },
+        currentLayer: (state) => {
+            return state.themes[state.selectedThemeId] ? state.themes[state.selectedThemeId].editableLayer.geojson : undefined
+        },
+        filteredCurrentLayer: (state, getters) => {
+            let filteredLayer = Object.assign({}, getters.currentLayer);
+            if (state.searchQuery && getters.currentLayer) {
+                filteredLayer.features = getters.currentLayer.features.filter((feature) => {
+                    let totalString = (feature.properties.title + " " + feature.properties.text + " " + feature.properties.author).toLowerCase();
+                    return totalString.indexOf(state.searchQuery.toLowerCase()) > -1;
+                });
+            }
+            return filteredLayer;
         }
     },
     mutations:{
@@ -65,6 +78,7 @@ export default new Vuex.Store({
         initRoutesData({state, commit, dispatch}){
             dispatch('initRoutesTheme');
             dispatch('initRoutesFeedback');
+            dispatch('initRoutesSearch');
         },
         initRoutesTheme({state, commit, dispatch}){
             if (state.selectedThemeId != state.route.params.themeId){
@@ -88,6 +102,11 @@ export default new Vuex.Store({
         initRoutesFeedback({state, commit, dispatch}){
             if (state.route.query.feedback != state.formActive ){
                 commit("setFormActive", state.route.query.feedback)
+            }
+        },
+        initRoutesSearch({state, commit, dispatch}){
+            if (state.route.query.search != state.searchQuery ){
+                commit("setSearchQuery", state.route.query.search)
             }
         },
         initStoreData({dispatch, commit}){

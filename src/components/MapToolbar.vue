@@ -35,7 +35,8 @@ export default {
     props:[ "selectedTheme" ],
     computed: {
       ...mapState([
-          'searchQuery'
+          'searchQuery',
+          'selectedThemeId'
       ]),
       searchQueryComputed: {
         get () { 
@@ -52,7 +53,9 @@ export default {
           bus.$emit('maptoolbar:themeSwitcherClicked')
         },
         onSearchInput(value){
-          this.$router.push({ 
+          let nextPath = this.$route.params.messageId ? "/map/" + this.selectedThemeId : this.$route.path;
+          this.$router.push({
+            path: nextPath,
             query: Object.assign({}, this.$route.query, { search: this.searchQueryComputed })
           });
         }
