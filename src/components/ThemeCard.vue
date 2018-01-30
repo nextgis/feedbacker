@@ -1,7 +1,7 @@
 <template>
     <v-card class="theme-card"
             height = "136px"
-            @click = "activateTheme($event)">
+            @click.native = "activateTheme($event)">
         <v-container fill-height fluid>
             <div class="theme-card__title">{{ theme }}</div>
             <div class="theme-card__meta" align-end flexbox>{{ messageCount }} сообщений</div>
@@ -45,7 +45,6 @@ export default {
 @require '~vuetify/src/stylus/tools/_elevations.styl'
 
 .theme-card
-    margin-bottom: $spacers.four.y;
     cursor: pointer;
     elevationTransition();
     box-shadow: none

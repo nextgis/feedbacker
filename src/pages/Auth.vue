@@ -23,7 +23,7 @@
                 <div v-if="error" class="auth__error">
                     {{ error }}
                 </div>
-                <v-btn light class="btn--xlarge mt-3"
+                <v-btn light depressed class="btn--xlarge mt-3"
                        type="submit">Войти</v-btn>
             </form>           
         </v-container>
@@ -114,7 +114,7 @@ export default {
 
     .auth
         min-height: 600px;
-        height: 100%;
+        height: 100vh;
         background-color: $theme.primary;
         color: #fff;
 

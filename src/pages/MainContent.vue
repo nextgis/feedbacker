@@ -21,7 +21,7 @@
 
     <transition name="fade">
         <div class="main-content__themes" v-if="themesIsShown">
-            <v-container>
+            <v-container fluid grid-list-md>
                 <theme-list class="first-screen__theme-list"
                             :themes="themes"></theme-list>
             </v-container>
@@ -29,8 +29,7 @@
     </transition>    
     <v-snackbar
       :timeout="snackbar.timeout"
-      :success="snackbar.mode === 'success'"
-      :error="snackbar.mode === 'error'"
+      :color="snackbar.color"
       v-model="snackbar.visibility"
     >
       {{ snackbar.text }}
@@ -69,7 +68,7 @@ export default {
       themesIsShown: false,
       snackbar: {
           visibility: false,
-          mode: undefined,
+          color: undefined,
           text: undefined,
           timeout: 3000
       }
@@ -117,9 +116,9 @@ export default {
     showThemes(){
         this.themesIsShown = !this.themesIsShown
     },
-    showSnackbar(mode, text){
+    showSnackbar(color, text){
         this.snackbar.visibility = true
-        this.snackbar.mode = mode
+        this.snackbar.color = color
         this.snackbar.text = text
     }
   }
@@ -171,10 +170,10 @@ export default {
         bottom:0;
         overflow:auto;
         background-color: $theme.secondary;
-        padding: $spacers.five.y $spacers.four.y
+        padding: 40px $spacers.four.y
 
         @media (max-width: $grid-breakpoints.lg)
-            padding-top: $spacers.four.y
+            padding-top: $spacers.three.y
 
         .container
             max-width: $grid-breakpoints.lg

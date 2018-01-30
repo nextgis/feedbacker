@@ -12,8 +12,7 @@
                   v-model = "formValues.title"
                   label="Заголовок"
                   single-line
-                  id="testing"
-                ></v-text-field>         
+                ></v-text-field>
                 <v-select
                   :items="themeList"
                   v-model = "formValues.theme"
@@ -23,7 +22,7 @@
                 ></v-select>
               </v-stepper-step>
               <v-stepper-content step="1">
-              <v-btn primary :disabled="!formValues.theme || !formValues.title" 
+              <v-btn color="primary" depressed :disabled="!formValues.theme || !formValues.title"
                              @click.native="feedbackStep = 2">Продолжить</v-btn>
               </v-stepper-content>
 
@@ -33,7 +32,7 @@
                         ref="drawer"></drawer>
               </v-stepper-step>
               <v-stepper-content step="2">
-              <v-btn primary :disabled="!formValues.latlng"
+              <v-btn color="primary" depressed :disabled="!formValues.latlng"
                              @click.native="feedbackStep = 3">Продолжить</v-btn>
               </v-stepper-content>
 
@@ -48,7 +47,7 @@
                 ></v-text-field>
               </v-stepper-step>
               <v-stepper-content step="3">
-                <v-btn primary :disabled="!formValues.text"
+                <v-btn color="primary" depressed :disabled="!formValues.text"
                                @click.native="feedbackStep = 4">Продолжить</v-btn>
               </v-stepper-content>
 
@@ -60,7 +59,7 @@
             </v-stepper>
         </div>
         <div class="feedback-form__footer">
-            <v-btn primary large
+            <v-btn color="primary" depressed large
                    :disabled="feedbackStep<4"
                    class="feedback-form__btn"
                    :class="{'accent': true, 'btn--faded': formInProgress}"
@@ -344,9 +343,9 @@ $ff-footer-height := 72px;
         margin-bottom: auto;
 
     &__loader
-        position: relative;
-        top: 12px;
-        margin-left: 16px;
+        position: absolute;
+        top: 18px;
+        left: 164px;
 
     .stepper 
         margin-left: -24px;
@@ -354,7 +353,8 @@ $ff-footer-height := 72px;
         padding-top: 12px;
         padding-bottom: 16px;
         height: 100%;
-        overflow: auto;
+        overflow-y: auto;
+        overflow-x: hidden;
 
         &__step
             align-items: flex-start
@@ -363,5 +363,9 @@ $ff-footer-height := 72px;
         &__label
             width: 85%
             line-height: 30px
+
+        .input-group--required label:after{
+          content: "";
+        }
 
 </style>

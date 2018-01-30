@@ -1,17 +1,16 @@
 .btn
     font-family: $heading-font-family
     button($material-light)
-    
-    &--raised
-        box-shadow: none
         
-    &--large
+    &.btn--large
+        font-size: $button-large-font-size
+        height: $button-large-height
         font-weight: 400
         
         .btn__content
             padding: 0 $spacers.four.x
             
-    &--xlarge
+    &.btn--xlarge
         font-size: 18px;
         height: 42px;
         font-weight: 700;
@@ -20,7 +19,7 @@
             padding-left: 32px
             padding-right: 32px
             
-    &--faded::after
+    &.btn--faded::after
         content: "";
         position: absolute;
         left: 0;
@@ -29,3 +28,7 @@
         bottom: 0;
         background: rgba(255, 255, 255, 0.4);
         border-radius: inherit;
+        
+.theme--light .btn.btn--disabled:not(.btn--icon):not(.btn--flat)
+    background-color: rgba(0,0,0,.12) !important
+    color: #fff !important

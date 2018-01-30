@@ -11,7 +11,17 @@
 import Vue from 'vue'
 
 import Vuetify from 'vuetify'
-Vue.use(Vuetify)
+Vue.use(Vuetify,{
+  theme: {
+    primary: '#006fbf',
+    accent: '#00b77e',
+    secondary: '#e5eef7',
+    info: '#2196f3',
+    warning: '#ffc107',
+    error: '#ff5252',
+    success: '#4caf50'
+  }
+})
 
 import {config} from "./js/config"
 import bus from "./js/eventBus"
@@ -57,7 +67,6 @@ export default {
 </script>
 
 <style lang="styl">
-  @import "./styl/variables"
   @import "./styl/vuetify"
 
   .loader

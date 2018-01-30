@@ -9,7 +9,7 @@
             </v-container>
         </div>
         <div class="first-screen__themes">   
-            <v-container fluid >
+            <v-container fluid grid-list-md>
                 <h1 class="first-screen__title">Выберите тему, чтобы оставить сообщение</h1>
                 <theme-list class="first-screen__theme-list"
                             :themes="themes"></theme-list>
@@ -68,7 +68,6 @@ export default {
             width: 100%;
             font-size: 16px;
             line-height: 1.5;
-            padding: $spacers.four.y
 
         &__greeting-text
             display: inline-block;
@@ -81,10 +80,10 @@ export default {
             top: 0;
             bottom: $footer-height;
             background-color: $theme.secondary;
-            padding: $spacers.five.y $spacers.four.y
+            padding: 40px $spacers.three.y
 
             @media (max-width: $grid-breakpoints.lg)
-                padding-top: $spacers.four.y
+                padding-top: $spacers.three.y
 
             .container
                 max-width: $grid-breakpoints.lg

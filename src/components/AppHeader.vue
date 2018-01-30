@@ -7,7 +7,7 @@
         <div class="header-actions">
             <router-link to="/signin" v-if="!user.name" class="header__login-link header__link" @click.prevent="$emit('header:loginLinkClicked')">Войти</router-link>
             <user-avatar v-else :userName="user.name"></user-avatar>
-            <v-btn primary dark large
+            <v-btn color="primary" dark large depressed
                    class="header__feedback-button feedback-button"
                    @click="goToFeedback()">Добавить точку</v-btn>
         </div>

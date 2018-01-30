@@ -5,13 +5,13 @@
         <message-list v-show="!activeMessageId || !activeMessage"
                       :messages = "messages"></message-list>
 
-        <v-dialog v-model="dialog.visibility">
+        <v-dialog v-model="dialog.visibility" width="290">
           <v-card>
             <v-card-text>Вы действительно хотите удалить сообщение «{{ dialog.message ? dialog.message.properties.title : ""}}»?</v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn @click.native="hideDialog()">Отмена</v-btn>
-              <v-btn primary @click.native="deleteMessage(dialog.message.id)">Удалить</v-btn>
+              <v-btn depressed @click.native="hideDialog()">Отмена</v-btn>
+              <v-btn color="primary" depressed @click.native="deleteMessage(dialog.message.id)">Удалить</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>

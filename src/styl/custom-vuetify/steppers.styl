@@ -2,6 +2,8 @@
     box-shadow: none;
     
     &__label
+        text-shadow: none !important;
+        
         .input-group--single-line:first-of-type
             margin-top: -18px
     
@@ -16,19 +18,19 @@
             
             .icon
                 color: #fff
-        &:not(.stepper__step--active):not(.stepper__step--complete)
+        &:not(.stepper__step--active):not(.stepper__step--complete):not(.stepper__step--error)
             .stepper__step__step
-                background: rgba(0,0,0,.1)
-                color: rgba(0,0,0,.48)
+                background: rgba(0,0,0,.1) !important
+                color: rgba(0,0,0,.48) !important
                 
         &--inactive
             .stepper__label
                 opacity:.48
         
         &--active
-            .stepper__step__step
-                background-color: $theme.secondary
-                color: $theme.primary
+            .stepper__step__step.primary
+                background-color: $theme.secondary !important
+                color: $theme.primary !important
     
 .stepper--vertical 
     .stepper
@@ -36,6 +38,7 @@
             margin-right: 24px
         &__content
             padding-left: 36px
+            border-left: 0 !important
             
         &__label
             .input-group:last-child
