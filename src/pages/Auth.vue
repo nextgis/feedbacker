@@ -61,7 +61,7 @@ export default {
     methods:{
         submitForm(){
             if (this.login && this.password){
-                let clientId = window.btoa(this.login + ":" + this.password); 
+                let clientId = window.btoa(unescape(encodeURIComponent(this.login + ":" + this.password))); 
                 this.$store.dispatch('getUserData', clientId)
                 .then((userData) => {
                     if (userData.keyname != "guest"){

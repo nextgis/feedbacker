@@ -247,4 +247,9 @@ export default {
     height: 100%
 }
 
+.application 
+    .leaflet-bar a, 
+    .leaflet-bar a:hover
+        color: black
+
 </style>

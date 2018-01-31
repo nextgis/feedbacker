@@ -4,7 +4,7 @@
             <v-flex class="app-footer__map-attribution" xs8 px-2
                     v-html="attribution"></v-flex>
             <v-flex class="app-footer__copyright" xs4 px-2 text-xs-right>
-                Разработано в <a href="https://nextgis.ru" target="_blank">NextGIS</a>
+                Разработано в <a class="app-footer__link" href="https://nextgis.ru" target="_blank">NextGIS</a>
             </v-flex>
         </v-layout>    
     </footer>
@@ -38,7 +38,8 @@ export default {
     line-height: $footer-height;
     height: $footer-height;
 
-    a
+    .app-footer__link,
+    .app-footer__map-attribution a
         color: #dedede;
 
 </style>

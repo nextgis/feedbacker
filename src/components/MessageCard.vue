@@ -7,7 +7,7 @@
             @click.native = "activateMessage($event)"
            >
         <v-container fluid>
-            <div class="message-card__title">{{ message.properties.title }}</div>
+            <div class="message-card__title" v-html="highlightedTitle"></div>
             <div class="message-card__text" v-html="highlightedText"></div>
             <div class="message-card__meta">
                 <span class="message-card__meta-item" v-if="message.properties.date">{{ message.properties.date }}</span>
@@ -54,12 +54,18 @@ export default {
       "user",
       "searchQuery"
     ]),
+    highlightedTitle(){
+      return this.getHighlightedString(this.message.properties.title);
+    },
     highlightedText(){
-      let regex = new RegExp('\\' + this.searchQuery, "ig");
-      return this.searchQuery ? this.message.properties.text.replace(regex, "<span class='yellow'>" + this.searchQuery + "</span>") : this.message.properties.text;
+      return this.getHighlightedString(this.message.properties.text);
     }
   },
   methods: {
+    getHighlightedString(string){
+      let regex = new RegExp('\\' + this.searchQuery, "ig");
+      return this.searchQuery ? string.replace(regex, "<span class='yellow'>" + this.searchQuery + "</span>") : string;
+    },
     activateMessage(e){
         if (!this.$refs.menuButton || (e.target != this.$refs.menuButton.$el && e.target.closest('.btn') != this.$refs.menuButton.$el)){
             this.$router.push({ 
