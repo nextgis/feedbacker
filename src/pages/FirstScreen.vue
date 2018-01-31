@@ -1,11 +1,8 @@
 <template>
-    <div class="first-screen" :class="{'first-screen--withGreeting':withGreeting}">
-        <div class="first-screen__greeting" v-if="withGreeting">
+    <div class="first-screen" :class="{'first-screen--withGreeting': (projectDescription && projectDescription.length)}">
+        <div class="first-screen__greeting" v-if="projectDescription && projectDescription.length">
             <v-container fluid>
-                <span class="first-screen__greeting-text">
-                    Мы&nbsp;&mdash; экологическое движение города N.<br>
-                    Помогаем людям жить более осознанно: питаться здоровой пищей, развиваться и&nbsp;не&nbsp;наносить вреда окружающей среде. Присоединяйся!
-                </span>
+                <span class="first-screen__greeting-text" v-html="projectDescription"></span>
             </v-container>
         </div>
         <div class="first-screen__themes">   
@@ -25,14 +22,9 @@ export default {
     components:{
         ThemeList
     },
-    data () {
-        return {
-          conditionalFillHeight: "fill-height",
-          withGreeting: true
-        }
-    },
     computed: mapState([
-        'themes'
+        'themes',
+        'projectDescription'
     ]),
     mounted(){
         this.$store.dispatch('selectTheme', undefined);

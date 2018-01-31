@@ -10,6 +10,8 @@ const debug = process.env.NODE_ENV !== 'production'
 
 export default new Vuex.Store({
     state:{
+        projectName: "Feedbacker",
+        projectDescription: undefined,
         dataLoaded: false,
         themes: [],
         selectedThemeId: undefined,
@@ -72,6 +74,12 @@ export default new Vuex.Store({
         },
         setPreviousRoute(state, route){
             state.previousRoute = route
+        },
+        setProjectName(state, name){
+            state.projectName = name;            
+        },
+        setProjectDescription(state, description){
+            state.projectDescription = description;            
         }
     },
     actions:{
@@ -110,6 +118,17 @@ export default new Vuex.Store({
             }
         },
         initStoreData({dispatch, commit}){
+            //init project data
+            axios.get(config.nextgiscomUrl + "/api/resource/" + config.baseResourceId)
+            .then(response => {
+                commit('setProjectName', response.data.resource.display_name);
+                commit('setProjectDescription', response.data.resource.description);
+            })
+            .catch(e => {
+                console.error(e);
+            })
+
+            // init themes
             dispatch('getThemes')
             .then((themes) => {
                 dispatch('getLayers', themes).then((themes) => {
@@ -117,6 +136,8 @@ export default new Vuex.Store({
                     dispatch('initRoutesData');
                 });
             });
+
+            // init user data
             if (localStorage.getItem("clientId")){
                 dispatch('getUserData', localStorage.getItem("clientId")).then((userData) =>{
                     if (userData.keyname != "guest")

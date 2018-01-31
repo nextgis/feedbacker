@@ -2,7 +2,7 @@
     <header class="header">
         <router-link class="header__title nolink" to="/">
             <img class="header__logo" src="../assets/ng_logo.svg" alt="Feedbacker">
-            <h1 class="header__title-text title">Feedbacker</h1>
+            <h1 class="header__title-text title">{{ projectName }}</h1>
         </router-link>
         <div class="header-actions">
             <router-link to="/signin" v-if="!user.name" class="header__login-link header__link" @click.prevent="$emit('header:loginLinkClicked')">Войти</router-link>
@@ -24,7 +24,8 @@ export default {
     },
     computed:{
         ...mapState([
-            "user"
+            "user",
+            "projectName"
         ])
     },
     methods:{
