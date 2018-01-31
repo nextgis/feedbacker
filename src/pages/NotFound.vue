@@ -11,48 +11,7 @@ import {config} from "../js/config"
 import {mapState} from "vuex"
 import axios from 'axios'
 
-export default {
-    data () {
-        return {
-            login: undefined,
-            password: undefined,
-            pwdVisibility: false,
-            error: undefined
-        }
-    },
-    computed:{ 
-        ...mapState([
-            "user"
-        ]),
-        logoUrl(){
-            let logoFile = config.logoFile;
-            return config.logoFile ? require('../assets/' + logoFile) : undefined;
-        }
-    },
-    methods:{
-        submitForm(){
-            if (this.login && this.password){
-                let clientId = window.btoa(this.login + ":" + this.password); 
-                this.$store.dispatch('getUserData', clientId)
-                .then((userData) => {
-                    if (userData.keyname != "guest"){
-                        localStorage.setItem("clientId", clientId);
-                        this.$store.commit('setUserData', userData);
-                        this.$router.go(-1);
-                    } else {
-                        this.error = "Логин и пароль неверны"
-                    }
-                })
-                .catch((e) => {
-                    this.error = e;
-                });
-            }
-        },
-        hideError(){
-            this.error = undefined;
-        }
-    }
-}
+export default {}
 </script>
 
 <style lang="styl">
