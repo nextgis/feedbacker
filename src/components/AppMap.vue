@@ -133,7 +133,7 @@ export default {
     if (this.extent)
         this.setExtent(this.extent);
     else
-        this.mapObject.setView([64.539393, 40.516939], 5);
+        this.mapObject.setView([61.698653, 99.505405], 3);
 
     if(that.activeMessage){
         this.panToMarker(that.activeMessage);
