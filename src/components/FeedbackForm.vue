@@ -5,13 +5,21 @@
                   @click="triggerClose()">close</v-icon>
             <h2 class="feedback-form__title">Добавить точку</h2>
         </div>
-        <div class="feedback-form__main">
+        <v-form class="feedback-form__main"
+                v-model="formValid"
+                ref="feedbackForm"
+                lazy-validation>
             <v-stepper v-model="feedbackStep" vertical>
-              <v-stepper-step step="1" :complete="feedbackStep > 1">
+              <v-stepper-step step="1" 
+                              :complete="feedbackStep > 1"
+                              :rules="[() => (!!formValues.title || formValues.title==undefined)]"
+                              >
                 <v-text-field class=""
                   v-model = "formValues.title"
                   label="Заголовок"
                   single-line
+                  :rules = "[() => !!formValues.title || 'Это обязательное поле']"
+                  ref="titleInput"
                 ></v-text-field>
                 <v-select
                   :items="themeList"
@@ -19,6 +27,7 @@
                   label="Тема сообщения"
                   bottom
                   @input = "onThemeChanged($event)"
+                  ref="themeInput"
                 ></v-select>
               </v-stepper-step>
               <v-stepper-content step="1">
@@ -36,7 +45,9 @@
                              @click.native="feedbackStep = 3">Продолжить</v-btn>
               </v-stepper-content>
 
-              <v-stepper-step step="3" :complete="feedbackStep > 3">
+              <v-stepper-step step="3"
+                              :complete="feedbackStep > 3"
+                              :rules="[() => (!!formValues.text || formValues.text==undefined)]">
                 <v-text-field
                   :disabled = "feedbackStep < 3"
                   v-model = "formValues.text"
@@ -44,6 +55,8 @@
                   placeholder="Расскажите, что вы знаете об этом объекте"
                   rows="3"
                   multi-line
+                  :rules = "[() => !!formValues.text || 'Это обязательное поле']"
+                  ref="textInput"
                 ></v-text-field>
               </v-stepper-step>
               <v-stepper-content step="3">
@@ -57,10 +70,10 @@
                                @fileUploader:changed="setFiles"></file-uploader>
               </v-stepper-step>
             </v-stepper>
-        </div>
+        </v-form>
         <div class="feedback-form__footer">
             <v-btn color="primary" depressed large
-                   :disabled="feedbackStep<4"
+                   :disabled="feedbackStep<4 || !formValid"
                    class="feedback-form__btn"
                    :class="{'accent': true, 'btn--faded': formInProgress}"
                    @click = "submitForm()">Отправить</v-btn>
@@ -99,6 +112,7 @@ export default {
                 latlng: undefined,
                 file: []
             },
+            formValid: false,
             messageTypes: [
                 "Нарушение",
                 "Предложение",
@@ -156,18 +170,22 @@ export default {
           this.resetForm();
         },
         onThemeChanged(value){
-          let selectedThemeId = this.themes.findIndex((theme) => { return theme.name === value } );
-          this.$store.dispatch("selectTheme", selectedThemeId);
+          let selectedThemeId = this.themes.findIndex((theme) => { return theme.name === value } )
+          this.$router.push({ 
+            path: '/map/' +  selectedThemeId,
+            query: this.$route.query
+          });
         },
         setFiles(files){
           this.$set(this.formValues, 'file', files)
         },
         resetForm(){
           this.feedbackStep = 1;
-          for (let key in this.formValues) {
-            if (key == "file") this.$set(this.formValues, key, [])
-            else if (key != "theme") this.$set(this.formValues, key, undefined)
-          }
+          this.$refs.feedbackForm.inputs.forEach((input) =>{
+            if (input != this.$refs.themeInput) input.reset();
+          });
+          this.$set(this.formValues, "file", []) // clear files
+          this.$set(this.formValues, "latlng", undefined) // clear position
           this.$refs.drawer.reset();
           this.$el.scrollTop = 0
         },
@@ -199,11 +217,11 @@ export default {
                  .then(response => {
                     this.uploadFiles(response.data.id)
                       .then(() => {
-                        this.triggerClose();
-                        this.resetForm();
-                        this.formInProgress = false;
                         this.$store.dispatch('updateMessages', this.selectedThemeId);
                         this.$emit("feedbackForm:submitted", this.selectedThemeId);
+                        this.formInProgress = false;
+                        this.triggerClose();
+                        this.resetForm();
                       })
                       .catch(e => {
                         this.formInProgress = false;
@@ -224,7 +242,6 @@ export default {
         },
         uploadFiles(featureId){
           let that = this
-
           return new Promise(function(resolve, reject){
             if (that.formValues.file.length){
               let files = that.formValues.file.map( item => { return item.file }),
