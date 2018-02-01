@@ -64,7 +64,7 @@ export default {
   methods: {
     getHighlightedString(string){
       let regex = new RegExp('\\' + this.searchQuery, "ig");
-      return this.searchQuery ? string.replace(regex, "<span class='yellow'>" + this.searchQuery + "</span>") : string;
+      return this.searchQuery ? string.replace(regex, "<span class='yellow'>$&</span>") : string;
     },
     activateMessage(e){
         if (!this.$refs.menuButton || (e.target != this.$refs.menuButton.$el && e.target.closest('.btn') != this.$refs.menuButton.$el)){
