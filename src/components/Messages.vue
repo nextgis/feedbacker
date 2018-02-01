@@ -81,6 +81,11 @@ export default {
         this.$store.dispatch('deleteMessage', {
             themeId: this.selectedThemeId,
             messageId: messageId
+        }).then(data => {
+            this.$router.push({ 
+              path: '/map/' +  this.selectedThemeId,
+              query: this.$route.query
+            });
         });
     }
   }
