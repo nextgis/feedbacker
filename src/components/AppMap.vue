@@ -3,7 +3,7 @@
            :options="mapOptions"
            ref="map">
 
-        <v-tilelayer url="https://korona.geog.uni-heidelberg.de/tiles/roads/x={x}&y={y}&z={z}"></v-tilelayer>
+        <v-tilelayer url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"></v-tilelayer>
 
         <v-tilelayer v-show="relatedLayersUrl"
                      :url="relatedLayersUrl"
