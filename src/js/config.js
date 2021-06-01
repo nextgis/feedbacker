@@ -1,4 +1,4 @@
 export const config = {
-	nextgiscomUrl:  "http://nastya.nextgis.com",
+	nextgiscomUrl:  "https://nastya.nextgis.com",
 	baseResourceId: 34
 }
