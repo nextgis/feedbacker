@@ -1,92 +1,109 @@
 <template>
-    <div class="file-uploader" :class="{'file-uploader--disabled':disabled}">
-        <bordered-block icon="photo"
-                        text="Загрузите фото: <span class='link-style'>выберите его</span> или перетащите сюда">
-            <file-upload v-if = "!disabled"
-                :name="name"
-                :extensions="extensions"
-                :accept="accept"
-                :multiple="multiple"
-                :directory="directory"
-                :thread="thread"
-                :drop="drop"
-                :dropDirectory="dropDirectory"
-                v-model="files"
-                @input-file="inputFile"
-                accept="image/*"
-                ref="upload">
-            </file-upload>
-            <div v-show="$refs.upload && $refs.upload.dropActive" class="drop-active"></div>
-        </bordered-block>
-        <div v-if="files.length" class="file-uploader__files">
-              <div class="file-uploader__file" v-for="(file, index) in files">
-                    <div class="file-uploader__file-image">
-                        <img v-if="file.type.substr(0, 6) == 'image/' && file.blob" :src="file.blob"/>
-                    </div>
-                    <div class="file-uploader__file-name">{{file.name}}</div>
-                    <div class="file-uploader__file-action">
-                        <v-icon class="file-uploader__file-remover" @click="$refs.upload.remove(file)">close</v-icon>
-                    </div>
-              </div>
+  <div class="file-uploader" :class="{ 'file-uploader--disabled': disabled }">
+    <bordered-block
+      icon="photo"
+      text="Загрузите фото: <span class='link-style'>выберите его</span> или перетащите сюда"
+    >
+      <file-upload
+        v-if="!disabled"
+        :name="name"
+        :extensions="extensions"
+        :accept="accept"
+        :multiple="multiple"
+        :directory="directory"
+        :thread="thread"
+        :drop="drop"
+        :dropDirectory="dropDirectory"
+        v-model="files"
+        @input-file="inputFile"
+        ref="upload"
+      >
+      </file-upload>
+      <div
+        v-show="$refs.upload && $refs.upload.dropActive"
+        class="drop-active"
+      ></div>
+    </bordered-block>
+    <div v-if="files.length" class="file-uploader__files">
+      <div
+        class="file-uploader__file"
+        v-for="(file, index) in files"
+        :key="index"
+      >
+        <div class="file-uploader__file-image">
+          <img
+            v-if="file.type.substr(0, 6) == 'image/' && file.blob"
+            :src="file.blob"
+          />
         </div>
-        <div v-else class="file-uploader__help-text caption">Загружать фото необязательно</div>
+        <div class="file-uploader__file-name">{{ file.name }}</div>
+        <div class="file-uploader__file-action">
+          <v-icon
+            class="file-uploader__file-remover"
+            @click="$refs.upload.remove(file)"
+            >close</v-icon
+          >
+        </div>
+      </div>
     </div>
+    <div v-else class="file-uploader__help-text caption">
+      Загружать фото необязательно
+    </div>
+  </div>
 </template>
 
 <script>
-import Vue from "vue"
-import bus from "../js/eventBus"
-import BorderedBlock from "./ui/BorderedBlock"
-import FileUpload from 'vue-upload-component'
+import Vue from 'vue';
+import BorderedBlock from './ui/BorderedBlock';
+import FileUpload from 'vue-upload-component';
 
 export default {
-  props: [
-    "disabled",
-    "value"
-  ],
+  props: ['disabled', 'value'],
   components: {
     BorderedBlock,
-    FileUpload
+    FileUpload,
   },
-  data () {
+  data() {
     return {
-        files: [],
-        accept: 'image/png,image/gif,image/jpeg,image/webp',
-        extensions: 'gif,jpg,jpeg,png,webp',
-        multiple: true,
-        directory: false,
-        drop: true,
-        dropElement: document.querySelector(".drop-active"),
-        dropDirectory: false,
-        thread: 3,
-        name: 'file',
-        auto: false
-    }
+      files: [],
+      accept: 'image/png,image/gif,image/jpeg,image/webp',
+      extensions: 'gif,jpg,jpeg,png,webp',
+      multiple: true,
+      directory: false,
+      drop: true,
+      dropElement: document.querySelector('.drop-active'),
+      dropDirectory: false,
+      thread: 3,
+      name: 'file',
+      auto: false,
+    };
   },
-  watch:{
-    value(value){
-        if (!value.length) this.files = []
-    }
+  watch: {
+    value(value) {
+      if (!value.length) this.files = [];
+    },
   },
-  mounted(){
-    this.$forceUpdate()
+  mounted() {
+    this.$forceUpdate();
   },
-  methods:{
+  methods: {
     inputFile(newFile, oldFile) {
-        if (newFile && !oldFile) {
-            var URL = window.URL || window.webkitURL
-            if (URL && URL.createObjectURL) {
-              this.$refs.upload.update(newFile, {blob: URL.createObjectURL(newFile.file)})
-            }
+      if (newFile && !oldFile) {
+        var URL = window.URL || window.webkitURL;
+        if (URL && URL.createObjectURL) {
+          this.$refs.upload.update(newFile, {
+            blob: URL.createObjectURL(newFile.file),
+          });
         }
+      }
 
-        let that = this
-        Vue.nextTick(function () {
-            that.$emit("fileUploader:changed", that.files)
-        })
-    }
-  }
-}
+      let that = this;
+      Vue.nextTick(function() {
+        that.$emit('fileUploader:changed', that.files);
+      });
+    },
+  },
+};
 </script>
 
 <style lang="styl">
@@ -101,7 +118,7 @@ export default {
 
 .file-uploader
     width: 100%;
-    
+
     .bordered-block
         position: relative
 
@@ -137,7 +154,7 @@ export default {
         display: table-cell
         vertical-align: middle
         padding: $spacer*0.5 $spacer*0.5
-    
+
     &__file-image
         border-bottom-left-radius: $card-border-radius
         border-top-left-radius: $card-border-radius
@@ -153,7 +170,7 @@ export default {
 
     &__file-name
         width: 100%
-    
+
     &__file-action
         text-align: right
         padding-right: $spacer*0.75
@@ -165,5 +182,4 @@ export default {
 
     &__help-text
         color: $grey.lighten-1
-
 </style>

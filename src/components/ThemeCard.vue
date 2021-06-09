@@ -1,36 +1,30 @@
 <template>
-    <v-card class="theme-card"
-            height = "136px"
-            @click.native = "activateTheme($event)">
-        <v-container fill-height fluid>
-            <div class="theme-card__title">{{ theme }}</div>
-            <div class="theme-card__meta" align-end flexbox>{{ messageCount }} сообщений</div>
-        </v-container>
-    </v-card>
+  <v-card class="theme-card" height="136px" @click="activateTheme($event)">
+    <v-container fill-height fluid>
+      <div class="theme-card__title">{{ theme }}</div>
+      <div class="theme-card__meta" align-end flexbox>
+        {{ messageCount }} сообщений
+      </div>
+    </v-container>
+  </v-card>
 </template>
 
 <script>
-import bus from "../js/eventBus"
+import bus from '../js/eventBus';
 
 export default {
-  props: [
-    "theme",
-    "themeIndex",
-    "messageCount"
-  ],
-  components: {
-  },
-  data () {
-    return {
-    }
+  props: ['theme', 'themeIndex', 'messageCount'],
+  components: {},
+  data() {
+    return {};
   },
   methods: {
-    activateTheme(e){
-      this.$router.push({ path: '/map/' +  this.themeIndex });
-      bus.$emit("themes:themeClicked", this.themeIndex);
-    }
-  }
-}
+    activateTheme() {
+      this.$router.push({ path: '/map/' + this.themeIndex });
+      bus.$emit('themes:themeClicked', this.themeIndex);
+    },
+  },
+};
 </script>
 
 <style lang="styl">
@@ -63,5 +57,4 @@ export default {
     &__meta
         font-size: 16px
         color: rgba($secondary-dark-color, .78)
-
 </style>

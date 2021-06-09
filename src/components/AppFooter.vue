@@ -1,21 +1,31 @@
 <template>
-    <footer class="app-footer caption" :class="{ 'app-footer--withForm':formActive }">
-        <v-layout row wrap ma-0>
-            <v-flex class="app-footer__map-attribution" xs8 px-2
-                    v-html="attribution"></v-flex>
-            <v-flex class="app-footer__copyright" xs4 px-2 text-xs-right>
-                Разработано в <a class="app-footer__link" href="https://nextgis.ru" target="_blank">NextGIS</a>
-            </v-flex>
-        </v-layout>    
-    </footer>
+  <footer
+    class="app-footer caption"
+    :class="{ 'app-footer--withForm': formActive }"
+  >
+    <v-layout row wrap ma-0>
+      <v-flex
+        class="app-footer__map-attribution"
+        xs8
+        px-2
+        v-html="attribution"
+      ></v-flex>
+      <v-flex class="app-footer__copyright" xs4 px-2 text-xs-right>
+        Разработано в
+        <a class="app-footer__link" href="https://nextgis.ru" target="_blank"
+          >NextGIS</a
+        >
+      </v-flex>
+    </v-layout>
+  </footer>
 </template>
 
 <script>
 import { mapState } from 'vuex';
 
 export default {
-    computed: mapState(['attribution', 'formActive']),
-}
+  computed: mapState(['attribution', 'formActive']),
+};
 </script>
 
 <style lang="styl">
@@ -41,5 +51,4 @@ export default {
     .app-footer__link,
     .app-footer__map-attribution a
         color: #dedede;
-
 </style>

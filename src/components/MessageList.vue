@@ -1,25 +1,25 @@
 <template>
-    <div class="message-list">
-        <message-card v-for="message in messages" 
-                 :key="message.id"
-                 :id="message.id"
-                 :message="message"
-                 ref="card">
-        </message-card>
-    </div>
+  <div class="message-list">
+    <message-card
+      v-for="message in messages"
+      :key="message.id"
+      :id="message.id"
+      :message="message"
+      ref="card"
+    >
+    </message-card>
+  </div>
 </template>
 
 <script>
-import MessageCard from "../components/MessageCard"
+import MessageCard from '../components/MessageCard';
 
 export default {
-  props: [
-    "messages"
-  ],
+  props: ['messages'],
   components: {
-    MessageCard
-  }
-}
+    MessageCard,
+  },
+};
 </script>
 
 <style lang="styl">
@@ -40,5 +40,4 @@ export default {
   overflow: auto;
   padding-bottom: 16px;
   width: 400px;
-
 </style>

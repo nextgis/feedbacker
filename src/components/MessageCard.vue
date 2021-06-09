@@ -1,84 +1,100 @@
 <template>
-    <v-card class="message-card"
-            :class="{ 
-                'message-card--active':isActive,
-                'message-card--withImage':message.attachments,
-            }"
-            @click.native = "activateMessage($event)"
-           >
-        <v-container fluid>
-            <div class="message-card__title" v-html="highlightedTitle"></div>
-            <div class="message-card__text" v-html="highlightedText"></div>
-            <div class="message-card__meta">
-                <span class="message-card__meta-item" v-if="message.properties.date">{{ message.properties.date }}</span>
-                <!-- <span class="message-card__meta-item"> <v-icon>comment</v-icon> {{ message.properties.comments || 0 }}</span> -->
-                <span class="message-card__meta-item" v-if="message.properties.type">{{ message.properties.type }}</span>
-            </div>
-            <div v-if="message.attachments && message.attachments.length"
-                 class="message-card__photo"
-                 :style="'background-image: url(' + message.attachments[0] + '?size=200x200'">
-                 <span v-if="message.attachments.length > 1"
-                       class="message-card__photo-num"> {{ message.attachments.length }} фото</span>
-            </div>
-            <v-menu class="message-card__menu" bottom left 
-                    v-if="user.uid && user.uid === message.properties.author_id">
-                <v-btn slot="activator" class="ma-0" icon small
-                       ref="menuButton">
-                    <v-icon class="icon--small">more_vert</v-icon>
-                </v-btn>
-                <v-list>
-                    <v-list-tile @click="onDeleteClick(message.id)">
-                        <v-list-tile-title>Удалить</v-list-tile-title>
-                    </v-list-tile>
-                </v-list>
-            </v-menu>
-      </v-container>
-    </v-card>
+  <v-card
+    class="message-card"
+    :class="{
+      'message-card--active': isActive,
+      'message-card--withImage': message.attachments,
+    }"
+    @click="activateMessage($event)"
+  >
+    <v-container fluid>
+      <div class="message-card__title" v-html="highlightedTitle"></div>
+      <div class="message-card__text" v-html="highlightedText"></div>
+      <div class="message-card__meta">
+        <span class="message-card__meta-item" v-if="message.properties.date">{{
+          message.properties.date
+        }}</span>
+        <!-- <span class="message-card__meta-item"> <v-icon>comment</v-icon> {{ message.properties.comments || 0 }}</span> -->
+        <span class="message-card__meta-item" v-if="message.properties.type">{{
+          message.properties.type
+        }}</span>
+      </div>
+      <div
+        v-if="message.attachments && message.attachments.length"
+        class="message-card__photo"
+        :style="
+          'background-image: url(' + message.attachments[0] + '?size=200x200'
+        "
+      >
+        <span
+          v-if="message.attachments.length > 1"
+          class="message-card__photo-num"
+        >
+          {{ message.attachments.length }} фото</span
+        >
+      </div>
+      <v-menu
+        class="message-card__menu"
+        bottom
+        left
+        v-if="user.uid && user.uid === message.properties.author_id"
+      >
+        <template v-slot:activator>
+          <v-btn class="ma-0" icon small ref="menuButton">
+            <v-icon class="icon--small">more_vert</v-icon>
+          </v-btn>
+        </template>
+        <v-list>
+          <v-list-tile @click="onDeleteClick(message.id)">
+            <v-list-tile-title>Удалить</v-list-tile-title>
+          </v-list-tile>
+        </v-list>
+      </v-menu>
+    </v-container>
+  </v-card>
 </template>
 
 <script>
-import bus from "../js/eventBus"
-import { mapState } from 'vuex'
-import { closest } from '../js/utilities'
+import bus from '../js/eventBus';
+import { mapState } from 'vuex';
+import { closest } from '../js/utilities';
 closest();
 
 export default {
-  props: [
-    "id",
-    "message",
-    "isActive"
-  ],
+  props: ['id', 'message', 'isActive'],
   computed: {
-    ...mapState([
-      "selectedThemeId",
-      "user",
-      "searchQuery"
-    ]),
-    highlightedTitle(){
+    ...mapState(['selectedThemeId', 'user', 'searchQuery']),
+    highlightedTitle() {
       return this.getHighlightedString(this.message.properties.title);
     },
-    highlightedText(){
+    highlightedText() {
       return this.getHighlightedString(this.message.properties.text);
-    }
+    },
   },
   methods: {
-    getHighlightedString(string){
-      let regex = new RegExp('\\' + this.searchQuery, "ig");
-      return this.searchQuery ? string.replace(regex, "<span class='yellow'>$&</span>") : string;
+    getHighlightedString(string) {
+      let regex = new RegExp('\\' + this.searchQuery, 'ig');
+      return this.searchQuery
+        ? string.replace(regex, "<span class='yellow'>$&</span>")
+        : string;
     },
-    activateMessage(e){
-        if (!this.$refs.menuButton || (e.target != this.$refs.menuButton.$el && e.target.closest('.btn') != this.$refs.menuButton.$el)){
-            this.$router.push({ 
-              path: '/map/' + this.$store.state.selectedThemeId + "/" + this.id,
-              query: this.$route.query
-            });
-        }    
+    activateMessage(e) {
+      if (
+        !this.$refs.menuButton ||
+        (e.target != this.$refs.menuButton.$el &&
+          e.target.closest('.btn') != this.$refs.menuButton.$el)
+      ) {
+        this.$router.push({
+          path: '/map/' + this.$store.state.selectedThemeId + '/' + this.id,
+          query: this.$route.query,
+        });
+      }
     },
-    onDeleteClick(messageId){
-        bus.$emit('messageCard:deleteClicked', messageId);
-    }
-  }
-}
+    onDeleteClick(messageId) {
+      bus.$emit('messageCard:deleteClicked', messageId);
+    },
+  },
+};
 </script>
 
 <style lang="styl">
@@ -114,7 +130,7 @@ export default {
     &--active
       elevation(16);
       background-color: #e8ffe2 !important;
-      
+
     &__title
         @extend .subheading
         margin-bottom: $spacers.one.y

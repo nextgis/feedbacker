@@ -1,48 +1,44 @@
 <template>
-    <v-menu class="user-avatar mr-2">
-        <template slot="activator">                    
-            <div class="user-avatar__label"> {{ nameLetters }} </div>
-            <v-icon class="user-avatar__icon icon--small">keyboard_arrow_down</v-icon>
-        </template>                
-        <v-list>
-            <v-subheader>{{ userName }}</v-subheader>
-            <v-divider></v-divider>
-            <v-list-tile @click="logout()">
-              <v-list-tile-title>Выйти</v-list-tile-title>
-            </v-list-tile>
-        </v-list>
-    </v-menu>
+  <v-menu class="user-avatar mr-2">
+    <template v-slot:activator>
+      <div class="user-avatar__label">{{ nameLetters }}</div>
+      <v-icon class="user-avatar__icon icon--small">keyboard_arrow_down</v-icon>
+    </template>
+    <v-list>
+      <v-subheader>{{ userName }}</v-subheader>
+      <v-divider></v-divider>
+      <v-list-tile @click="logout()">
+        <v-list-tile-title>Выйти</v-list-tile-title>
+      </v-list-tile>
+    </v-list>
+  </v-menu>
 </template>
 
 <script>
 export default {
-  props: [
-    "userName"
-  ],
-  data () {
-    return {
-    }
+  props: ['userName'],
+  data() {
+    return {};
   },
   computed: {
-    nameLetters(){
-      let nameLetters = "";
-      this.userName.split(" ").forEach((word, index) => {         
+    nameLetters() {
+      let nameLetters = '';
+      this.userName.split(' ').forEach((word, index) => {
         if (index < 2) {
-          nameLetters += word.charAt(0) 
+          nameLetters += word.charAt(0);
         }
       });
-      return nameLetters; 
-    }
+      return nameLetters;
+    },
   },
   methods: {
-    logout(){
-      localStorage.removeItem("clientId");
-      this.$store.commit("setUserData", {uid: undefined, name:undefined});
-      if (this.$route.query.feedback)
-        this.$router.push(this.$route.path);
-    }
-  }
-}
+    logout() {
+      localStorage.removeItem('clientId');
+      this.$store.commit('setUserData', { uid: undefined, name: undefined });
+      if (this.$route.query.feedback) this.$router.push(this.$route.path);
+    },
+  },
+};
 </script>
 
 <style lang="styl">
@@ -70,5 +66,4 @@ export default {
 
     &__icon
         margin-left: -2px;
-
 </style>
