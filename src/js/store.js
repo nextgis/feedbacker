@@ -395,7 +395,7 @@ export default new Vuex.Store({
           });
       });
     },
-    getUserData({ commit }, clientId) {
+    getUserData(context, clientId) {
       return new Promise((resolve, reject) => {
         axios
           .get(nextgiscomUrl + '/api/component/auth/current_user', {
