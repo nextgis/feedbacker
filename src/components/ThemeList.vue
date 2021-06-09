@@ -1,31 +1,34 @@
 <template>
-    <div class="theme-list">
-        <v-layout row wrap>
-          <v-flex xs4 lg3 v-for="(theme, index) in themes" :key="index">
-            <theme-card :messageCount="theme.editableLayer.geojson ? theme.editableLayer.geojson.features.length : 0"
-                        :theme="theme.name"
-                        :themeIndex="index">
-            </theme-card>
-          </v-flex>
-        </v-layout>
-    </div>
+  <div class="theme-list">
+    <v-layout row wrap>
+      <v-flex xs4 lg3 v-for="(theme, index) in themes" :key="index">
+        <theme-card
+          :messageCount="
+            theme.editableLayer.geojson
+              ? theme.editableLayer.geojson.features.length
+              : 0
+          "
+          :theme="theme.name"
+          :themeIndex="index"
+        >
+        </theme-card>
+      </v-flex>
+    </v-layout>
+  </div>
 </template>
 
 <script>
-import ThemeCard from "./ThemeCard"
+import ThemeCard from './ThemeCard';
 
 export default {
-  props: [
-    "themes"
-  ],
+  props: ['themes'],
   components: {
-    ThemeCard
+    ThemeCard,
   },
-  data () {
-    return {
-    }
-  }
-}
+  data() {
+    return {};
+  },
+};
 </script>
 
 <style lang="styl">
@@ -37,5 +40,4 @@ export default {
 @require '../styl/custom-vuetify/_typography'
 @require '~vuetify/src/stylus/trumps/_spacing.styl'
 @require '~vuetify/src/stylus/tools/_elevations.styl'
-
 </style>

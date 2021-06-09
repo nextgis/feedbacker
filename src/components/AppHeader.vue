@@ -1,43 +1,55 @@
 <template>
-    <header class="header">
-        <router-link class="header__title nolink" to="/">
-            <img class="header__logo" src="../assets/ng_logo.svg" alt="Feedbacker">
-            <h1 class="header__title-text title">{{ projectName }}</h1>
-        </router-link>
-        <div class="header-actions">
-            <router-link to="/signin" v-if="!user.name" class="header__login-link header__link" @click.prevent="$emit('header:loginLinkClicked')">Войти</router-link>
-            <user-avatar v-else :userName="user.name"></user-avatar>
-            <v-btn color="primary" dark large depressed
-                   class="header__feedback-button feedback-button"
-                   @click="goToFeedback()">Добавить точку</v-btn>
-        </div>
-    </header>
+  <header class="header">
+    <router-link class="header__title nolink" to="/">
+      <img class="header__logo" src="../assets/ng_logo.svg" alt="Feedbacker" />
+      <h1 class="header__title-text title">{{ projectName }}</h1>
+    </router-link>
+    <div class="header-actions">
+      <router-link
+        to="/signin"
+        v-if="!user.name"
+        class="header__login-link header__link"
+        @click.prevent="$emit('header:loginLinkClicked')"
+        >Войти</router-link
+      >
+      <user-avatar v-else :userName="user.name"></user-avatar>
+      <v-btn
+        color="primary"
+        dark
+        large
+        depressed
+        class="header__feedback-button feedback-button"
+        @click="goToFeedback()"
+        >Добавить точку</v-btn
+      >
+    </div>
+  </header>
 </template>
 
 <script>
-import {mapState} from "vuex"
-import UserAvatar from "./UserAvatar"
+import { mapState } from 'vuex';
+import UserAvatar from './UserAvatar';
 
 export default {
-    components: {
-        UserAvatar
+  components: {
+    UserAvatar,
+  },
+  computed: {
+    ...mapState(['user', 'projectName']),
+  },
+  methods: {
+    goToFeedback() {
+      let feedbackPath =
+        this.$route.params.themeId != undefined
+          ? '/map/' + this.$route.params.themeId
+          : '/map/';
+      this.$router.push({
+        path: feedbackPath,
+        query: Object.assign({}, this.$route.query, { feedback: true }),
+      });
     },
-    computed:{
-        ...mapState([
-            "user",
-            "projectName"
-        ])
-    },
-    methods:{
-        goToFeedback(){
-            let feedbackPath = this.$route.params.themeId != undefined ? "/map/" + this.$route.params.themeId : "/map/";
-            this.$router.push({
-                path: feedbackPath,
-                query: Object.assign({}, this.$route.query, {feedback: true})
-            })
-        }
-    }
-}
+  },
+};
 </script>
 
 <style lang="styl">
@@ -58,7 +70,7 @@ export default {
     width: 100%;
     height: $header-height;
     background-color: #fff;
-    border-bottom: 1px solid $line-color;    
+    border-bottom: 1px solid $line-color;
     min-width: $grid-breakpoints.md
     z-index: 2
 
@@ -68,7 +80,7 @@ export default {
         left: 14px;
         top:0;
         white-space: nowrap;
-  
+
         @media $display-breakpoints.xs-only
             left: $grid-gutters.xl;
 
@@ -89,7 +101,7 @@ export default {
     &__feedback-button
         margin:0;
         vertical-align: baseline;
-  
+
         @media $display-breakpoints.xs-only
             right: $grid-gutters.xl;
 
@@ -120,7 +132,7 @@ export default {
     position: absolute;
     right: $spacers.three.x;
     top:0;
-    bottom:0;    
+    bottom:0;
     margin-top: auto;
     margin-bottom: auto;
     line-height: $header-height;

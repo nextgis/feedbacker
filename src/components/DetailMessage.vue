@@ -1,104 +1,131 @@
 <template>
-    <div class="detail-message"
-         :class="{ 'detail-message--overflowed':isCardOverflowed }">
-        <v-icon class="detail-message__closer"
-                @click="triggerClose($event)">close</v-icon>
-        <v-card class="detail-message__inner"
-                ref="container">     
-            <v-container ref="innerContainer" fluid>
-                <header class="detail-message__header">
-                    <div class="detail-message__theme">{{ message ? message.properties.theme : "" }}</div>
-                    <h2 class="detail-message__title">{{ message ? message.properties.title : "" }}</h2>
-                    <div class="detail-message__meta">{{ message ? message.properties.date : ""  }}, {{ message ? message.properties.author : "" }}</div>
-                </header>
-                <div class="deatil-message__text">
-                    {{message ? message.properties.text : "" }}
-                </div>
-                <template v-if="message && message.attachments && message.attachments.length">
-                    <div v-for="attachment, id in message.attachments"
-                         class="detail-message__photo">
-                        <img class="detail-message__pic" :src="attachment + '?size=400x800'" alt=""
-                             @click="galleryIndex = id">
-                    </div>
-                    <vue-gallery class="detail-message__gallery"
-                                 :images="message.attachments"
-                                 :index="galleryIndex"
-                                 @close="galleryIndex = null"
-                                 ref="gallery"></vue-gallery>
-                </template>    
-            </v-container>
-        </v-card>
-        <v-menu class="detail-message__menu" bottom left 
-                v-if="user && message && user.uid === message.properties.author_id"
-                >
-            <v-btn slot="activator" class="detail-message__menu-button ma-0" icon small
-                   ref="menuButton">
-                <v-icon class="icon--small">more_vert</v-icon>
-            </v-btn>
-            <v-list>
-                <v-list-tile @click="onDeleteClick(message.id)">
-                    <v-list-tile-title>Удалить</v-list-tile-title>
-                </v-list-tile>
-            </v-list>
-        </v-menu>
-    </div>
+  <div
+    class="detail-message"
+    :class="{ 'detail-message--overflowed': isCardOverflowed }"
+  >
+    <v-icon class="detail-message__closer" @click="triggerClose($event)"
+      >close</v-icon
+    >
+    <v-card class="detail-message__inner" ref="container">
+      <v-container ref="innerContainer" fluid>
+        <header class="detail-message__header">
+          <div class="detail-message__theme">
+            {{ message ? message.properties.theme : '' }}
+          </div>
+          <h2 class="detail-message__title">
+            {{ message ? message.properties.title : '' }}
+          </h2>
+          <div class="detail-message__meta">
+            {{ message ? message.properties.date : '' }},
+            {{ message ? message.properties.author : '' }}
+          </div>
+        </header>
+        <div class="deatil-message__text">
+          {{ message ? message.properties.text : '' }}
+        </div>
+        <template
+          v-if="message && message.attachments && message.attachments.length"
+        >
+          <div
+            v-for="(attachment, id) in message.attachments"
+            :key="id"
+            class="detail-message__photo"
+          >
+            <img
+              class="detail-message__pic"
+              :src="attachment + '?size=400x800'"
+              alt=""
+              @click="galleryIndex = id"
+            />
+          </div>
+          <vue-gallery
+            class="detail-message__gallery"
+            :images="message.attachments"
+            :index="galleryIndex"
+            @close="galleryIndex = null"
+            ref="gallery"
+          ></vue-gallery>
+        </template>
+      </v-container>
+    </v-card>
+    <v-menu
+      class="detail-message__menu"
+      bottom
+      left
+      v-if="user && message && user.uid === message.properties.author_id"
+    >
+      <template v-slot:activator>
+        <v-btn
+          class="detail-message__menu-button ma-0"
+          icon
+          small
+          ref="menuButton"
+        >
+          <v-icon class="icon--small">more_vert</v-icon>
+        </v-btn>
+      </template>
+      <v-list>
+        <v-list-tile @click="onDeleteClick(message.id)">
+          <v-list-tile-title>Удалить</v-list-tile-title>
+        </v-list-tile>
+      </v-list>
+    </v-menu>
+  </div>
 </template>
 
 <script>
-import bus from "../js/eventBus"
-import Vue from "vue"
-import {mapState} from "vuex"
-import VueGallery from 'vue-gallery'
+import bus from '../js/eventBus';
+import Vue from 'vue';
+import { mapState } from 'vuex';
+import VueGallery from 'vue-gallery';
 
 export default {
-  components:{ VueGallery},
-  props: [
-    "message"
-  ],
-  data(){
+  components: { VueGallery },
+  props: ['message'],
+  data() {
     return {
-        isCardOverflowed: false,
-        galleryIndex: null
-    }
+      isCardOverflowed: false,
+      galleryIndex: null,
+    };
   },
   computed: {
-    ...mapState([
-        "user"
-    ])
+    ...mapState(['user']),
   },
-  watch:{
-    message(value){
-        this.$el.scrollTop = 0;
-        if (value!=undefined) {
-            Vue.nextTick(()=>{ 
-                this.checkCardOverflowing();
-            });
+  watch: {
+    message(value) {
+      this.$el.scrollTop = 0;
+      if (value != undefined) {
+        Vue.nextTick(() => {
+          this.checkCardOverflowing();
+        });
 
-            if (value.attachments && value.attachments.length)
-                Vue.nextTick(()=>{
-                    document.body.appendChild(this.$refs.gallery.$el);
-                });
-        }
-    }
+        if (value.attachments && value.attachments.length)
+          Vue.nextTick(() => {
+            document.body.appendChild(this.$refs.gallery.$el);
+          });
+      }
+    },
   },
-  beforeDestroy(){
+  beforeUnmount() {
     if (this.$refs.gallery) document.body.removeChild(this.$refs.gallery.$el);
   },
   methods: {
-    triggerClose(e){
-        this.$router.push({
-            path: '/map/' + this.$store.state.selectedThemeId,
-            query: this.$route.query
-        });
+    triggerClose() {
+      this.$router.push({
+        path: '/map/' + this.$store.state.selectedThemeId,
+        query: this.$route.query,
+      });
     },
-    checkCardOverflowing(){
-        this.isCardOverflowed = (this.$refs.innerContainer.offsetHeight > this.$refs.container.offsetHeight)
+    checkCardOverflowing() {
+      this.isCardOverflowed =
+        this.$refs.innerContainer.offsetHeight >
+        this.$refs.container.offsetHeight;
     },
-    onDeleteClick(messageId){
-        bus.$emit('detailMessage:deleteClicked', messageId);
-    }
-  }
-}
+    onDeleteClick(messageId) {
+      bus.$emit('detailMessage:deleteClicked', messageId);
+    },
+  },
+};
 </script>
 
 <style lang="styl">
@@ -119,7 +146,7 @@ export default {
 
     &__inner
         width: 400px;
-        box-shadow: none;        
+        box-shadow: none;
         max-height: "calc(100vh - 24px - %s - %s - %s)" % ($header-height $map-toolbar-height $footer-height);
         overflow: auto;
 
@@ -147,14 +174,14 @@ export default {
         margin-bottom: 16px;
 
     &__theme
-        margin-bottom: 12px 
+        margin-bottom: 12px
         padding-right: 30px
         color: rgba($secondary-dark-color, .78)
-    
+
     &__meta
         color: $grey.lighten-1
         margin-top: 2px
-    
+
     &__photo
         margin-top: 12px
         background: #dedede
@@ -163,7 +190,7 @@ export default {
     &__pic
         width: 100%
         display: block
-        border-radius: $card-border-radius       
+        border-radius: $card-border-radius
         cursor: pointer
         cursor: -webkit-zoom-in
         cursor: zoom-in
@@ -195,7 +222,7 @@ export default {
                 height: 42px;
                 line-height: 42px;
 
-        & > .close        
+        & > .close
             width: 72px;
             height: 72px;
 
@@ -223,5 +250,4 @@ export default {
                 content: "arrow_back";
                 right: auto;
                 left: 15px;
-
 </style>

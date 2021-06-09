@@ -1,66 +1,68 @@
-<template>    
-    <div class="map-toolbar">
-      <v-container class="pa-0" fluid>
-        <v-layout nowrap class="map-toolbar__layout ma-0" >
-          <v-flex xs3 class="map-toolbar__item pa-0">
-            <fake-select :value="selectedTheme"
-                         placeholder="Тема сообщения"
-                         closeEvent="themes:themeClicked"
-                         @fakeSelect:clicked = "onThemeSwitcherClicked()"></fake-select>
-          </v-flex>
-          <v-flex xs9 class="map-toolbar__item pa-0" >
-            <v-text-field
-              placeholder="Поиск"
-              single-line
-              full-width
-              hide-details
-              prepend-icon="search"
-              v-model="searchQueryComputed"
-              @input="onSearchInput"
-            ></v-text-field>
-          </v-flex>
-        </v-layout>
-      </v-container>
-    </div>
+<template>
+  <div class="map-toolbar">
+    <v-container class="pa-0" fluid>
+      <v-layout nowrap class="map-toolbar__layout ma-0">
+        <v-flex xs3 class="map-toolbar__item pa-0">
+          <fake-select
+            :value="selectedTheme"
+            placeholder="Тема сообщения"
+            closeEvent="themes:themeClicked"
+            @fakeSelect:clicked="onThemeSwitcherClicked()"
+          ></fake-select>
+        </v-flex>
+        <v-flex xs9 class="map-toolbar__item pa-0">
+          <v-text-field
+            placeholder="Поиск"
+            single-line
+            full-width
+            hide-details
+            prepend-icon="search"
+            v-model="searchQueryComputed"
+            @input="onSearchInput"
+          ></v-text-field>
+        </v-flex>
+      </v-layout>
+    </v-container>
+  </div>
 </template>
 
 <script>
-import {mapState} from "vuex"
-import bus from "../js/eventBus"
-import FakeSelect from "./ui/FakeSelect"
-import Vue from "vue"
+import { mapState } from 'vuex';
+import bus from '../js/eventBus';
+import FakeSelect from './ui/FakeSelect';
 
 export default {
-    components: { FakeSelect },   
-    props:[ "selectedTheme" ],
-    computed: {
-      ...mapState([
-          'searchQuery',
-          'selectedThemeId'
-      ]),
-      searchQueryComputed: {
-        get () { 
-          return this.searchQuery 
-        },
-        set (value) {
-          if (!value) value = undefined;
-          this.$store.commit('setSearchQuery', value) 
-        }
-      }
+  components: { FakeSelect },
+  props: ['selectedTheme'],
+  computed: {
+    ...mapState(['searchQuery', 'selectedThemeId']),
+    searchQueryComputed: {
+      get() {
+        return this.searchQuery;
+      },
+      set(value) {
+        if (!value) value = undefined;
+        this.$store.commit('setSearchQuery', value);
+      },
     },
-    methods: {
-        onThemeSwitcherClicked(){
-          bus.$emit('maptoolbar:themeSwitcherClicked')
-        },
-        onSearchInput(value){
-          let nextPath = this.$route.params.messageId ? "/map/" + this.selectedThemeId : this.$route.path;
-          this.$router.push({
-            path: nextPath,
-            query: Object.assign({}, this.$route.query, { search: this.searchQueryComputed })
-          });
-        }
-    }
-}
+  },
+  methods: {
+    onThemeSwitcherClicked() {
+      bus.$emit('maptoolbar:themeSwitcherClicked');
+    },
+    onSearchInput() {
+      let nextPath = this.$route.params.messageId
+        ? '/map/' + this.selectedThemeId
+        : this.$route.path;
+      this.$router.push({
+        path: nextPath,
+        query: Object.assign({}, this.$route.query, {
+          search: this.searchQueryComputed,
+        }),
+      });
+    },
+  },
+};
 </script>
 
 <style lang="styl">
@@ -101,5 +103,4 @@ export default {
 
         input, textarea
             font-size: 14px;
-
 </style>

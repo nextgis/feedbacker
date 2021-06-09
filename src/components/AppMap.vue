@@ -1,235 +1,239 @@
 <template>
-    <v-map class="map"
-           :options="mapOptions"
-           ref="map">
+  <v-map class="map" :options="mapOptions" ref="map">
+    <v-tilelayer
+      url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
+    ></v-tilelayer>
 
-        <v-tilelayer url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"></v-tilelayer>
+    <v-tilelayer
+      v-show="relatedLayersUrl"
+      :url="relatedLayersUrl"
+      ref="relatedLayers"
+    ></v-tilelayer>
 
-        <v-tilelayer v-show="relatedLayersUrl"
-                     :url="relatedLayersUrl"
-                     ref="relatedLayers"></v-tilelayer>
-
-        <v-geojson-layer v-if="messageGeojson && messagesShown"
-                         :geojson="messageGeojson"
-                         :options="messageGeojsonOptions"
-                         ref="messageGeojson"></v-geojson-layer>
-    </v-map>
+    <v-geojson-layer
+      v-if="messageGeojson && messagesShown"
+      :geojson="messageGeojson"
+      :options="messageGeojsonOptions"
+      ref="messageGeojson"
+    ></v-geojson-layer>
+  </v-map>
 </template>
 
 <script>
-import {config} from "../js/config"
-import bus from "../js/eventBus"
+import bus from '../js/eventBus';
 
-import Vue from "vue"
-import {mapState} from "vuex"
-import L from "leaflet"
-import "leaflet-editable"
-import Vue2Leaflet from "vue2-leaflet"
-import {coordToLatlng} from "../js/utilities"
-import "../js/extendLeaflet"
-import axios from 'axios'
+import { mapState } from 'vuex';
+import L from 'leaflet';
+import 'leaflet-editable';
+import Vue2Leaflet from 'vue2-leaflet';
+import { coordToLatlng } from '../js/utilities';
+import '../js/extendLeaflet';
+
+const nextgiscomUrl = process.env.VUE_APP_NEXTGISCOM_URL;
 
 export default {
-  props: [
-    "activeMessage",
-    "messageGeojson",
-    "relatedLayers",
-  ],
+  props: ['activeMessage', 'messageGeojson', 'relatedLayers'],
   components: {
     'v-map': Vue2Leaflet.Map,
     'v-tilelayer': Vue2Leaflet.TileLayer,
     'v-geojson-layer': Vue2Leaflet.GeoJSON,
-    'v-marker': Vue2Leaflet.Marker
+    //'v-marker': Vue2Leaflet.Marker,
   },
-  data () {
+  data() {
     let that = this;
 
     return {
-        messagesShown: true,
-        mapOptions: {
-           editable: true,
-           offset:  [-200, 0]
+      messagesShown: true,
+      mapOptions: {
+        editable: true,
+        offset: [-200, 0],
+      },
+      messageGeojsonOptions: {
+        coordsToLatLng: function (coords) {
+          return coordToLatlng(L.point(coords[0], coords[1]));
         },
-        messageGeojsonOptions: {
-            coordsToLatLng: function(coords) {
-                return coordToLatlng(L.point(coords[0], coords[1]))
+        pointToLayer: function (feature, latlng) {
+          return L.marker(latlng, {
+            icon:
+              feature.id == that.activeMessage
+                ? that.customIconActive
+                : that.customIcon,
+          });
+        },
+        onEachFeature: function (feature, layer) {
+          layer.on({
+            click: function (e) {
+              that.showMessage(e.target, false);
             },
-            pointToLayer: function(feature, latlng) {
-                return L.marker(latlng, {
-                    icon: (feature.id==that.activeMessage) ? that.customIconActive : that.customIcon
-                });
-            },
-            onEachFeature: function (feature, layer) {
-                layer.on({
-                    click: function(e){
-                        that.showMessage(e.target, false)
-                    }
-                });
-            }
-        }
-    }
+          });
+        },
+      },
+    };
   },
   computed: {
-    ...mapState([
-        'themes',
-        'selectedThemeId'
-    ]),
-    extent(){
-        let selectedTheme = this.themes[this.selectedThemeId];
-        if (selectedTheme && selectedTheme.extent.top && selectedTheme.extent.left && selectedTheme.extent.bottom && selectedTheme.extent.right)
-            return selectedTheme.extent
-        else 
-            return undefined;
+    ...mapState(['themes', 'selectedThemeId']),
+    extent() {
+      let selectedTheme = this.themes[this.selectedThemeId];
+      if (
+        selectedTheme &&
+        selectedTheme.extent.top &&
+        selectedTheme.extent.left &&
+        selectedTheme.extent.bottom &&
+        selectedTheme.extent.right
+      )
+        return selectedTheme.extent;
+      else return undefined;
     },
-    mapPaddingRight(){
-        return this.messageGeojson.features.length ? 400 : 0;
+    mapPaddingRight() {
+      return this.messageGeojson.features.length ? 400 : 0;
     },
     customIcon() {
-        return L.icon({
-            iconUrl: require('../assets/custom-marker.svg'),
-            shadowUrl: require('../assets/custom-marker-shadow.png'),
-            iconSize:     [24, 31], // size of the icon
-            shadowSize:   [54, 61], // size of the shadow
-            iconAnchor:   [12, 31], // point of the icon which will correspond to marker's location
-            shadowAnchor: [24, 45],  // the same for the shadow
-        });
+      return L.icon({
+        iconUrl: require('../assets/custom-marker.svg'),
+        shadowUrl: require('../assets/custom-marker-shadow.png'),
+        iconSize: [24, 31], // size of the icon
+        shadowSize: [54, 61], // size of the shadow
+        iconAnchor: [12, 31], // point of the icon which will correspond to marker's location
+        shadowAnchor: [24, 45], // the same for the shadow
+      });
     },
-    customIconActive () {
-        return L.icon({
-            iconUrl: require('../assets/custom-marker-active.svg'),
-            shadowUrl: require('../assets/custom-marker-shadow.png'),
-            iconSize:     [24, 31], // size of the icon
-            shadowSize:   [54, 61], // size of the shadow
-            iconAnchor:   [12, 31], // point of the icon which will correspond to marker's location
-            shadowAnchor: [24, 45],  // the same for the shadow
-        });
+    customIconActive() {
+      return L.icon({
+        iconUrl: require('../assets/custom-marker-active.svg'),
+        shadowUrl: require('../assets/custom-marker-shadow.png'),
+        iconSize: [24, 31], // size of the icon
+        shadowSize: [54, 61], // size of the shadow
+        iconAnchor: [12, 31], // point of the icon which will correspond to marker's location
+        shadowAnchor: [24, 45], // the same for the shadow
+      });
     },
-    mapObject(){
-        return this.$refs.map.mapObject
+    mapObject() {
+      return this.$refs.map.mapObject;
     },
-    relatedLayersUrl(){
-        return this.relatedLayers && this.relatedLayers.length ? config.nextgiscomUrl + "/api/component/render/tile?x={x}&y={y}&z={z}&resource=" + this.relatedLayers.toString() : '#'
-    }
+    relatedLayersUrl() {
+      return this.relatedLayers && this.relatedLayers.length
+        ? nextgiscomUrl +
+            '/api/component/render/tile?x={x}&y={y}&z={z}&resource=' +
+            this.relatedLayers.toString()
+        : '#';
+    },
   },
   watch: {
-    activeMessage(value, oldValue){
-        if (value != undefined)
-            this.panToMarker(value);
+    activeMessage(value, oldValue) {
+      if (value != undefined) this.panToMarker(value);
 
-        if (oldValue && this.getMarkerById(oldValue))
-            this.unhighlightMessage(this.getMarkerById(oldValue))
+      if (oldValue && this.getMarkerById(oldValue))
+        this.unhighlightMessage(this.getMarkerById(oldValue));
 
-        if (value && this.getMarkerById(value))
-            this.highlightMessage(this.getMarkerById(value), true)
+      if (value && this.getMarkerById(value))
+        this.highlightMessage(this.getMarkerById(value), true);
     },
-    extent(value, oldValue){
-        if (value && value!=oldValue)
-            this.setExtent(value);
-    }
+    extent(value, oldValue) {
+      if (value && value != oldValue) this.setExtent(value);
+    },
   },
-  mounted(){
+  mounted() {
     let that = this;
 
-    if (this.extent)
-        this.setExtent(this.extent);
-    else
-        this.mapObject.setView([61.698653, 99.505405], 3);
+    if (this.extent) this.setExtent(this.extent);
+    else this.mapObject.setView([61.698653, 99.505405], 3);
 
-    if(that.activeMessage){
-        this.panToMarker(that.activeMessage);
-    };
+    if (that.activeMessage) {
+      this.panToMarker(that.activeMessage);
+    }
 
-    bus.$on("drawer:activated", function(){
-        that.mapObject.editTools.startMarker(null, {icon: that.customIconActive});
+    bus.$on('drawer:activated', () => {
+      that.mapObject.editTools.startMarker(null, {
+        icon: that.customIconActive,
+      });
     });
 
-    bus.$on("drawer:reseted", function(){      
-        that.mapObject.editTools.stopDrawing();
-        that.removeEditableLayers();
+    bus.$on('drawer:reseted', () => {
+      that.mapObject.editTools.stopDrawing();
+      that.removeEditableLayers();
     });
 
-    this.mapObject.on('editable:drawing:commit editable:dragend', function (e) {
-        bus.$emit("map:markerAdded", e.layer._latlng)
+    this.mapObject.on('editable:drawing:commit editable:dragend', (e) => {
+      bus.$emit('map:markerAdded', e.layer._latlng);
     });
 
     this.setAttribution();
   },
-  destroyed(){
+  unmounted() {
     this.removeAttribution();
   },
   methods: {
-    geojsonObject(ref){
-        return this.$refs[ref] ? this.$refs[ref].mapObject : undefined
+    geojsonObject(ref) {
+      return this.$refs[ref] ? this.$refs[ref].mapObject : undefined;
     },
-    showMessage(marker){
-        this.$router.push({ 
-            path: '/map/' + this.$store.state.selectedThemeId + "/" + marker.feature.id,
-            query: this.$route.query
-        });   
-        this.highlightMessage(marker)
+    showMessage(marker) {
+      this.$router.push({
+        path:
+          '/map/' + this.$store.state.selectedThemeId + '/' + marker.feature.id,
+        query: this.$route.query,
+      });
+      this.highlightMessage(marker);
     },
-    highlightMessage(marker){
-        this.panToMarker(this.activeMessage);
-        marker.setIcon(this.customIconActive)
-              .setZIndexOffset(1000);    
+    highlightMessage(marker) {
+      this.panToMarker(this.activeMessage);
+      marker.setIcon(this.customIconActive).setZIndexOffset(1000);
     },
-    panToMarker(markerId){
-        let marker = this.getMarkerById(markerId);
-        if (marker)
-            this.mapObject.panToOffset(marker._latlng, this.mapOptions.offset);
+    panToMarker(markerId) {
+      let marker = this.getMarkerById(markerId);
+      if (marker)
+        this.mapObject.panToOffset(marker._latlng, this.mapOptions.offset);
     },
-    unhighlightMessage(marker){
-        marker.setIcon(this.customIcon)
-              .setZIndexOffset(0)
+    unhighlightMessage(marker) {
+      marker.setIcon(this.customIcon).setZIndexOffset(0);
     },
-    removeEditableLayers(){
-        for (var id in this.mapObject.editTools.featuresLayer._layers){
-            this.removeLayer(this.mapObject.editTools.featuresLayer._layers[id]);
-        }
+    removeEditableLayers() {
+      for (var id in this.mapObject.editTools.featuresLayer._layers) {
+        this.removeLayer(this.mapObject.editTools.featuresLayer._layers[id]);
+      }
     },
-    removeLayer(layer){
-        this.mapObject.editTools.featuresLayer.removeLayer(layer);
-        this.mapObject.removeLayer(layer);
+    removeLayer(layer) {
+      this.mapObject.editTools.featuresLayer.removeLayer(layer);
+      this.mapObject.removeLayer(layer);
     },
-    getActiveMarker(){        
-        let geojsonLayers = this.geojsonObject("messageGeojson")._layers;
+    getActiveMarker() {
+      let geojsonLayers = this.geojsonObject('messageGeojson')._layers;
+
+      for (let layer in geojsonLayers) {
+        if (geojsonLayers[layer].feature.id == this.activeMessage)
+          return geojsonLayers[layer];
+      }
+    },
+    getMarkerById(id) {
+      if (this.geojsonObject('messageGeojson')) {
+        let geojsonLayers = this.geojsonObject('messageGeojson')._layers;
 
         for (let layer in geojsonLayers) {
-            if (geojsonLayers[layer].feature.id == this.activeMessage)
-                return geojsonLayers[layer]
+          if (geojsonLayers[layer].feature.id == id)
+            return geojsonLayers[layer];
         }
+      }
     },
-    getMarkerById(id){
-        if (this.geojsonObject("messageGeojson")){
-            let geojsonLayers = this.geojsonObject("messageGeojson")._layers;
+    setExtent(extent) {
+      if (extent) {
+        let southWest = L.latLng(extent.bottom, extent.left),
+          northEast = L.latLng(extent.top, extent.right),
+          bounds = L.latLngBounds(southWest, northEast);
 
-            for (let layer in geojsonLayers) {
-                if (geojsonLayers[layer].feature.id == id)
-                    return geojsonLayers[layer]
-            }
-        }
+        this.mapObject.fitBounds(bounds, {
+          paddingBottomRight: [this.mapPaddingRight, 0],
+        });
+      }
     },
-    setExtent(extent){
-        if (extent){
-            let southWest = L.latLng(extent.bottom, extent.left),
-                northEast = L.latLng(extent.top, extent.right),
-                bounds = L.latLngBounds(southWest, northEast);
-
-            this.mapObject.fitBounds(bounds,{
-                paddingBottomRight:[this.mapPaddingRight, 0]
-            });
-        }
+    setAttribution() {
+      let attributionControl = this.mapObject.attributionControl.getContainer();
+      attributionControl.style.display = 'none';
+      this.$store.commit('setAttribution', attributionControl.innerHTML);
     },
-    setAttribution(){
-        let attributionControl = this.mapObject.attributionControl.getContainer();
-        attributionControl.style.display = "none";
-        this.$store.commit('setAttribution', attributionControl.innerHTML);
+    removeAttribution() {
+      this.$store.commit('setAttribution', '');
     },
-    removeAttribution(){
-        this.$store.commit('setAttribution', "");
-    }
-  }
-}
+  },
+};
 </script>
 
 <style lang="styl">
@@ -247,9 +251,8 @@ export default {
     height: 100%
 }
 
-.application 
-    .leaflet-bar a, 
+.application
+    .leaflet-bar a,
     .leaflet-bar a:hover
         color: black
-
 </style>
