@@ -8,7 +8,6 @@ import axios from 'axios';
 const debug = process.env.NODE_ENV !== 'production';
 const nextgiscomUrl = process.env.VUE_APP_NEXTGISCOM_URL;
 const baseResourceId = process.env.VUE_APP_BASE_RESOURCE_ID;
-console.log(process.env);
 
 export default new Vuex.Store({
   state: {
@@ -397,7 +396,6 @@ export default new Vuex.Store({
       });
     },
     getUserData({ commit }, clientId) {
-      console.log(commit);
       return new Promise((resolve, reject) => {
         axios
           .get(nextgiscomUrl + '/api/component/auth/current_user', {
@@ -428,7 +426,7 @@ export default new Vuex.Store({
               Authorization: 'Basic ' + localStorage.getItem('clientId'),
             },
           })
-          .then(function(response) {
+          .then(function (response) {
             dispatch('updateMessages', params.themeId);
             resolve(response);
           })
