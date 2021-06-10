@@ -1,5 +1,9 @@
 <template>
-  <v-card class="theme-card" height="136px" @click="activateTheme($event)">
+  <v-card
+    class="theme-card"
+    height="136px"
+    @click.native="activateTheme($event)"
+  >
     <v-container fill-height fluid>
       <div class="theme-card__title">{{ theme }}</div>
       <div class="theme-card__meta" align-end flexbox>
@@ -20,6 +24,7 @@ export default {
   },
   methods: {
     activateTheme() {
+      console.log('activate theme');
       this.$router.push({ path: '/map/' + this.themeIndex });
       bus.$emit('themes:themeClicked', this.themeIndex);
     },

@@ -5,7 +5,7 @@
       'message-card--active': isActive,
       'message-card--withImage': message.attachments,
     }"
-    @click="activateMessage($event)"
+    @click.native="activateMessage($event)"
   >
     <v-container fluid>
       <div class="message-card__title" v-html="highlightedTitle"></div>
