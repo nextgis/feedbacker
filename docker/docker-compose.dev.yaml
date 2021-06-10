@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  feedbacker:
+    image: registry.nextgis.com/feedbacker:dev
+    build:
+        context: ../
+        dockerfile: ./docker/Dockerfile
+    ports:
+      - 8000:8000
+    volumes:
+        - ../:/opt/feedbacker/src
+        - ./nginx.conf:/etc/nginx/conf.d/feedbacker.conf
+
+    # environment:
+    # entrypoint: sh ../bin/init.sh
+    command: nginx -g "daemon off;error_log /dev/stdout info;"
+    # command: nginx -g "daemon off;error_log /dev/stdout info;"
